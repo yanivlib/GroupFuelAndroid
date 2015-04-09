@@ -7,4 +7,5 @@ Android/.DS_Store
 Android/app/build
 Android/build
 desktop.ini
-
+web_ui/vendors.txt
+web_ui/.idea
