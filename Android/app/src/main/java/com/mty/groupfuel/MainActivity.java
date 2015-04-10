@@ -1,4 +1,4 @@
-package com.mty.groupfuel.groupfuel;
+package com.mty.groupfuel;
 
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -23,7 +23,6 @@ public class MainActivity extends ActionBarActivity {
 
         // Enable Local Datastore.
         Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "LkuUmj7OE1C9BzsbhkpMZEgeAT1A0ZACqTUZgN2f", "E6rm9orzoHeg4O36SSm7kToum9I4nb9lUwhlyFjY");
 
         ParseObject testObject = new ParseObject("TestObject");
         testObject.put("foo", "bar");
