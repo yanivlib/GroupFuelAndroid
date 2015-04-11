@@ -10,25 +10,35 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.TextView;
 
 import com.parse.Parse;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    static String username;
+
+    public static String getUserName () {
+        return username;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
+//
 
-        ParseObject testObject = new ParseObject("TestObject");
-        testObject.put("foo", "bar");
-        testObject.saveInBackground();
-
+//        ParseObject testObject = new ParseObject("TestObject");
+//        testObject.put("foo", "bar");
+//        testObject.saveInBackground();
+        ParseUser user = ParseUser.getCurrentUser();
+        username = user.getUsername();
         setContentView(R.layout.activity_main);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
@@ -71,6 +81,8 @@ public class MainActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            TextView textView = (TextView) rootView.findViewById(R.id.hello_world_text);
+            textView.setText("Hello World, " + MainActivity.getUserName());
             return rootView;
         }
     }

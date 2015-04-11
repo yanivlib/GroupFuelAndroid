@@ -19,7 +19,8 @@
         android:id="@+id/login_button"
         android:layout_gravity="center_horizontal"
         android:layout_weight="0.03"
-        android:text="@string/login" />
+        android:text="@string/login"
+        android:onClick="doLogin" />
 
     <Button
         android:layout_width="247dp"
@@ -27,5 +28,6 @@
         android:text="@string/register"
         android:id="@+id/register_button"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.03" />
+        android:layout_weight="0.03"
+        android:onClick="doRegister" />
 </LinearLayout>

@@ -5,4 +5,7 @@
     <string name="login">Login</string>
     <string name="register">Register</string>
     <string name="login_or_register">Please log in or register</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="title_activity_register">RegisterActivity</string>
 </resources>
