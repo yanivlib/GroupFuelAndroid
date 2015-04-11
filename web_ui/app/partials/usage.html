@@ -1,0 +1,27 @@
+<div class="container">
+    <div class="page-header">
+        <form>
+            <fieldset>
+                <div class="form-group col-md-2 col-sm-4">
+                    <label for="car">Car</label>
+                    <select name="car" class="form-control" ui-select2 ng-model="usageForm.car">
+                        <option value="" ng-if="!usageForm.car">[Select]</option>
+                        <option value="[All]">[All Cars]</option>
+                        <option ng-repeat="car in data.cars | orderBy:'carName'" value="{{ car.carID }}">{{ car.carName }}</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-2 col-sm-4">
+                    <label for="driver">Driver</label>
+                    <select name="driver" class="form-control" ui-select2 ng-disabled="!usageForm.car" ng-model="usageForm.driver">
+                        <option value="" ng-if="!usageForm.driver">[Select]</option>
+                        <option value="[All]">[All Drivers]</option>
+                        <option ng-repeat="driver in data.drivers | orderBy:'driverName'" value="{{ driver.driverID }}">{{ driver.driverName }}</option>
+                    </select>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="panel panel-default">
+
+    </div>
+</div>
