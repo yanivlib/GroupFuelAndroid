@@ -1,5 +1,6 @@
 package com.mty.groupfuel;
 
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -11,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.TextView;
-
+import android.support.v4.app.FragmentActivity;
 import com.parse.Parse;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -28,22 +29,24 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Enable Local Datastore.
-//
-
-//        ParseObject testObject = new ParseObject("TestObject");
-//        testObject.put("foo", "bar");
-//        testObject.saveInBackground();
-        ParseUser user = ParseUser.getCurrentUser();
-        username = user.getUsername();
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
-        }
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this));
+
+        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        slidingTabLayout.setDistributeEvenly(true);
+        slidingTabLayout.setViewPager(viewPager);
+
+        ParseUser user = ParseUser.getCurrentUser();
+        username = user.getUsername();
+//        setContentView(R.layout.activity_main);
+
+        //if (savedInstanceState == null) {
+        //    getSupportFragmentManager().beginTransaction()
+        //            .add(R.id.container, new PlaceholderFragment())
+        //            .commit();
+        //}
     }
 
 
@@ -71,7 +74,7 @@ public class MainActivity extends ActionBarActivity {
 
     /**
      * A placeholder fragment containing a simple view.
-     */
+
     public static class PlaceholderFragment extends Fragment {
 
         public PlaceholderFragment() {
@@ -85,5 +88,5 @@ public class MainActivity extends ActionBarActivity {
             textView.setText("Hello World, " + MainActivity.getUserName());
             return rootView;
         }
-    }
+    }*/
 }
