@@ -1,0 +1,10 @@
+Android/.gradle
+Android/local.properties
+Android/.idea/workspace.xml
+Android/.idea/tasks.xml
+Android/.idea/libraries
+Android/.DS_Store
+Android/app/build
+Android/build
+desktop.ini
+
