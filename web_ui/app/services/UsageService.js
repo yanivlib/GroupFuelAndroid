@@ -3,8 +3,14 @@
  */
 app.service('UsageService', function (){
    'use strict';
-    this.getCarsByOwner = function () {
-        console.log("getCarByOwner");
+    this.getCars = function (option) {
+        // option can be user or owner, call api accordingly.
+        console.log("getCar " + option);
+        if (option === "owned") {
+            return [
+                {'carName': 'Renault', 'carID': 5}
+            ];
+        }
         return [
             {'carName': 'MG', 'carID': 1},
             {'carName': 'Toyota', 'carID': 2},
