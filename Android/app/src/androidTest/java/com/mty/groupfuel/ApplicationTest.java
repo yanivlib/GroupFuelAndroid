@@ -1,4 +1,4 @@
-package com.mty.groupfuel.groupfuel;
+package com.mty.groupfuel;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
