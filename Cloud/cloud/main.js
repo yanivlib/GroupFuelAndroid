@@ -1,4 +1,3 @@
-
 Parse.Cloud.define("hello", function(request, response) {
   response.success("Hello world!");
 });
@@ -9,7 +8,7 @@ Parse.Cloud.define("getCarMakes",function(req, res) {
     query.select(["Make"]);
     query.find({
             success: function (results) {
-                results = distinct(results);
+//                results = distinct(results);
                 console.log(results);
                 res.success(results);
             },
@@ -29,7 +28,7 @@ Parse.Cloud.define("getCarModels", function(req, res) {
         query.equalTo("Make", make);
         query.find({
             success: function (results) {
-                results = distinct(results);
+//                results = distinct(results);
                 console.log(results);
                 res.success(results);
             },
@@ -47,7 +46,7 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
     }
     else {
         console.log(user);
-        var query = Parse.Query("Car");
+        var query = new Parse.Query("Car");
         query.equalTo("Owner", {
             __type: "Pointer",
             className: "_User",
@@ -55,7 +54,7 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         });
         query.find({
             success: function (results) {
-                results = distinct(results);
+//                results = distinct(results);
                 console.log(results);
                 res.success(results);
             },
