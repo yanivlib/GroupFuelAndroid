@@ -6,46 +6,6 @@ import com.parse.ParseQuery;
 
 @ParseClassName("CarModel")
 public class CarModel extends ParseObject {
-    public enum Gear {
-        AUTO("Auto"), MANUAL("Manual"), ROBOTIC("Robotic");
-        private String string;
-        Gear(String name){string = name;}
-
-        public String toString() {
-            return string;
-        }
-
-        public static Gear fromString(String text) {
-            if (text != null) {
-                for (Gear gear : Gear.values()) {
-                    if (text.equalsIgnoreCase(gear.string)) {
-                        return gear;
-                    }
-                }
-            }
-            throw new IllegalArgumentException("No Gear of type " + text + " found");
-        }
-    }
-
-    public enum Fuel {
-        GASOLINE("Gasoline"), DIESEL("Diesel");
-        private String string;
-        Fuel(String name){string = name;}
-        public String toString() {
-            return string;
-        }
-
-        public static Fuel fromString(String text) {
-            if (text != null) {
-                for (Fuel fuel : Fuel.values()) {
-                    if (text.equalsIgnoreCase(fuel.string)) {
-                        return fuel;
-                    }
-                }
-            }
-            throw new IllegalArgumentException("No Gear of type " + text + " found");
-        }
-    }
 
     public String getMake() {
         return getString("Make");

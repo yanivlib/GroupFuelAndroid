@@ -60,8 +60,12 @@ public class Fueling extends ParseObject {
         put("Price", value);
     }
 
-    public CarModel.Fuel getFuelType() {
-        return CarModel.Fuel.fromString(getString("Type"));
+    public Fuel getFuelType() {
+        return Fuel.fromString(getString("Type"));
+    }
+
+    public void setFuelType(Fuel value) {
+        put("FuelType", value.toString());
     }
 
     public ParseGeoPoint getLocation() {
