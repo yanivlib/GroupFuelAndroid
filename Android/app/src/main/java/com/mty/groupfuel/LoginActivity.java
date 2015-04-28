@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.mty.groupfuel.datamodel.User;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -56,12 +57,13 @@ public class LoginActivity extends ActionBarActivity {
 
         //TODO: check if username and password are legal and non-empty
 
-        ParseUser.logInInBackground(username, password, new LogInCallback() {
+        User.logInInBackground(username, password, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
                 if (user != null) {
                     // Hooray! The user is logged in.
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
+                    System.out.println(e.getMessage());
                     // Signup failed. TODO: Look at the ParseException to see what happened.
                 }
             }
