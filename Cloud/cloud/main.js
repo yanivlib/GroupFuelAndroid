@@ -1,3 +1,5 @@
+require('cloud/common.js');
+
 Parse.Cloud.define("hello", function(request, response) {
   response.success("Hello world!");
 });
@@ -9,7 +11,7 @@ Parse.Cloud.define("getCarMakes",function(req, res) {
     query.find({
             success: function (results) {
 //                results = distinct(results);
-                console.log(results);
+                console.log(" --- getCarMakes results: " + results);
                 res.success(results);
             },
             error: function () {
@@ -29,7 +31,7 @@ Parse.Cloud.define("getCarModels", function(req, res) {
         query.find({
             success: function (results) {
 //                results = distinct(results);
-                console.log(results);
+                console.log(" --- getCarModels results: " + results);
                 res.success(results);
             },
             error: function () {
@@ -45,7 +47,7 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         res.error("You must be logged in");
     }
     else {
-        console.log(user);
+        console.log(" --- getOwnedCars user: " + user);
         var query = new Parse.Query("Car");
         query.equalTo("Owner", {
             __type: "Pointer",
@@ -55,7 +57,29 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         query.find({
             success: function (results) {
 //                results = distinct(results);
-                console.log(results);
+                console.log(" --- getOwnedCars results: " + results);
+                res.success(results);
+            },
+            error: function () {
+                res.error("Failed to retrieve owned cars");
+            }
+        });
+    }
+});
+
+Parse.Cloud.define("getOwnedCars_2", function(req, res) {
+    var user = req.user;
+    if (user === undefined) {
+        res.error("You must be logged in");
+    }
+    else {
+        console.log(" --- getOwnedCars_2 user: " + user);
+        var query = new Parse.Query("Car");
+        query.equalTo(user);
+        query.find({
+            success: function (results) {
+//                results = distinct(results);
+                console.log(" --- getOwnedCars_2 results: " + results);
                 res.success(results);
             },
             error: function () {
