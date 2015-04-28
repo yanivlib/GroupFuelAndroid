@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 require('cloud/common.js');
 
+=======
+>>>>>>> df8456da34c099c4e4bfb2fefa22bde0362fc629
 Parse.Cloud.define("hello", function(request, response) {
     response.success("Hello world!");
 });
@@ -9,6 +12,7 @@ Parse.Cloud.define("getCarMakes",function(req, res) {
     var query = new Parse.Query("CarModel");
     query.select(["Make"]);
     query.find({
+<<<<<<< HEAD
         success: function (results) {
                 results = distinct(results);
             console.log(" --- getCarMakes results: " + results);
@@ -18,6 +22,17 @@ Parse.Cloud.define("getCarMakes",function(req, res) {
             res.error("Failed to retrieve car makers.");
         }
     });
+=======
+            success: function (results) {
+//                results = distinct(results);
+                console.log(results);
+                res.success(results);
+            },
+            error: function () {
+                res.error("Failed to retrieve car makers.");
+            }
+        });
+>>>>>>> df8456da34c099c4e4bfb2fefa22bde0362fc629
 });
 
 Parse.Cloud.define("getCarModels", function(req, res) {
@@ -30,8 +45,13 @@ Parse.Cloud.define("getCarModels", function(req, res) {
         query.equalTo("Make", make);
         query.find({
             success: function (results) {
+<<<<<<< HEAD
                 results = distinct(results);
                 console.log(" --- getCarModels results: " + results);
+=======
+//                results = distinct(results);
+                console.log(results);
+>>>>>>> df8456da34c099c4e4bfb2fefa22bde0362fc629
                 res.success(results);
             },
             error: function () {
@@ -47,7 +67,11 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         res.error("You must be logged in");
     }
     else {
+<<<<<<< HEAD
         console.log(" --- getOwnedCars user: " + user);
+=======
+        console.log(user);
+>>>>>>> df8456da34c099c4e4bfb2fefa22bde0362fc629
         var query = new Parse.Query("Car");
         query.equalTo("Owner", {
             __type: "Pointer",
@@ -56,6 +80,7 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         });
         query.find({
             success: function (results) {
+<<<<<<< HEAD
                 results = distinct(results);
                 console.log(" --- getOwnedCars results: " + results);
                 res.success(results);
@@ -80,6 +105,10 @@ Parse.Cloud.define("getOwnedCars_2", function(req, res) {
             success: function (results) {
                 results = distinct(results);
                 console.log(" --- getOwnedCars_2 results: " + results);
+=======
+//                results = distinct(results);
+                console.log(results);
+>>>>>>> df8456da34c099c4e4bfb2fefa22bde0362fc629
                 res.success(results);
             },
             error: function () {
@@ -87,4 +116,8 @@ Parse.Cloud.define("getOwnedCars_2", function(req, res) {
             }
         });
     }
+<<<<<<< HEAD
 }); */
+=======
+});
+>>>>>>> df8456da34c099c4e4bfb2fefa22bde0362fc629
