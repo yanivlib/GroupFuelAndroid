@@ -7,6 +7,10 @@ import com.parse.ParseQuery;
 @ParseClassName("CarModel")
 public class CarModel extends ParseObject {
 
+    public CarModel() {
+
+    }
+
     public String getMake() {
         return getString("Make");
     }

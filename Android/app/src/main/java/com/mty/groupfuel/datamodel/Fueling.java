@@ -9,6 +9,10 @@ import com.parse.ParseUser;
 @ParseClassName("Fueling")
 public class Fueling extends ParseObject {
 
+    public Fueling() {
+
+    }
+
     public Car getCar() {
         return (Car) getParseObject("Car");
     }
@@ -17,11 +21,11 @@ public class Fueling extends ParseObject {
         put("Car", value);
     }
 
-    public ParseUser getUser() {
-        return getParseUser("User");
+    public User getUser() {
+        return (User)getParseUser("User");
     }
 
-    public void setUser(ParseUser value) {
+    public void setUser(User value) {
         put("User", value);
     }
 
@@ -35,7 +39,6 @@ public class Fueling extends ParseObject {
 
     public Number getMileage() {
         return getNumber("Mileage");
-
     }
 
     public void setMileage(Number value) {

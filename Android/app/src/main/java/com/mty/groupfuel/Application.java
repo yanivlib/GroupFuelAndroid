@@ -1,11 +1,13 @@
 package com.mty.groupfuel;
 
-/**
- * Created by yanivlib on 4/10/15.
- */
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.mty.groupfuel.datamodel.Car;
+import com.mty.groupfuel.datamodel.CarModel;
+import com.mty.groupfuel.datamodel.Fueling;
+import com.mty.groupfuel.datamodel.GasStation;
+import com.mty.groupfuel.datamodel.User;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -21,6 +23,11 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
 
+        ParseObject.registerSubclass(CarModel.class);
+        ParseObject.registerSubclass(Car.class);
+        ParseObject.registerSubclass(GasStation.class);
+        ParseObject.registerSubclass(Fueling.class);
+        ParseObject.registerSubclass(User.class);
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "LkuUmj7OE1C9BzsbhkpMZEgeAT1A0ZACqTUZgN2f", "E6rm9orzoHeg4O36SSm7kToum9I4nb9lUwhlyFjY");
 
