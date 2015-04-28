@@ -1,6 +1,7 @@
+require('cloud/common.js');
 
 Parse.Cloud.define("hello", function(request, response) {
-  response.success("Hello world!");
+    response.success("Hello world!");
 });
 
 Parse.Cloud.define("getCarMakes",function(req, res) {
@@ -8,15 +9,15 @@ Parse.Cloud.define("getCarMakes",function(req, res) {
     var query = new Parse.Query("CarModel");
     query.select(["Make"]);
     query.find({
-            success: function (results) {
+        success: function (results) {
                 results = distinct(results);
-                console.log(results);
-                res.success(results);
-            },
-            error: function () {
-                res.error("Failed to retrieve car makers.");
-            }
-        });
+            console.log(" --- getCarMakes results: " + results);
+            res.success(results);
+        },
+        error: function () {
+            res.error("Failed to retrieve car makers.");
+        }
+    });
 });
 
 Parse.Cloud.define("getCarModels", function(req, res) {
@@ -30,7 +31,7 @@ Parse.Cloud.define("getCarModels", function(req, res) {
         query.find({
             success: function (results) {
                 results = distinct(results);
-                console.log(results);
+                console.log(" --- getCarModels results: " + results);
                 res.success(results);
             },
             error: function () {
@@ -46,8 +47,8 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         res.error("You must be logged in");
     }
     else {
-        console.log(user);
-        var query = Parse.Query("Car");
+        console.log(" --- getOwnedCars user: " + user);
+        var query = new Parse.Query("Car");
         query.equalTo("Owner", {
             __type: "Pointer",
             className: "_User",
@@ -56,7 +57,7 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         query.find({
             success: function (results) {
                 results = distinct(results);
-                console.log(results);
+                console.log(" --- getOwnedCars results: " + results);
                 res.success(results);
             },
             error: function () {
@@ -65,3 +66,25 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         });
     }
 });
+/*
+Parse.Cloud.define("getOwnedCars_2", function(req, res) {
+    var user = req.user;
+    if (user === undefined) {
+        res.error("You must be logged in");
+    }
+    else {
+        console.log(" --- getOwnedCars_2 user: " + user);
+        var query = new Parse.Query("Car");
+        query.equalTo(user);
+        query.find({
+            success: function (results) {
+                results = distinct(results);
+                console.log(" --- getOwnedCars_2 results: " + results);
+                res.success(results);
+            },
+            error: function () {
+                res.error("Failed to retrieve owned cars");
+            }
+        });
+    }
+}); */
