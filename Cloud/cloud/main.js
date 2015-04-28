@@ -63,11 +63,7 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
     else {
         console.log(user);
         var query = new Parse.Query("Car");
-        query.equalTo("Owner", {
-            __type: "Pointer",
-            className: "_User",
-            objectId: user.objectId
-        });
+        query.equalTo("Owner", user);
         query.find({
             success: function (results) {
                 results = distinct(results);
