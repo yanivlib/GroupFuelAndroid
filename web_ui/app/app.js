@@ -4,6 +4,7 @@ var app = angular.module('GroupFuel', ['ui.bootstrap','ngRoute','ngTable','ui.se
 	'use strict';
 	console.log("app started");
 
+    Parse.initialize("LkuUmj7OE1C9BzsbhkpMZEgeAT1A0ZACqTUZgN2f", "SjAjaVwR56asiH2VYZuY2j44LerSTflgvNTyCnzl");
 
     // Configure routes for app
     app.config(function($routeProvider, $locationProvider) {
@@ -26,6 +27,9 @@ var app = angular.module('GroupFuel', ['ui.bootstrap','ngRoute','ngTable','ui.se
         }).when('/about', {
             controller:'UsageController',
             templateUrl: 'web_ui/app/partials/about.html'
+        }).when('/signup', {
+            controller:'SignupController',
+            templateUrl: 'web_ui/app/partials/signup.html'
         }).otherwise({ redirectTo: '/welcome'});
     });
 
