@@ -5,6 +5,8 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
+import com.mty.groupfuel.datamodel.Car;
+
 public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter{
     final int PAGE_COUNT = 3;
     private String tabTitles[] = new String[] { "My Usage", "Fuel Now", "My Account" };
@@ -22,7 +24,12 @@ public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAd
 
     @Override
     public Fragment getItem(int position) {
-        return MainFragment.newInstance(position + 1);
+        switch (position) {
+            case 1:
+                return FuelingFragment.newInstance();
+            default:
+                return MainFragment.newInstance(position + 1);
+        }
     }
 
     @Override

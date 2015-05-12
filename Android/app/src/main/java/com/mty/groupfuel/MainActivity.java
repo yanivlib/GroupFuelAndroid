@@ -13,17 +13,33 @@ import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.TextView;
 import android.support.v4.app.FragmentActivity;
+
+import com.mty.groupfuel.datamodel.Car;
+import com.mty.groupfuel.datamodel.User;
+import com.parse.FindCallback;
+import com.parse.FunctionCallback;
 import com.parse.Parse;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
 
-    static String username;
+    static private ParseUser user;
+    static private Car[] cars;
 
     public static String getUserName () {
-        return username;
+        return user.getUsername();
+    }
+    public Car[] getCars(){
+        return cars;
     }
 
     @Override
@@ -38,8 +54,10 @@ public class MainActivity extends ActionBarActivity {
         slidingTabLayout.setDistributeEvenly(true);
         slidingTabLayout.setViewPager(viewPager);
 
-        ParseUser user = ParseUser.getCurrentUser();
-        username = user.getUsername();
+//        getOwnedCars();
+        queryOwnedCars();
+        user = ParseUser.getCurrentUser();
+        System.out.println("Current user is " + getUserName());
 //        setContentView(R.layout.activity_main);
 
         //if (savedInstanceState == null) {
@@ -71,22 +89,49 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    /**
-     * A placeholder fragment containing a simple view.
-
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.hello_world_text);
-            textView.setText("Hello World, " + MainActivity.getUserName());
-            return rootView;
-        }
-    }*/
+    private void queryOwnedCars() {
+        ParseQuery<Car> query = Car.getQuery().whereEqualTo("Owner", user);
+        query.findInBackground(new FindCallback<Car>() {
+            @Override
+            public void done(List<Car> result, ParseException e) {
+                if (e == null) {
+                    System.out.println("Parse query, result size is " + result.toString() + "size is " + result.size());
+                    cars = new Car[result.size()];
+                    for (int i = 0; i < result.size(); i++) {
+                        cars[i] = result.get(i);
+                        System.out.println(cars[i].getDisplayName());
+                    }
+                } else {
+                    switch (e.getCode()) {
+                        case 141:
+                            System.out.println("Failed to find cars.");
+                            break;
+                        default:
+                            throw new RuntimeException(e.getMessage());
+                    }
+                }
+            }
+        });
+    }
+    private static void getOwnedCars() {
+        ParseCloud.callFunctionInBackground("getOwnedCars", new HashMap<String, Object>(), new FunctionCallback<ArrayList>() {
+            @Override
+            public void done(ArrayList result, ParseException e) {
+                if (e == null) {
+                    cars = new Car[result.size()];
+                    for (int i = 0; i < result.size(); i++) {
+                        cars[i] = (Car) result.get(i);
+                    }
+                } else {
+                    switch (e.getCode()) {
+                        case 141:
+                            System.out.println("Failed to find cars.");
+                            break;
+                        default:
+                            throw new RuntimeException(e.getMessage());
+                    }
+                }
+            }
+        });
+    }
 }

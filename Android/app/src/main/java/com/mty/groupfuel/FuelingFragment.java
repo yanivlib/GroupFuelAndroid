@@ -21,8 +21,10 @@ import com.parse.ParseUser;
 
 import java.util.Arrays;
 
-public class FuelingFragment extends Fragment {
-    private static final String CARS_KEY = "cars_key";
+public class FuelingFragment extends android.support.v4.app.Fragment {
+//    private static final String CARS_KEY = "cars_key";
+
+    private Car[] cars;
 
     private EditText mileageEditText;
     private EditText priceEditText;
@@ -30,19 +32,15 @@ public class FuelingFragment extends Fragment {
     private EditText locationEditText;
     private String selectedFuel;
     private Car selectedCar;
-    private Button sendButton;
 
     public FuelingFragment() {
-        // Required empty public constructor
     }
 
-    public static FuelingFragment newInstance(Car[] cars) {
-        FuelingFragment fuelingFragment = new FuelingFragment();
-
+    public static FuelingFragment newInstance() {
         Bundle args = new Bundle();
-        args.putSerializable(CARS_KEY, cars);
+//        args.putSerializable(CARS_KEY, cars);
+        FuelingFragment fuelingFragment = new FuelingFragment();
         fuelingFragment.setArguments(args);
-
         return fuelingFragment;
     }
 
@@ -57,12 +55,11 @@ public class FuelingFragment extends Fragment {
             if (spinnerType == Fuel.class) {
                 selectedFuel = (String) parent.getItemAtPosition(pos);
             } else if (spinnerType == Car.class) {
-                Car[] cars = (Car[]) getArguments().getSerializable(CARS_KEY);
                 selectedCar = cars[pos];
             }
         }
         public void onNothingSelected(AdapterView<?> parent) {
-            // Another interface callback
+            // Do Nothing
         }
     }
 
@@ -83,24 +80,31 @@ public class FuelingFragment extends Fragment {
             fueling.setFuelType(Fuel.fromString(selectedFuel));
             fueling.setCar(selectedCar);
 
-            fueling.saveInBackground();
+            fueling.saveEventually();
         }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        cars = ((MainActivity) getActivity()).getCars();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_fueling, container, false);
+        String[] carNames;
+        try {
+            carNames = new String[cars.length];
+        } catch (java.lang.NullPointerException e) {
+            carNames = new String[0];
+        }
 
-        Car[] cars = (Car[]) getArguments().getSerializable(CARS_KEY);
-        String[] carNames = new String[cars.length];
-        for(int i = 0; i < cars.length; i++) {
+        for(int i = 0; i < carNames.length; i++) {
             carNames[i] = cars[i].getDisplayName();
         }
-//        Fuel defaultFuel = cars[0].getModel().getFuelType();
-
-        View view = inflater.inflate(R.layout.fragment_fueling, container, false);
-        ArrayAdapter<String> carSpinnerAdapter = new ArrayAdapter<String>(view.getContext(),
+        ArrayAdapter<String> carSpinnerAdapter = new ArrayAdapter<>(view.getContext(),
                 android.R.layout.simple_spinner_item, carNames);
         carSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner carSpinner = (Spinner) view.findViewById(R.id.fueling_car);
@@ -112,12 +116,12 @@ public class FuelingFragment extends Fragment {
         amountEditText = (EditText) view.findViewById(R.id.fueling_amount);
 
         Spinner fuelSpinner = (Spinner) view.findViewById(R.id.fueling_type);
-        ArrayAdapter<String> fuelSpinnerAdapter = new ArrayAdapter<String>(view.getContext(),
+        ArrayAdapter<String> fuelSpinnerAdapter = new ArrayAdapter<>(view.getContext(),
                 android.R.layout.simple_spinner_item, Fuel.getNames());
         fuelSpinner.setAdapter(fuelSpinnerAdapter);
         fuelSpinner.setOnItemSelectedListener(new SpinnerSelect(Fuel.class));
 
-        sendButton = (Button) view.findViewById(R.id.fueling_send);
+        Button sendButton = (Button) view.findViewById(R.id.fueling_send);
         sendButton.setOnClickListener(new SendListener());
         return view;
 

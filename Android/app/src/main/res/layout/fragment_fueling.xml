@@ -94,6 +94,7 @@
         android:layout_alignRight="@+id/fueling_type"
         android:layout_alignEnd="@+id/fueling_type"
         android:hint="Amount (liters)"
-        android:inputType="number" />
+        android:inputType="number"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
