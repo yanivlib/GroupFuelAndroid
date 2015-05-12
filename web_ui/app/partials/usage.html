@@ -1,37 +1,6 @@
 <div class="container">
     <div class="page-header">
-        <form>
-            <fieldset>
-                <div class="row">
-                    <div class="form-group col-md-3 col-sm-4">
-                        <label for="option">Usage for</label>
-                        <select class="input-small" name="option" ui-select2 ng-model="usageForm.option">
-                            <option value="" ng-if="usageForm.option">[Select]</option>
-                            <option value="owned">Owned by me</option>
-                            <option value="used">Used by me</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-2 col-sm-4">
-                        <label for="car">Car</label>
-                        <select class="input-small" name="car" ui-select2 ng-model="usageForm.car">
-                            <option value="" ng-if="!usageForm.car">[Select]</option>
-                            <option value="[All]">[All Cars]</option>
-                            <option ng-repeat="car in data.cars | orderBy:'carName'" value="{{ car.carID }}">{{ car.carName }}</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-md-2 col-sm-4">
-                        <label for="driver">Driver</label>
-                        <select class="input-small" name="driver" ui-select2 ng-disabled="!usageForm.car" ng-model="usageForm.driver">
-                            <option value="" ng-if="!usageForm.driver">[Select]</option>
-                            <option value="[All]">[All Drivers]</option>
-                            <option ng-repeat="driver in data.drivers | orderBy:'driverName'" value="{{ driver.driverID }}">{{ driver.driverName }}</option>
-                        </select>
-                    </div>
-                 </div>
-            </fieldset>
-        </form>
-    </div>
-    <div class="panel panel-default">
 
     </div>
+
 </div>

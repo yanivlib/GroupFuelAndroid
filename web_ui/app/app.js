@@ -10,7 +10,7 @@ var app = angular.module('GroupFuel', ['ui.bootstrap','ngRoute','ngTable','ui.se
     app.config(function($routeProvider, $locationProvider) {
         $locationProvider.html5Mode(true);
         $routeProvider.when('/welcome', {
-            controller:'UsageController',
+            controller:'NavigationController',
             templateUrl: 'web_ui/app/partials/welcome.html'
         }).when('/usage', {
             controller:'UsageController',
@@ -28,7 +28,7 @@ var app = angular.module('GroupFuel', ['ui.bootstrap','ngRoute','ngTable','ui.se
             controller:'UsageController',
             templateUrl: 'web_ui/app/partials/about.html'
         }).when('/signup', {
-            controller:'LoginController',
+            controller:'SignupController',
             templateUrl: 'web_ui/app/partials/signup.html'
         }).otherwise({ redirectTo: '/welcome'});
     });

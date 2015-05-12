@@ -38,9 +38,9 @@
                         <li ng-class="{'active': isActive('/about')}"><a href="/about">About Us</a></li>
 					</ul>
 					<ul class="nav navbar-nav pull-right">
-						<li ng-if="!logged"><a href="signup">Sign Up</a></li>
-						<li ng-if="!logged"><a href="#">Login</a></li>
-						<li ng-if="logged" ng-click="doLogOut()"><a href="#">Logout</a></li>
+						<li ng-if="!UserService.logged" ng-class="{'active': isActive('/signup')}"><a href="/signup">Create Account</a></li>
+						<li ng-if="!UserService.logged" ng-click="doLogin()"><a href="#">Login</a></li>
+						<li ng-if="UserService.logged" ng-click="doLogOut()"><a href="#">Logout</a></li>
 					</ul>
 	    		</div>
             </div>
@@ -65,8 +65,11 @@
 		<script src="web_ui/app/controllers/UsageController.js"></script>
 		<script src="web_ui/app/controllers/MailReportController.js"></script>
 		<script src="web_ui/app/controllers/NavigationController.js"></script>
-        <script src="web_ui/app/controllers/LoginController.js"></script>
-        <script src="web_ui/app/services/UsageService.js"></script>
+        <script src="web_ui/app/controllers/SignupController.js"></script>
+		<script src="web_ui/app/controllers/LoginController.js"></script>
+		<script src="web_ui/app/services/UsageService.js"></script>
+		<script src="web_ui/app/services/UserService.js"></script>
+
 
 
 
