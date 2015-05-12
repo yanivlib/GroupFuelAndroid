@@ -18,4 +18,13 @@ public enum Fuel {
         }
         throw new IllegalArgumentException("No Gear of type " + text + " found");
     }
+
+    public static String[] getNames() {
+        Fuel[] values = Fuel.values();
+        String[] result = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+            result[i] = values[i].toString();
+        }
+        return result;
+    }
 }

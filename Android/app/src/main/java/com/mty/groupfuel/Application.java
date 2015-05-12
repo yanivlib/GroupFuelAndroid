@@ -1,8 +1,5 @@
 package com.mty.groupfuel;
 
-/**
- * Created by yanivlib on 4/10/15.
- */
 import android.content.Context;
 import android.content.SharedPreferences;
 

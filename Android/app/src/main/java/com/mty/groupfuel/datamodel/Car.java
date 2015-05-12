@@ -43,4 +43,8 @@ public class Car extends ParseObject {
     public static ParseQuery<Car> getQuery() {
         return ParseQuery.getQuery(Car.class);
     }
+
+    public String getDisplayName() {
+        return getCarNumber() + "(" + getModel().getMake() + ")";
+    }
 }
