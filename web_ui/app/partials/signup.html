@@ -1,0 +1,48 @@
+<div class="container">
+    <div class="page-header">
+
+    </div>
+    <div class="col-md-6">
+        <form>
+            <fieldset>
+                <div class="form-group">
+                    <div class="row">
+                            <label for="user_name" class="control-label">User Name:</label>
+                        <input class="form-control" id="user_name" type="text" ng-model="signupDetails.userName" placeholder="johndoe">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="first_name">First Name:</label>
+                        <input class="form-control" id="first_name" type="text" ng-model="signupDetails.firstName" placeholder="John">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="last_name">Last Name:</label>
+                        <input class="form-control" id="last_name" type="text" ng-model="signupDetails.lastName" placeholder="Doe">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="email">Email:</label>
+                        <input class="form-control" id="email" type="email" ng-model="signupDetails.email" placeholder="John.Doe@GroupFuel.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="password">Password:</label>
+                        <input class="form-control" id="password" type="password" ng-model="signupDetails.password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="repeat_password">Repeat Password:</label>
+                        <input class="form-control" id="repeat_password" type="password" ng-model="signupDetails.repeatPassword">
+                    </div>
+                </div>
+            </fieldset>
+            <button type="submit" class="btn btn-primary" ng-click="doSignUp()">Sign Up!</button>
+        </form>
+    </div>
+</div>

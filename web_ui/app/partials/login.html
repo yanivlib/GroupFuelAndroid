@@ -1,0 +1,26 @@
+<div class="modal-header">
+    <h3 class="modal-title">Login</h3>
+</div>
+<div class="modal-body">
+    <form>
+        <fieldset>
+            <div class="form-group center-block">
+                <div class="row">
+                    <div class="col-md-5">
+                        <label for="user_name">User Name:</label>
+                        <input class="form-control col-md-2" id="user_name" type="text" ng-model="loginDetails.username" placeholder="User Name">
+                    </div>
+                    <div class="col-md-5">
+                        <label for="password">Password:</label>
+                        <input class="form-control col-md-2" id="password" type="password" ng-model="loginDetails.password">
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+    <!-- Here we'll add log in with facebook/google/twitter -->
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="doLogin()">Login</button>
+    <button class="btn btn-warning" ng-click="doCancel()">Cancel</button>
+</div>
