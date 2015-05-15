@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.TextView;
 import android.support.v4.app.FragmentActivity;
+
+import com.mty.groupfuel.datamodel.User;
 import com.parse.Parse;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -38,7 +40,7 @@ public class MainActivity extends ActionBarActivity {
         slidingTabLayout.setDistributeEvenly(true);
         slidingTabLayout.setViewPager(viewPager);
 
-        ParseUser user = ParseUser.getCurrentUser();
+        User user = (User)User.getCurrentUser();
         username = user.getUsername();
 //        setContentView(R.layout.activity_main);
 
