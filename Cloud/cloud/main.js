@@ -1,4 +1,4 @@
-require('cloud/common.js');
+var common = require('cloud/common.js');
 
 Parse.Cloud.define("hello", function(request, response) {
   response.success("Hello world!");
@@ -67,9 +67,6 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         query.find({
             success: function (results) {
                 console.log(results);
-                if (results.length == 0) {
-                    res.error("User has no owned cars");
-                }
                 res.success(results);
             },
             error: function () {
