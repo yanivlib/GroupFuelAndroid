@@ -56,12 +56,7 @@ Parse.Cloud.define("getCarModels", function(req, res) {
  * returns an array of ParseObjects. 
  */
 Parse.Cloud.define("getOwnedCars", function(req, res) {
-    var user;
-    if (req.params.Owner === undefined) {
-        user = req.user;
-    } else {
-        user = req.params.Owner;
-    }
+    var user = req.params.Owner || req.user;
     if (user === undefined) {
         res.error("You must be logged in");
     }
@@ -74,9 +69,8 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
                 console.log(results);
                 if (results.length == 0) {
                     res.error("User has no owned cars");
-                } else {
-                    res.success(results);
                 }
+                res.success(results);
             },
             error: function () {
                 res.error("Failed to retrieve owned cars");
