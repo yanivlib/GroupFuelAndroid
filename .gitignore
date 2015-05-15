@@ -4,6 +4,8 @@ Android/.idea/workspace.xml
 Android/.idea/tasks.xml
 Android/.idea/libraries
 Android/.idea/misc.xml
+Android/.idea/compiler.xml
+Android/.idea/encoding.xml
 Android/.DS_Store
 Android/app/build
 Android/app/app.iml
