@@ -13,7 +13,7 @@ Parse.Cloud.define("getCarMakes",function(req, res) {
     query.select(["Make"]);
     query.find({
             success: function (results) {
-                results = distinct(results);
+                results = distinct(results, "Make");
                 console.log(results);
                 res.success(results);
             },
@@ -30,7 +30,7 @@ Parse.Cloud.define("getCarMakes",function(req, res) {
  * returns an array of ParseObjects. 
  */
 Parse.Cloud.define("getCarModels", function(req, res) {
-    var make = req.params.make;
+    var make = req.params.Make;
     if (make === undefined) {
         res.error("Car Maker is a required field.");
     }
@@ -39,7 +39,7 @@ Parse.Cloud.define("getCarModels", function(req, res) {
         query.equalTo("Make", make);
         query.find({
             success: function (results) {
-                results = distinct(results);
+                results = distinct(results, "Model");
                 console.log(results);
                 res.success(results);
             },
@@ -51,12 +51,17 @@ Parse.Cloud.define("getCarModels", function(req, res) {
 });
 
 /*
- * gets a user name, and returns a list of all the cars owned by the user.
- * if no user is provided, the current user is used. if no user is provided with the request, returns an error.
+ * gets an Owner, and returns a list of all the cars owned by the Owner.
+ * if no Owner is provided, the current user is used. if no user is provided with the request, returns an error.
  * returns an array of ParseObjects. 
  */
 Parse.Cloud.define("getOwnedCars", function(req, res) {
-    var user = req.user;
+    var user;
+    if (req.params.Owner === undefined) {
+        user = req.user;
+    } else {
+        user = req.params.Owner;
+    }
     if (user === undefined) {
         res.error("You must be logged in");
     }
@@ -66,9 +71,12 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         query.equalTo("Owner", user);
         query.find({
             success: function (results) {
-                results = distinct(results);
                 console.log(results);
-                res.success(results);
+                if (results.length == 0) {
+                    res.error("User has no owned cars");
+                } else {
+                    res.success(results);
+                }
             },
             error: function () {
                 res.error("Failed to retrieve owned cars");

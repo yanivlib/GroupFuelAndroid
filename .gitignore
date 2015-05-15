@@ -3,10 +3,13 @@ Android/local.properties
 Android/.idea/workspace.xml
 Android/.idea/tasks.xml
 Android/.idea/libraries
+Android/.idea/misc.xml
 Android/.DS_Store
 Android/app/build
+Android/app/app.iml
 Android/build
 desktop.ini
 web_ui/vendors.txt
 web_ui/.idea
 Cloud/cloud/.idea
+Cloud/.idea
