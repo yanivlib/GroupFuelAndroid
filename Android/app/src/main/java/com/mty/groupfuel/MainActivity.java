@@ -21,8 +21,13 @@ import com.mty.groupfuel.datamodel.User;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseCloud;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -70,7 +75,7 @@ public class MainActivity extends ActionBarActivity {
 		
 		getOwnedCars();
         User user = (User)User.getCurrentUser();
-        username = user.getUsername();
+        String username = user.getUsername();
 //        setContentView(R.layout.activity_main);
 
         //if (savedInstanceState == null) {
