@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<item><title>אאודי</title>
+<SemelTozar>19</SemelTozar>
+<ShemTozar>אאודי</ShemTozar> ## Make
+<KodDegem>10</KodDegem>
+<TeurDegem>4LB0EL</TeurDegem>
+<Hamerkav>פנאי-שטח</Hamerkav>
+<KinuyMishari>Q7</KinuyMishari>  ### Model
+<NefahManoa>4163</NefahManoa>    ### Volume
+<MishkalKolel>3065</MishkalKolel>
+<Gova>173</Gova>
+<RamatGimur></RamatGimur>
+<KoahSus>350</KoahSus>
+<MisparDlatot>5</MisparDlatot>
+<Mazgan>X</Mazgan>
+<KariyotAvir>6</KariyotAvir>
+<Abs>X</Abs>
+<Otomat>X</Otomat>               ### Gear
+<HalonBagag></HalonBagag>
+<Shana value="2007">             ### Year
+	<KvutzatAgra>7</KvutzatAgra>
+	<HoraotRishum>06-0526</HoraotRishum>
+	<TotalRegister>3</TotalRegister>
+	<TotalActive>3</TotalActive>
+</Shana>
+<TotalRegisterToModel>3</TotalRegisterToModel>
+<TotalActiveToModel>3</TotalActiveToModel>
+<Hanaah>4X4</Hanaah>
+<HegeKoah>X</HegeKoah>
+<HalonotHasmal>4</HalonotHasmal>
+<GalgalMagnezium>X</GalgalMagnezium>    
+<SugDelek>בנזין</SugDelek> 	## FuelType
+<Argaz></Argaz>
+<BakaratYezivut>X</BakaratYezivut>
+<Hibridi></Hibridi>             ## Hybrid
+<MisparMosavim>7</MisparMosavim>
+<KosherGriraWith>0</KosherGriraWith>
+<KosherGrira>0</KosherGrira>
+<KvuzatZihum></KvuzatZihum>
+<Tkina value="0" />
+<MaarehotBetihut>
+	<BakaratStiyaMeNativ/>
+	<NiturMerhakMelifnim/>
+	<ZihyiBeshetahMet></ZihyiBeshetahMet>
+	<BakaratShiutAdaptivit></BakaratShiutAdaptivit>
+	<ZihyiOlheyRegel/>
+	<MaarehetEzerLebalam></MaarehetEzerLebalam>
+	<MazlematRevers></MazlematRevers>
+	<HishaneiLahazAvirBezmigim></HishaneiLahazAvirBezmigim>
+	<HishaneiHagurot></HishaneiHagurot>
+	<NikudBetihut></NikudBetihut>
+	<RamatAvizorBetihuti></RamatAvizorBetihuti>
+	<TeuraAutomatit></TeuraAutomatit>
+	<ShlitaAutomatitBeorotHagvuim/>
+	<ZihyiMazavHitkarvutMesukenet></ZihyiMazavHitkarvutMesukenet>
+	<ZihyiTamrureiTnua/>
+</MaarehotBetihut></item>
+
+
+
+
+<item><title>אאודי</title>
+<SemelTozar>19</SemelTozar>
+<ShemTozar>אאודי</ShemTozar>
+<KodDegem>1</KodDegem>
+<TeurDegem>8P1AIG</TeurDegem>
+<Hamerkav>הצ'בק</Hamerkav>
+<KinuyMishari>A3</KinuyMishari>
+<NefahManoa>1197</NefahManoa>
+<MishkalKolel>1790</MishkalKolel>
+<Gova></Gova>
+<RamatGimur></RamatGimur>
+<KoahSus>105</KoahSus>
+<MisparDlatot>3</MisparDlatot>
+<Mazgan>X</Mazgan>
+<KariyotAvir>6</KariyotAvir>
+<Abs>X</Abs>
+<Otomat>X</Otomat>
+<HalonBagag></HalonBagag>
+<Shana value="2011">
+	<KvutzatAgra>5</KvutzatAgra>
+	<HoraotRishum>10-1480</HoraotRishum>
+	<TotalRegister>25</TotalRegister>
+	<TotalActive>24</TotalActive>
+</Shana>
+<Shana value="2012">
+	<KvutzatAgra>5</KvutzatAgra>
+	<HoraotRishum>12-0180</HoraotRishum>
+	<TotalRegister>0</TotalRegister>
+	<TotalActive>0</TotalActive>
+</Shana>
+<TotalRegisterToModel>25</TotalRegisterToModel>
+<TotalActiveToModel>24</TotalActiveToModel>
+<Hanaah>4X2</Hanaah>
+<HegeKoah>X</HegeKoah>
+<HalonotHasmal>2</HalonotHasmal>
+<GalgalMagnezium>X</GalgalMagnezium>
+<SugDelek>בנזין</SugDelek>
+<Argaz> </Argaz>
+<BakaratYezivut>X</BakaratYezivut>
+<Hibridi></Hibridi>
+<MisparMosavim>5</MisparMosavim>
+<KosherGriraWith>750</KosherGriraWith>
+<KosherGrira>650</KosherGrira>
+<KvuzatZihum>4</KvuzatZihum>
+<MadadYarok>157</MadadYarok>
+<Tkina value="1">
+	<SugMemir></SugMemir>
+	<Sug>אירופאית</Sug>
+	<KamutC02>120</KamutC02>
+	<KamutNOX>0.02</KamutNOX>
+	<KamutPM10></KamutPM10>
+	<KamutHC>0.024</KamutHC>
+	<KamutHCnox></KamutHCnox>
+	<KamutC0>0.322</KamutC0>
+</Tkina>
+<MaarehotBetihut><BakaratStiyaMeNativ/><NiturMerhakMelifnim/><ZihyiBeshetahMet></ZihyiBeshetahMet><BakaratShiutAdaptivit></BakaratShiutAdaptivit><ZihyiOlheyRegel/><MaarehetEzerLebalam>X</MaarehetEzerLebalam><MazlematRevers></MazlematRevers><HishaneiLahazAvirBezmigim></HishaneiLahazAvirBezmigim><HishaneiHagurot></HishaneiHagurot><NikudBetihut></NikudBetihut><RamatAvizorBetihuti>01</RamatAvizorBetihuti><TeuraAutomatit></TeuraAutomatit><ShlitaAutomatitBeorotHagvuim/><ZihyiMazavHitkarvutMesukenet></ZihyiMazavHitkarvutMesukenet><ZihyiTamrureiTnua/></MaarehotBetihut></item>
