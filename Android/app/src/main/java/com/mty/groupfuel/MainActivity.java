@@ -15,6 +15,8 @@ import android.widget.TextView;
 import android.support.v4.app.FragmentActivity;
 
 import com.mty.groupfuel.datamodel.Car;
+import com.mty.groupfuel.datamodel.CarModel;
+import com.mty.groupfuel.datamodel.Fueling;
 import com.mty.groupfuel.datamodel.User;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
@@ -33,13 +35,30 @@ import java.util.List;
 public class MainActivity extends ActionBarActivity {
 
     static private ParseUser user;
-    static private Car[] cars;
+    private Car[] cars;
+    private FragmentPagerAdapter fragmentPagerAdapter;
 
     public static String getUserName () {
         return user.getUsername();
     }
+    public User getUser () {
+        return (User) user;
+    }
+
     public Car[] getCars(){
-        return cars;
+        return this.cars;
+    }
+
+    public void setCars(Car[] cars) {
+        this.cars = cars;
+        for (Car car : cars) {
+            System.out.println(car.getDisplayName());
+        }
+        FuelingFragment fuelingFragment = (FuelingFragment) fragmentPagerAdapter.getRegisteredFragment(1);
+        fuelingFragment.updateCars(cars);
+    }
+    public void setfragmentPagerAdapter(FragmentPagerAdapter adapter) {
+        this.fragmentPagerAdapter = adapter;
     }
 
     @Override
@@ -48,16 +67,21 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this));
+        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this);
+        viewPager.setAdapter(adapter);
+        setfragmentPagerAdapter(adapter);
 
         SlidingTabLayout slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         slidingTabLayout.setDistributeEvenly(true);
         slidingTabLayout.setViewPager(viewPager);
 
-//        getOwnedCars();
-        queryOwnedCars();
+        getOwnedCars();
         user = ParseUser.getCurrentUser();
         System.out.println("Current user is " + getUserName());
+
+        FuelingFragment fuelingFragment = (FuelingFragment) adapter.getRegisteredFragment(1);
+
+
 //        setContentView(R.layout.activity_main);
 
         //if (savedInstanceState == null) {
@@ -104,7 +128,7 @@ public class MainActivity extends ActionBarActivity {
                 } else {
                     switch (e.getCode()) {
                         case 141:
-                            System.out.println("Failed to find cars.");
+                            System.out.println(e.getMessage());
                             break;
                         default:
                             throw new RuntimeException(e.getMessage());
@@ -113,19 +137,21 @@ public class MainActivity extends ActionBarActivity {
             }
         });
     }
-    private static void getOwnedCars() {
+    private void getOwnedCars() {
         ParseCloud.callFunctionInBackground("getOwnedCars", new HashMap<String, Object>(), new FunctionCallback<ArrayList>() {
             @Override
             public void done(ArrayList result, ParseException e) {
+                System.out.println("getOwnedCars done.");
                 if (e == null) {
-                    cars = new Car[result.size()];
+                    Car[] new_cars = new Car[result.size()];
                     for (int i = 0; i < result.size(); i++) {
-                        cars[i] = (Car) result.get(i);
+                        new_cars[i] = (Car) result.get(i);
                     }
+                    setCars(new_cars);
                 } else {
                     switch (e.getCode()) {
                         case 141:
-                            System.out.println("Failed to find cars.");
+                            System.out.println(e.getMessage());
                             break;
                         default:
                             throw new RuntimeException(e.getMessage());

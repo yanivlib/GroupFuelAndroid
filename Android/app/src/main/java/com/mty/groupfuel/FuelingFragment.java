@@ -1,8 +1,8 @@
 package com.mty.groupfuel;
 
 
+import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,20 +16,20 @@ import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.Fuel;
 import com.mty.groupfuel.datamodel.Fueling;
 import com.mty.groupfuel.datamodel.User;
-import com.parse.Parse;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
-
-import java.util.Arrays;
 
 public class FuelingFragment extends android.support.v4.app.Fragment {
 //    private static final String CARS_KEY = "cars_key";
 
     private Car[] cars;
+    Context context;
 
     private EditText mileageEditText;
     private EditText priceEditText;
     private EditText amountEditText;
     private EditText locationEditText;
+    private Spinner carSpinner;
     private String selectedFuel;
     private Car selectedCar;
 
@@ -55,7 +55,11 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             if (spinnerType == Fuel.class) {
                 selectedFuel = (String) parent.getItemAtPosition(pos);
             } else if (spinnerType == Car.class) {
-                selectedCar = cars[pos];
+                try {
+                    selectedCar = cars[pos];
+                } catch (NullPointerException e) {
+                    selectedCar = new Car();
+                }
             }
         }
         public void onNothingSelected(AdapterView<?> parent) {
@@ -70,7 +74,6 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             Number mileage = numberFromEditText(mileageEditText);
             Number price = numberFromEditText(priceEditText);
             User user = (User) ParseUser.getCurrentUser();
-
             Fueling fueling = new Fueling();
 
             fueling.setAmount(amount);
@@ -78,7 +81,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             fueling.setPrice(price);
             fueling.setUser(user);
             fueling.setFuelType(Fuel.fromString(selectedFuel));
-            fueling.setCar(selectedCar);
+            fueling.put("Car", ParseObject.createWithoutData("Car", selectedCar.getObjectId()));
 
             fueling.saveEventually();
         }
@@ -94,6 +97,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fueling, container, false);
+        this.context = view.getContext();
         String[] carNames;
         try {
             carNames = new String[cars.length];
@@ -107,7 +111,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
         ArrayAdapter<String> carSpinnerAdapter = new ArrayAdapter<>(view.getContext(),
                 android.R.layout.simple_spinner_item, carNames);
         carSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Spinner carSpinner = (Spinner) view.findViewById(R.id.fueling_car);
+        carSpinner = (Spinner) view.findViewById(R.id.fueling_car);
         carSpinner.setAdapter(carSpinnerAdapter);
         carSpinner.setOnItemSelectedListener(new SpinnerSelect(Car.class));
 
@@ -129,5 +133,18 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
 
     private static Number numberFromEditText(EditText editText) {
         return Integer.parseInt(editText.getText().toString());
+    }
+
+    public void updateCars(Car[] cars) {
+        String[] carNames = new String[cars.length];
+        this.cars = new Car[cars.length];
+        for(int i = 0; i < cars.length; i++) {
+            carNames[i] = cars[i].getDisplayName();
+            this.cars[i] = cars[i];
+        }
+        ArrayAdapter<String> carSpinnerAdapter = new ArrayAdapter<>(this.context,
+                android.R.layout.simple_spinner_item, carNames);
+        carSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        carSpinner.setAdapter(carSpinnerAdapter);
     }
 }
