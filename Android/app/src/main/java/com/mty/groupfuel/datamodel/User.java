@@ -9,6 +9,10 @@ import java.util.Date;
 
 @ParseClassName("_User")
 public class User extends ParseUser {
+
+    public User() {
+
+    }
 	
 	public String getFirstName() {
         return getString("FirstName");
@@ -57,4 +61,5 @@ public class User extends ParseUser {
 	public void setBirthDate(Date value) {
 		put("BirthDate", value);
 	}
+
 }

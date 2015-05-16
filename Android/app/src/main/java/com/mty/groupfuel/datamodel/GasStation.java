@@ -8,6 +8,10 @@ import com.parse.ParseQuery;
 @ParseClassName("GasStation")
 public class GasStation extends ParseObject {
 
+    public GasStation() {
+
+    }
+
     public String getAddress() {
         return getString("Address");
 

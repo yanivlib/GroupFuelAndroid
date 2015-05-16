@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.mty.groupfuel.datamodel.User;
 import com.parse.Parse;
 import com.parse.ParseUser;
 
@@ -17,14 +18,14 @@ public class DispatchActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        User user = (User) User.getCurrentUser();
 //        setContentView(R.layout.activity_login);
-        if (ParseUser.getCurrentUser() != null) {
+        if (user != null) {
 //            System.out.println(" --- YL : user is logged in.");
-            ParseUser parseUser = ParseUser.getCurrentUser();
-            System.out.println(parseUser.getUsername());
+//            System.out.println(user.getUsername());
             startActivity(new Intent(this, MainActivity.class));
         } else {
-            System.out.println(" --- YL : user is not logged in.");
+//            System.out.println(" --- YL : user is not logged in.");
             startActivity(new Intent(this, WelcomeActivity.class));
         }
     }

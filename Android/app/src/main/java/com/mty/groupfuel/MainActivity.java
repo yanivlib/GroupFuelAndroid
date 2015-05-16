@@ -21,15 +21,8 @@ import com.mty.groupfuel.datamodel.User;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.Parse;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -74,14 +67,10 @@ public class MainActivity extends ActionBarActivity {
         SlidingTabLayout slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         slidingTabLayout.setDistributeEvenly(true);
         slidingTabLayout.setViewPager(viewPager);
-
-        getOwnedCars();
-        user = ParseUser.getCurrentUser();
-        System.out.println("Current user is " + getUserName());
-
-        FuelingFragment fuelingFragment = (FuelingFragment) adapter.getRegisteredFragment(1);
-
-
+		
+		getOwnedCars();
+        User user = (User)User.getCurrentUser();
+        username = user.getUsername();
 //        setContentView(R.layout.activity_main);
 
         //if (savedInstanceState == null) {
@@ -113,30 +102,7 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    private void queryOwnedCars() {
-        ParseQuery<Car> query = Car.getQuery().whereEqualTo("Owner", user);
-        query.findInBackground(new FindCallback<Car>() {
-            @Override
-            public void done(List<Car> result, ParseException e) {
-                if (e == null) {
-                    System.out.println("Parse query, result size is " + result.toString() + "size is " + result.size());
-                    cars = new Car[result.size()];
-                    for (int i = 0; i < result.size(); i++) {
-                        cars[i] = result.get(i);
-                        System.out.println(cars[i].getDisplayName());
-                    }
-                } else {
-                    switch (e.getCode()) {
-                        case 141:
-                            System.out.println(e.getMessage());
-                            break;
-                        default:
-                            throw new RuntimeException(e.getMessage());
-                    }
-                }
-            }
-        });
-    }
+
     private void getOwnedCars() {
         ParseCloud.callFunctionInBackground("getOwnedCars", new HashMap<String, Object>(), new FunctionCallback<ArrayList>() {
             @Override

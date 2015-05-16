@@ -9,11 +9,15 @@ import com.parse.ParseUser;
 @ParseClassName("Car")
 public class Car extends ParseObject {
 
-    public ParseUser getOwner() {
-        return getParseUser("User");
+    public Car () {
+
     }
 
-    public void setOwner(ParseUser value) {
+    public User getOwner() {
+        return (User)getParseUser("User");
+    }
+
+    public void setOwner(User value) {
         put("User", value);
     }
 
