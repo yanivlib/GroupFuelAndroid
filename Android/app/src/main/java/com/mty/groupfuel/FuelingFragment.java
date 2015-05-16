@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.Fuel;
@@ -75,15 +76,19 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             Number price = numberFromEditText(priceEditText);
             User user = (User) ParseUser.getCurrentUser();
             Fueling fueling = new Fueling();
-
             fueling.setAmount(amount);
             fueling.setMileage(mileage);
             fueling.setPrice(price);
             fueling.setUser(user);
             fueling.setFuelType(Fuel.fromString(selectedFuel));
             fueling.put("Car", ParseObject.createWithoutData("Car", selectedCar.getObjectId()));
-
             fueling.saveEventually();
+
+            Toast.makeText(context,"Fueling updated",Toast.LENGTH_LONG).show();
+            amountEditText.setText(null);
+            mileageEditText.setText(null);
+            priceEditText.setText(null);
+            locationEditText.setText(null);
         }
     }
 
@@ -118,6 +123,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
         mileageEditText = (EditText) view.findViewById(R.id.fueling_mileage);
         priceEditText = (EditText) view.findViewById(R.id.fueling_price);
         amountEditText = (EditText) view.findViewById(R.id.fueling_amount);
+        locationEditText = (EditText) view.findViewById(R.id.fueling_location);
 
         Spinner fuelSpinner = (Spinner) view.findViewById(R.id.fueling_type);
         ArrayAdapter<String> fuelSpinnerAdapter = new ArrayAdapter<>(view.getContext(),
