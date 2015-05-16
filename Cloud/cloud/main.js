@@ -64,6 +64,7 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         console.log(" --- getOwnedCars user: " + user);
         var query = new Parse.Query("Car");
         query.equalTo("Owner", user);
+        query.include("Model");
         query.find({
             success: function (results) {
                 console.log(results);
@@ -75,3 +76,15 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         });
     }
 });
+/*
+Parse.Cloud.define("AddCar" , function(req, res) {
+    var user = req.user;
+    if (user == undefined) {
+        res.error("Please log in in order to add a car");
+    }
+    else{
+        console.log("--- AddCar --- User is : " + user);
+
+    }
+});
+*/
