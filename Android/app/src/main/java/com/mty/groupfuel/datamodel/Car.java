@@ -1,6 +1,7 @@
 package com.mty.groupfuel.datamodel;
 
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -17,7 +18,13 @@ public class Car extends ParseObject {
     }
 
     public CarModel getModel() {
-        return (CarModel) getParseObject("Model");
+        CarModel model;
+        try {
+            model = getParseObject("Model").fetch();
+        } catch (ParseException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return model;
     }
 
     public void setModel(CarModel value) {
@@ -42,5 +49,9 @@ public class Car extends ParseObject {
 
     public static ParseQuery<Car> getQuery() {
         return ParseQuery.getQuery(Car.class);
+    }
+
+    public String getDisplayName() {
+        return getCarNumber() + "(" + getModel().getMake() + ")";
     }
 }
