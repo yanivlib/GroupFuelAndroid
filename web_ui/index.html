@@ -29,8 +29,14 @@
 				    <ul class="nav navbar-nav">
 					    <li ng-class="{'active': isActive('/usage')}"><a href="/usage">My Usage</a></li>
 					    <li class="divider-vertical"></li>
-   					    <li ng-class="{'active': isActive('/account-manager')}"><a href="/account-manager">Account</a></li>
-    					<li class="divider-vertical"></li>
+						<li class="dropdown" ng-class="{'active': isActive('/manage-cars') || isActive('/edit-profile')}">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Manage Account <span class="caret"></span></a>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="/manage-cars">Manage cars</a></li>
+								<li><a href="/edit-profile">Edit profile</a></li>
+							</ul>
+						</li>
+						<li class="divider-vertical"></li>
 	    				<li ng-class="{'active': isActive('/statistics')}"><a href="/statistics">Stats</a></li>
                         <li class="divider-vertical"></li>
                         <li ng-class="{'active': isActive('/mail-report')}"><a href="/mail-report">Mail Reports</a></li>
@@ -60,13 +66,14 @@
 		<script src="web_ui/app/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 		<!-- our scripts -->
 		<script src="web_ui/app/app.js"></script>
-        <script src="web_ui/app/controllers/AccountManagerController.js"></script>
         <script src="web_ui/app/controllers/StatisticsController.js"></script>
 		<script src="web_ui/app/controllers/UsageController.js"></script>
 		<script src="web_ui/app/controllers/MailReportController.js"></script>
 		<script src="web_ui/app/controllers/NavigationController.js"></script>
         <script src="web_ui/app/controllers/SignupController.js"></script>
 		<script src="web_ui/app/controllers/LoginController.js"></script>
+        <script src="web_ui/app/controllers/ManageCarsController.js"></script>
+        <script src="web_ui/app/controllers/EditProfileController.js"></script>
 		<script src="web_ui/app/services/UsageService.js"></script>
 		<script src="web_ui/app/services/UserService.js"></script>
 

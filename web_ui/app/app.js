@@ -15,9 +15,6 @@ var app = angular.module('GroupFuel', ['ui.bootstrap','ngRoute','ngTable','ui.se
         }).when('/usage', {
             controller:'UsageController',
             templateUrl: 'web_ui/app/partials/usage.html'
-        }).when('/account-manager', {
-            controller:'AccountManagerController',
-            templateUrl: 'web_ui/app/partials/account-manager.html'
         }).when('/statistics', {
             controller:'StatisticsController',
             templateUrl: 'web_ui/app/partials/statistics.html'
@@ -28,8 +25,14 @@ var app = angular.module('GroupFuel', ['ui.bootstrap','ngRoute','ngTable','ui.se
             controller:'UsageController',
             templateUrl: 'web_ui/app/partials/about.html'
         }).when('/signup', {
-            controller:'SignupController',
+            controller: 'SignupController',
             templateUrl: 'web_ui/app/partials/signup.html'
+        }).when('/manage-cars', {
+            contoller: 'ManageCarsController',
+            templateUrl: 'web_ui/app/partials/managecars.html'
+        }).when('/edit-profile', {
+            contoller: 'EditProfileController',
+            templateUrl: 'web_ui/app/partials/editprofile.html'
         }).otherwise({ redirectTo: '/welcome'});
     });
 
