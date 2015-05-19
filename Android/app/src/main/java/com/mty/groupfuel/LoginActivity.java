@@ -2,6 +2,7 @@ package com.mty.groupfuel;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 public class LoginActivity extends ActionBarActivity {
 
     private ProgressDialog progressDialog;
-    private AlertDialog alertDialog;
+    private AlertDialog.Builder alertDialogBuilder;
     private EditText usernameET;
     private EditText passwordET;
 
@@ -59,23 +60,23 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     public void login (View view) {
-        progressDialog = ProgressDialog.show(this, R.string.wait, R.string.login_progress);
+        progressDialog = ProgressDialog.show(this, getResources().getString(R.string.wait), getResources().getString(R.string.login_progress));
         String username = usernameET.getText().toString().trim();
         String password = passwordET.getText().toString().trim();
         usernameET.setText("");
         passwordET.setText("");
         ArrayList<String> error = new ArrayList<>();
         if (username.isEmpty()) {
-            error.add(R.string.username_empty);
+            error.add(getResources().getString(R.string.username_empty));
         }
         if (password.isEmpty()) {
-            error.add(R.string.password_empty);
+            error.add(getResources().getString(R.string.password_empty));
         }
         //TODO add more checks.
         if (!error.isEmpty()) {
             progressDialog.dismiss();
-            alertDialog = createErrorAlert();
-            alertDialog.show();
+            alertDialogBuilder = createErrorAlert(catString(error), this);
+            alertDialogBuilder.show();
         }
         User.logInInBackground(username, password, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
@@ -83,14 +84,14 @@ public class LoginActivity extends ActionBarActivity {
                 if (user != null) {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
-                    alertDialog = createErrorAlert(e.getMessage());
+                    alertDialogBuilder = createErrorAlert(e.getMessage(), LoginActivity.this);
                 }
             }
         });
     }
 
-    private static AlertDialog createErrorAlert(String message) {
-        return new AlertDialog.Builder(this)
+    private static AlertDialog.Builder createErrorAlert(String message, Context context) {
+        return new AlertDialog.Builder(context)
             .setTitle(R.string.login_error_title)
             .setMessage(message)
             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -100,5 +101,13 @@ public class LoginActivity extends ActionBarActivity {
                 }
             })
             .setIcon(android.R.drawable.ic_dialog_alert);
+    }
+    private static String catString (ArrayList<String> list) {
+        String result = "";
+            for (String string : list) {
+                result += string;
+                result += "\n";
+            }
+        return result;
     }
 }
