@@ -1,3 +1,38 @@
-<div>
-    <h1>edit profile</h1>
+<div class="container">
+    <div class="alert alert-danger" role="alert" ng-if="!UserService.logged">
+        <h4>Attention <small>You are not logged in</small></h4>
+        <p>In order to edit your profile you must log in first <button class="btn btn-primary" ng-click="UserService.doLogin()">Login</button></p>
+        <p>Don't have an account yet? <a href="/signup" class="btn btn-default">Create Account</a> </p>
+    </div>
+    <div class="col-md-6" ng-if="UserService.logged">
+        <form>
+            <fieldset>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="user_name" class="control-label">User Name:</label>
+                        <input class="form-control" id="user_name" type="text" ng-model="userDetails.userName" placeholder="johndoe">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="first_name">First Name:</label>
+                        <input class="form-control" id="first_name" type="text" ng-model="userDetails.firstName" placeholder="John">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="last_name">Last Name:</label>
+                        <input class="form-control" id="last_name" type="text" ng-model="userDetails.lastName" placeholder="Doe">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label for="email">Email:</label>
+                        <input class="form-control" id="email" type="email" ng-model="userDetails.email" placeholder="John.Doe@GroupFuel.com">
+                    </div>
+                </div>
+            </fieldset>
+            <button type="submit" class="btn btn-primary" ng-click="doUpdate()">Update</button>
+        </form>
+    </div>
 </div>

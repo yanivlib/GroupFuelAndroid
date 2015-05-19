@@ -18,21 +18,7 @@ app.controller('NavigationController', function ($scope, $modal, $location, User
 
     $scope.doLogin = function () {
         // when modal closed - change url according to answer, change $scope.logged
-        var modalInstance = $modal.open({
-            templateUrl : 'web_ui/app/partials/login.html',
-            controller : 'LoginController'
-        });
-        modalInstance.result.then(
-            function (res) {
-                // show notification
-                console.log(res);
-                $scope.logged = true;
-                $location.url('/welcome');
-            },
-            function (res) {
-                console.log(res);
-                // show notification
-            });
+        $scope.UserService.doLogin();
     };
 
     $scope.doSignup = function () {

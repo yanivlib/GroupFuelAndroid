@@ -21,6 +21,7 @@ app.controller('LoginController', function ($scope, $modalInstance, $location, U
             success: function(user) {
                 console.log("login worked");
                 $scope.UserService.logged = true;
+                $scope.UserService.currentUser = user;
                 $modalInstance.close("user " + details.username + " logged in succesfully");
             },
             error: function(user, error) {
@@ -36,4 +37,5 @@ app.controller('LoginController', function ($scope, $modalInstance, $location, U
         $modalInstance.dismiss('login canceled');
     };
 
+    // TODO - add forgot my password button
 });

@@ -28,10 +28,10 @@ var app = angular.module('GroupFuel', ['ui.bootstrap','ngRoute','ngTable','ui.se
             controller: 'SignupController',
             templateUrl: 'web_ui/app/partials/signup.html'
         }).when('/manage-cars', {
-            contoller: 'ManageCarsController',
+            controller: 'ManageCarsController',
             templateUrl: 'web_ui/app/partials/managecars.html'
         }).when('/edit-profile', {
-            contoller: 'EditProfileController',
+            controller: 'EditProfileController',
             templateUrl: 'web_ui/app/partials/editprofile.html'
         }).otherwise({ redirectTo: '/welcome'});
     });
