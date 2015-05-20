@@ -47,11 +47,14 @@ app.controller('ManageCarsController', function ($scope, $filter, ngTableParams,
         });
     }
 
+    $scope.$watch('UserService.logged', updateCars );
+
     /*
      * Private function - gets a list of parse car objects and
      * refines it to a bindable json.
      */
     function refineCars(parseCars) {
+        $scope.userCars = [];
         for (var i = 0; i < parseCars.length; i++) {
             var currentCar = parseCars[i];
             var currentModel = currentCar.get('Model');
@@ -63,5 +66,6 @@ app.controller('ManageCarsController', function ($scope, $filter, ngTableParams,
             newCar.model = currentModel.get('Model');
             $scope.userCars[i] = angular.copy(newCar);
         }
+            $scope.numCars = $scope.userCars.length;
     }
 });

@@ -1,7 +1,16 @@
 <div class="container">
     <h1>manage cars</h1>
 
-    <div>
+    <div class="alert alert-danger" role="alert" ng-if="!UserService.logged">
+        <h4>Attention
+            <small>You are not logged in</small>
+        </h4>
+        <p>In order to manage your cars you must log in first
+            <button class="btn btn-primary" ng-click="UserService.doLogin()">Login</button>
+        </p>
+        <p>Don't have an account yet? <a href="/signup" class="btn btn-default">Create Account</a></p>
+    </div>
+    <div ng-if="UserService.logged && numCars!=0">
         <table ng-table="tableParams" class="table table-striped table-bordered">
             <tr ng-repeat="car in $data">
                 <td data-title="'Car Number'">{{ car.carNumber }}</td>
@@ -10,6 +19,12 @@
                 <td data-title="'Mielage'">{{ car.mileage }}</td>
             </tr>
         </table>
+    </div>
+    <div class="alert alert-warning" role="alert" ng-if="UserService.logged && numCars==0">
+        <h4>Attention
+            <small>You Don't own any car.</small>
+        </h4>
+        <p>please add cars you own</p>
     </div>
 
 </div>
