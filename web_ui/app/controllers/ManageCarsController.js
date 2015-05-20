@@ -68,4 +68,9 @@ app.controller('ManageCarsController', function ($scope, $filter, ngTableParams,
         }
             $scope.numCars = $scope.userCars.length;
     }
+
+    function removeCar(carNumber){
+        console.log('am i here?');
+        console.log(carNumber);
+    }
 });
