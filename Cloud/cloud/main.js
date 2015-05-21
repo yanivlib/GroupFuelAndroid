@@ -78,6 +78,7 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
 });
 
 Parse.Cloud.define("removeCar", function(req, res) {
+    // TODO change find to first
     var user = req.user;
     if (user == undefined) {
         res.error("You must be logged in");
@@ -89,7 +90,14 @@ Parse.Cloud.define("removeCar", function(req, res) {
         query.equalTo("CarNumber",carNumber);
         query.find({
             success: function(results) {
-                res.success(results);
+                results[0].destroy({
+                    success: function(object){
+                        res.success("Object was deleted");
+                    },
+                    error: function() {
+                        res.error("Deletedion was failed"+Parse.Error);
+                    }
+                });
             },
             error: function () {
                 res.error("Are you sure this is your car?");
