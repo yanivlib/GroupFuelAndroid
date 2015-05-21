@@ -76,6 +76,29 @@ Parse.Cloud.define("getOwnedCars", function(req, res) {
         });
     }
 });
+
+Parse.Cloud.define("removeCar", function(req, res) {
+    var user = req.user;
+    if (user == undefined) {
+        res.error("You must be logged in");
+    }
+    else{
+        var carNumber = req.params.carNumber;
+        var query = new Parse.Query("Car");
+        query.equalTo("Owner", user);
+        query.equalTo("CarNumber",carNumber);
+        query.find({
+            success: function(results) {
+                res.success(results);
+            },
+            error: function () {
+                res.error("Are you sure this is your car?");
+            }
+        });
+    }
+});
+
+
 /*
 Parse.Cloud.define("AddCar" , function(req, res) {
     var user = req.user;
