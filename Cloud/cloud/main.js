@@ -100,7 +100,6 @@ Parse.Cloud.define("removeCar", function (req, res) {
                         }
                     });
                 }
-
             },
             error: function () {
                 res.error("Are you sure this is your car?");
