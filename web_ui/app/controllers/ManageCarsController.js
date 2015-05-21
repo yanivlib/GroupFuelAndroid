@@ -69,8 +69,16 @@ app.controller('ManageCarsController', function ($scope, $filter, ngTableParams,
             $scope.numCars = $scope.userCars.length;
     }
 
-    function removeCar(carNumber){
-        console.log('am i here?');
+    $scope.removeCar = function (car){
         console.log(carNumber);
+        Parse.Cloud.run('removeCar',{'carNumber':car.carNumber},{
+            success: function(results){
+                console.log(results);
+            },
+            error: function() {
+                // TODO add notification error
+                console.log("Error: query failed in removeCar");
+            }
+        });
     }
 });
