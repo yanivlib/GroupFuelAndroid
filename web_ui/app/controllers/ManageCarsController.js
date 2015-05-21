@@ -70,10 +70,10 @@ app.controller('ManageCarsController', function ($scope, $filter, ngTableParams,
     }
 
     $scope.removeCar = function (car){
-        console.log(carNumber);
+        console.log(car.carNumber);
         Parse.Cloud.run('removeCar',{'carNumber':car.carNumber},{
             success: function(results){
-                console.log(results);
+                updateCars();
             },
             error: function() {
                 // TODO add notification error
