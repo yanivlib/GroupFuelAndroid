@@ -1,7 +1,7 @@
 /**
  * Created by matansab on 5/18/2015.
  */
-app.controller('ManageCarsController', function ($scope, $filter, ngTableParams, UserService) {
+app.controller('ManageCarsController', function ($scope, $filter, $modal, ngTableParams, UserService) {
     'use strict';
     (function () {
         $scope.UserService = UserService;
@@ -70,7 +70,6 @@ app.controller('ManageCarsController', function ($scope, $filter, ngTableParams,
     }
 
     $scope.removeCar = function (car){
-        console.log(car.carNumber);
         Parse.Cloud.run('removeCar',{'carNumber':car.carNumber},{
             success: function(results){
                 updateCars();
@@ -81,4 +80,20 @@ app.controller('ManageCarsController', function ($scope, $filter, ngTableParams,
             }
         });
     }
+    $scope.addCar = function (){
+        console.log('in add a car');
+        var modalInstance = $modal.open({
+            templateUrl:'web_ui/app/partials/addCar.html',
+            controller : 'AddCarController'
+        });
+        modalInstance.result.then(
+            function (res) {
+                // show notification
+                console.log(res);
+            },
+            function (res) {
+                console.log(res);
+                // show notification
+            });
+    };
 });

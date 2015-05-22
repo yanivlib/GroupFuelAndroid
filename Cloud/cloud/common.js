@@ -26,7 +26,13 @@ function extract(objectList, fieldList) {
  * objects do not have to be of the same type.
  * if object does not have the field - field's value is undefined.
  */
-function distinct (objectList,field) {
+
+//function distinct (objectList,field) {
+  //  var stringArray = [];
+   // for (var i=0; i<objectList.length; i++){
+     //   var currentRow = objectList[i].get(field);
+   // }
+    /*
     var result = [];
     var tempDict = {};
     for (obj in objectList) {
@@ -37,4 +43,6 @@ function distinct (objectList,field) {
         }
     }
     return result;
-}
+    */
+
+//}

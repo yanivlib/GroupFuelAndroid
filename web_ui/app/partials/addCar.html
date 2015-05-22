@@ -1,0 +1,41 @@
+<div class="modal-header">
+    <h3 class="modal-title">Add A Car</h3>
+</div>
+<div class="modal-body">
+    <form>
+        <fieldset>
+            <div class="form-group required center-block">
+                <div class="row">
+                    <div class="col-md-5">
+                        <label class="control-label" for="car_number">Car Number </label>
+                        <input class="form-control col-md-2" required="required" id="car_number" type="text"
+                               ng-model="carDetails.car_number" placeholder="Car Number">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="control-label" for="MakeSelect">Make </label>
+                        <select class="form-control col-md-2" id="MakeSelect" name="make" ui-select2
+                                ng-model="carDetails.make">
+                            <option ng-repeat="make in makes" value="{{ make }}">{{ make}}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                    <label class="control-label" for="ModelSelect">Model </label>
+                    <select class="form-control col-md-2" id="ModelSelect" name="make" ui-select2
+                            ng-model="carDetails.make">
+                        <option ng-repeat="model in models" value="{{ model }}">{{ make}}</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label for="mileage">Mileage</label>
+                    <input class="form-control col-md-2" id="mileage" type="text" ng-model="carDetails.mileage">
+                </div>
+            </div>
+</div>
+</fieldset>
+</form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="addCar()">Add</button>
+    <button class="btn btn-default" ng-click="clearCarsForm()">Clear</button>
+    <button class="btn btn-warning" ng-click="close()">Close</button>
+</div>

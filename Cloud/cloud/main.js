@@ -13,9 +13,8 @@ Parse.Cloud.define("getCarMakes",function(req, res) {
     query.select(["Make"]);
     query.find({
             success: function (results) {
-                results = distinct(results, "Make");
-                console.log(results);
-                res.success(results);
+                var distinctResults = distinct(results,'Make');
+                res.success(distinctResults);
             },
             error: function () {
                 res.error("Failed to retrieve car makers.");
@@ -108,6 +107,19 @@ Parse.Cloud.define("removeCar", function (req, res) {
     }
 });
 
+
+function distinct (objectList,field) {
+    var distinctArray = [];
+    var tempDict = {};
+    for (var i = 0; i < objectList.length; i++){
+        var tmp = objectList[i].get(field);
+        if (tempDict[tmp] === undefined){
+            tempDict[tmp] = 1;
+            distinctArray.push(tmp);
+        }
+    }
+    return distinctArray;
+}
 
 /*
  Parse.Cloud.define("AddCar" , function(req, res) {

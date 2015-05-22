@@ -1,6 +1,8 @@
 .button-wrapper {
     margin : 2px;
 }
-.form-control {
 
-}
+.form-group.required .control-label:after {
+     content:"*";
+     color:red;
+ }
