@@ -35,10 +35,6 @@ public class MainFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
-
-        getCarMakes();
-        getCarModels("Audi");
-        getOwnedCars();
     }
 
     @Override
