@@ -1,6 +1,10 @@
 package com.mty.groupfuel;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,11 +13,15 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.parse.LogOutCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+
 import java.util.HashMap;
 import java.util.List;
 
 public class SettingsListAdapter extends BaseExpandableListAdapter{
-
+    private final int CHILD_TYPE_COUNT = 4;
     private Context context;
     private List<String> listDataHeader;
     private HashMap<String, List<String>> listDataChild;
@@ -23,6 +31,7 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
         this.listDataHeader = listDataHeader;
         this.listDataChild = listDataChild;
     }
+
 
     @Override
     public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
@@ -49,6 +58,10 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
                 TextView txtListChild = (TextView) convertView.findViewById(R.id.lblListItem_text);
                 txtListChild.setText(childText);
                 break;
+            case 3: // settings_button
+                Button button = (Button) convertView.findViewById(R.id.settings_button);
+                button.setText(childText);
+                button.setOnClickListener(signOut(context));
         }
 
         return convertView;
@@ -112,7 +125,7 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
 
     @Override
     public int getChildTypeCount() {
-        return 3;
+        return CHILD_TYPE_COUNT;
     }
 
     @Override
@@ -124,6 +137,8 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
                 } else {
                     return 1;
                 }
+            case 2:
+                return 3;
             default:
                 return 2;
         }
@@ -137,6 +152,8 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
                 return R.layout.settings_car;
             case 2:
                 return R.layout.settings_item;
+            case 3:
+                return R.layout.settings_button;
             default:
                 return R.layout.settings_item;
         }
@@ -156,6 +173,38 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
             @Override
             public void onClick(View view) {
                 //
+            }
+        };
+    }
+
+    private View.OnClickListener signOut(final Context context) {
+        return new View.OnClickListener() {
+            final Context mcontext = context;
+            ProgressDialog progress;
+
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(mcontext)
+                        .setMessage("Are you sure you want to log out?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                progress = ProgressDialog.show(mcontext, "Logging you out", "Please Wait...");
+                                ParseUser.logOutInBackground(new LogOutCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        progress.dismiss();
+                                        mcontext.startActivity(new Intent(mcontext, DispatchActivity.class));
+                                    }
+                                });
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
         };
     }

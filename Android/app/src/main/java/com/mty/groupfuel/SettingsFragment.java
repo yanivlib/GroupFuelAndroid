@@ -55,7 +55,7 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
 
         listDataHeader.add("Manage Cars");
         listDataHeader.add("Change personal settings");
-        listDataHeader.add("More settings");
+        listDataHeader.add("Account settings");
 
         List<String> carList = new ArrayList<>();
         Car[] cars = ((MainActivity) getActivity()).getCars();
@@ -69,7 +69,7 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         b.add("Change notification settings ");
 
         List<String> c = new ArrayList<>();
-        c.add("...");
+        c.add("Log out");
 
         listDataChild.put(listDataHeader.get(0), carList);
         listDataChild.put(listDataHeader.get(1), b);
