@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.HashMap;
@@ -24,7 +25,7 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
     }
 
     @Override
-    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+    public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         final String childText = (String)getChild(groupPosition, childPosition);
 
         int type = getChildType(groupPosition, childPosition);
@@ -35,6 +36,10 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
 
         switch (getChildType(groupPosition, childPosition)) {
             case 0: // settings_addremove
+                Button addNew = (Button)convertView.findViewById(R.id.add_new_car);
+                addNew.setOnClickListener(addNewCar());
+                Button remove = (Button)convertView.findViewById(R.id.remove_car);
+                remove.setOnClickListener(removecar());
                 break;
             case 1: // settings_car
                 TextView carText = (TextView) convertView.findViewById(R.id.car_text);
@@ -135,5 +140,23 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
             default:
                 return R.layout.settings_item;
         }
+    }
+
+    private View.OnClickListener addNewCar() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //
+            }
+        };
+    }
+
+    private View.OnClickListener removecar() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //
+            }
+        };
     }
 }

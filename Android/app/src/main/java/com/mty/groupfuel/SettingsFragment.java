@@ -34,6 +34,8 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        prepareListData();
+
     }
 
     @Override
@@ -41,9 +43,7 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        // Inflate the layout for this fragment
         expListView = (ExpandableListView)view.findViewById(R.id.lvExp);
-        prepareListData();
         listAdapter = new SettingsListAdapter(getActivity(), listDataHeader, listDataChild);
         expListView.setAdapter(listAdapter);
         return view;
