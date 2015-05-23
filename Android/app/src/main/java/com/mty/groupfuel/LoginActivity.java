@@ -85,6 +85,7 @@ public class LoginActivity extends ActionBarActivity {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
                     alertDialogBuilder = createErrorAlert(e.getMessage(), LoginActivity.this);
+                    alertDialogBuilder.show();
                 }
             }
         });
