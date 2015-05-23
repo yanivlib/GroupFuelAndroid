@@ -37,19 +37,37 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_settings, container, false);
         // Inflate the layout for this fragment
-        expListView = (ExpandableListView)getActivity().findViewById(R.id.lvExp);
+        expListView = (ExpandableListView)view.findViewById(R.id.lvExp);
         prepareListData();
         listAdapter = new SettingsListAdapter(getActivity(), listDataHeader, listDataChild);
         expListView.setAdapter(listAdapter);
-        return inflater.inflate(R.layout.fragment_settings, container, false);
+        return view;
     }
 
     private void prepareListData() {
         listDataHeader= new ArrayList<>();
         listDataChild = new HashMap<>();
 
-        listDataHeader.add("a");
-        listDataHeader.add("b");
+        listDataHeader.add("Add/Remove a car");
+        listDataHeader.add("Change personal settings");
+        listDataHeader.add("More settings");
+
+        List<String> a = new ArrayList<>();
+        a.add("Add new car");
+        a.add("Remove existing car");
+
+        List<String> b = new ArrayList<>();
+        b.add("Change password");
+        b.add("Change notification settings ");
+
+        List<String> c = new ArrayList<>();
+        c.add("...");
+
+        listDataChild.put(listDataHeader.get(0), a);
+        listDataChild.put(listDataHeader.get(1), b);
+        listDataChild.put(listDataHeader.get(2), c);
     }
 }
