@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
+import com.mty.groupfuel.datamodel.Car;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,13 +53,16 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         listDataHeader= new ArrayList<>();
         listDataChild = new HashMap<>();
 
-        listDataHeader.add("Add/Remove a car");
+        listDataHeader.add("Manage Cars");
         listDataHeader.add("Change personal settings");
         listDataHeader.add("More settings");
 
-        List<String> a = new ArrayList<>();
-        a.add("Add new car");
-        a.add("Remove existing car");
+        List<String> carList = new ArrayList<>();
+        Car[] cars = ((MainActivity) getActivity()).getCars();
+        for (Car car : cars) {
+            carList.add(car.getDisplayName());
+        }
+        carList.add("");
 
         List<String> b = new ArrayList<>();
         b.add("Change password");
@@ -66,7 +71,7 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         List<String> c = new ArrayList<>();
         c.add("...");
 
-        listDataChild.put(listDataHeader.get(0), a);
+        listDataChild.put(listDataHeader.get(0), carList);
         listDataChild.put(listDataHeader.get(1), b);
         listDataChild.put(listDataHeader.get(2), c);
     }

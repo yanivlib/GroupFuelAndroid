@@ -26,12 +26,26 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         final String childText = (String)getChild(groupPosition, childPosition);
+
+        int type = getChildType(groupPosition, childPosition);
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.list_item, null);
+            convertView = layoutInflater.inflate(resourceFromType(type), null);
         }
-        TextView txtListChild = (TextView)convertView.findViewById(R.id.lblListItem);
-        txtListChild.setText(childText);
+
+        switch (getChildType(groupPosition, childPosition)) {
+            case 0: // settings_addremove
+                break;
+            case 1: // settings_car
+                TextView carText = (TextView) convertView.findViewById(R.id.car_text);
+                carText.setText(childText);
+                break;
+            case 2: // settings_item
+                TextView txtListChild = (TextView) convertView.findViewById(R.id.lblListItem_text);
+                txtListChild.setText(childText);
+                break;
+        }
+
         return convertView;
     }
 
@@ -82,12 +96,44 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
             LayoutInflater layoutInflater = (LayoutInflater)this
                 .context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.list_group, null);
+            convertView = layoutInflater.inflate(R.layout.settings_group, null);
         }
         TextView lblListHeader = (TextView)convertView.findViewById(R.id.lblListHeader);
         lblListHeader.setTypeface(null, Typeface.BOLD);
         lblListHeader.setText(headerTitle);
 
         return convertView;
+    }
+
+    @Override
+    public int getChildTypeCount() {
+        return 3;
+    }
+
+    @Override
+    public int getChildType(int groupPosition, int childPosition) {
+        switch (groupPosition) {
+            case 0:
+                if ((getChildrenCount(groupPosition) - 1) == childPosition) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            default:
+                return 2;
+        }
+    }
+
+    public int resourceFromType(int type) {
+        switch (type) {
+            case 0:
+                return R.layout.settings_addremove;
+            case 1:
+                return R.layout.settings_car;
+            case 2:
+                return R.layout.settings_item;
+            default:
+                return R.layout.settings_item;
+        }
     }
 }
