@@ -11,13 +11,17 @@ import com.mty.groupfuel.datamodel.Car;
 
 public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter{
     final int PAGE_COUNT = 3;
-    private String tabTitles[] = new String[] { "My Usage", "Fuel Now", "My Account" };
+    private String tabTitles[];
     private Context context;
     SparseArray<Fragment> registeredFragments = new SparseArray<>(3);
 
     public FragmentPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
         this.context = context;
+        tabTitles = new String[PAGE_COUNT];
+        tabTitles[0] = context.getString(R.string.usage_title);
+        tabTitles[1] = context.getString(R.string.fueling_title);
+        tabTitles[2] = context.getString(R.string.settings_title);
     }
 
     @Override
@@ -28,6 +32,8 @@ public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAd
     @Override
     public Fragment getItem(int position) {
         switch (position) {
+            case 0:
+                return SettingsFragment.newInstance();
             case 1:
                 return FuelingFragment.newInstance();
             default:
