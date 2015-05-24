@@ -187,7 +187,7 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mcontext, PersonalActivity.class);
-                intent.putExtra(Consts.PARENT_ACTIVITY_NAME, SettingsFragment.class.getClasses());
+                intent.putExtra(Consts.PARENT_ACTIVITY_NAME, SettingsFragment.class.getName());
                 mcontext.startActivity(intent);
             }
         };

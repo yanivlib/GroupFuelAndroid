@@ -59,8 +59,10 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
 
         List<String> carList = new ArrayList<>();
         Car[] cars = ((MainActivity) getActivity()).getCars();
-        for (Car car : cars) {
-            carList.add(car.getDisplayName());
+        if (cars != null) {
+            for (Car car : cars) {
+                carList.add(car.getDisplayName());
+            }
         }
         carList.add(Consts.BUTTON_ADDREMOVE);
 

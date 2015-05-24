@@ -1,10 +1,7 @@
 package com.mty.groupfuel;
 
 import android.app.DatePickerDialog;
-import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.provider.SyncStateContract;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,13 +10,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.app.DatePickerDialog.OnDateSetListener;
 
 import com.mty.groupfuel.datamodel.User;
+
+import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -85,6 +82,7 @@ public class PersonalActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal);
         prevActivity = getIntent().getExtras().getString(Consts.PARENT_ACTIVITY_NAME);
+        System.out.println(prevActivity);
         findViewsById();
         getDefaultsFromUser();
         buttonApply.setOnClickListener(createApplyListener());
@@ -124,6 +122,23 @@ public class PersonalActivity extends ActionBarActivity {
                 } else {
                     user.setGender(false);
                 }
+                user.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            Intent intent = new Intent(PersonalActivity.this, MainActivity.class);
+                            if (prevActivity.equals(SettingsFragment.class.getName())) { // we came here from settings
+                                intent.setAction(Consts.OPEN_TAB_SETTINGS);
+                                startActivity(intent);
+                            } else if (prevActivity.equals(RegisterActivity.class.getName())) { // we came here from register
+                                intent.setAction(Consts.OPEN_TAB_USAGE);
+                                startActivity(intent);
+                            }
+                        } else {
+                            throw new RuntimeException(e.getMessage());
+                        }
+                    }
+                });
             }
         };
     }

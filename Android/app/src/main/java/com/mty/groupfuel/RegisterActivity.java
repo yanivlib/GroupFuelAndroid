@@ -84,7 +84,7 @@ public class RegisterActivity extends ActionBarActivity {
                 progressDialog.dismiss();
                 if (e == null) {
                     Intent intent = new Intent(RegisterActivity.this, PersonalActivity.class);
-                    intent.putExtra(Consts.PARENT_ACTIVITY_NAME, RegisterActivity.this.getClass().getSimpleName());
+                    intent.putExtra(Consts.PARENT_ACTIVITY_NAME, RegisterActivity.class.getName());
                     startActivity(intent);
                 } else {
                     createErrorAlert(e.getMessage(), RegisterActivity.this).show();
