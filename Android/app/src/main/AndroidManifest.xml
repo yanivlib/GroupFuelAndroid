@@ -20,6 +20,7 @@
             android:noHistory="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -47,7 +48,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mty.groupfuel.WelcomeActivity" />
         </activity>
+        <activity
+            android:name=".AddCarActivity"
+            android:label="@string/title_activity_add_car" >
+        </activity>
     </application>
 
 </manifest>
-

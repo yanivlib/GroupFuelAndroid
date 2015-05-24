@@ -1,6 +1,7 @@
 package com.mty.groupfuel;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +44,9 @@ public class MainFragment extends android.support.v4.app.Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         TextView textView = (TextView) view;
         textView.setText("Fragment #" + mPage);
+
+        startActivity(new Intent(getActivity(), AddCarActivity.class));
+
         return view;
     }
 
