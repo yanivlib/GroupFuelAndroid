@@ -24,7 +24,6 @@ import java.util.ArrayList;
 public class LoginActivity extends ActionBarActivity {
 
     private ProgressDialog progressDialog;
-    private AlertDialog.Builder alertDialogBuilder;
     private EditText usernameET;
     private EditText passwordET;
 
@@ -75,8 +74,8 @@ public class LoginActivity extends ActionBarActivity {
         //TODO add more checks.
         if (!error.isEmpty()) {
             progressDialog.dismiss();
-            alertDialogBuilder = createErrorAlert(catString(error), this);
-            alertDialogBuilder.show();
+            createErrorAlert(catString(error), this).show();
+            return;
         }
         User.logInInBackground(username, password, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
@@ -84,8 +83,7 @@ public class LoginActivity extends ActionBarActivity {
                 if (user != null) {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
-                    alertDialogBuilder = createErrorAlert(e.getMessage(), LoginActivity.this);
-                    alertDialogBuilder.show();
+                    createErrorAlert(e.getMessage(), LoginActivity.this).show();
                 }
             }
         });
