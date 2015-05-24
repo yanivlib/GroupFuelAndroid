@@ -1,5 +1,9 @@
 package com.mty.groupfuel;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -8,15 +12,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.mty.groupfuel.datamodel.User;
 import com.parse.SignUpCallback;
 import com.parse.ParseException;
-import com.parse.ParseUser;
 
 public class RegisterActivity extends ActionBarActivity {
 
     private EditText usernameET;
     private EditText passwordET;
     private EditText passwordAgainET;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,27 +56,53 @@ public class RegisterActivity extends ActionBarActivity {
     }
 
     public void register (View view) {
+        String error = "";
         String username = usernameET.getText().toString().trim();
         String password = passwordET.getText().toString().trim();
         String passwordAgain = passwordAgainET.getText().toString().trim();
 
-        //TODO: check that values are legal and non-empty.
-
-        ParseUser user = new ParseUser();
+        if (username.isEmpty()) {
+            error += getString(R.string.username_empty);
+        }
+        if (password.isEmpty()) {
+            error += getString(R.string.password_empty);
+        }
+        if (!password.equals(passwordAgain)) {
+            error += getString(R.string.passwords_diff);
+        }
+        if (error.length() > 0) {
+            createErrorAlert(error, this).show();
+            return;
+        }
+        //ParseUser user = new ParseUser();
+        User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-//        user.setEmail("email@example.com");
-
+        progressDialog = ProgressDialog.show(this, getResources().getString(R.string.wait), getResources().getString(R.string.signup_progress));
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
+                progressDialog.dismiss();
                 if (e == null) {
-                    // Hooray! Let them use the app now.
-                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                    Intent intent = new Intent(RegisterActivity.this, PersonalActivity.class);
+                    intent.putExtra(Consts.PARENT_ACTIVITY_NAME, RegisterActivity.this.getClass().getSimpleName());
+                    startActivity(intent);
                 } else {
-                    // Sign up didn't succeed.
-                    // TODO: Look at the ParseException to figure out what went wrong
+                    createErrorAlert(e.getMessage(), RegisterActivity.this).show();
                 }
             }
         });
+    }
+
+    private static AlertDialog.Builder createErrorAlert(String message, Context context) {
+        return new AlertDialog.Builder(context)
+            .setTitle(R.string.signup_error_title)
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // do nothing
+                    dialog.cancel();
+                }
+            })
+            .setIcon(android.R.drawable.ic_dialog_alert);
     }
 }

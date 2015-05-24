@@ -60,8 +60,13 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
                 break;
             case 3: // settings_button
                 Button button = (Button) convertView.findViewById(R.id.settings_button);
-                button.setText(childText);
-                button.setOnClickListener(signOut(context));
+                if (childText == Consts.BUTTON_LOGOUT) {
+                    button.setOnClickListener(signOut(context));
+                    button.setText(context.getString(R.string.logout));
+                } else if (childText == Consts.BUTTON_UPDATE) {
+                    button.setOnClickListener(updatePersonal(context));
+                    button.setText(context.getString(R.string.change_personal));
+                }
         }
 
         return convertView;
@@ -176,7 +181,17 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
             }
         };
     }
-
+    private View.OnClickListener updatePersonal(final Context context) {
+        return new View.OnClickListener() {
+            final Context mcontext = context;
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mcontext, PersonalActivity.class);
+                intent.putExtra(Consts.PARENT_ACTIVITY_NAME, SettingsFragment.class.getClasses());
+                mcontext.startActivity(intent);
+            }
+        };
+    }
     private View.OnClickListener signOut(final Context context) {
         return new View.OnClickListener() {
             final Context mcontext = context;
@@ -185,26 +200,26 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
             @Override
             public void onClick(View view) {
                 new AlertDialog.Builder(mcontext)
-                        .setMessage("Are you sure you want to log out?")
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                progress = ProgressDialog.show(mcontext, "Logging you out", "Please Wait...");
-                                ParseUser.logOutInBackground(new LogOutCallback() {
-                                    @Override
-                                    public void done(ParseException e) {
-                                        progress.dismiss();
-                                        mcontext.startActivity(new Intent(mcontext, DispatchActivity.class));
-                                    }
-                                });
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // do nothing
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
+                    .setMessage("Are you sure you want to log out?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            progress = ProgressDialog.show(mcontext, "Logging you out", "Please Wait...");
+                            ParseUser.logOutInBackground(new LogOutCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    progress.dismiss();
+                                    mcontext.startActivity(new Intent(mcontext, DispatchActivity.class));
+                                }
+                            });
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
             }
         };
     }

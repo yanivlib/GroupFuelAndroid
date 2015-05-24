@@ -108,11 +108,14 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+    }
+
     private void getOwnedCars() {
         ParseCloud.callFunctionInBackground("getOwnedCars", new HashMap<String, Object>(), new FunctionCallback<ArrayList>() {
             @Override
             public void done(ArrayList result, ParseException e) {
-                System.out.println("getOwnedCars done.");
                 if (e == null) {
                     Car[] new_cars = new Car[result.size()];
                     for (int i = 0; i < result.size(); i++) {

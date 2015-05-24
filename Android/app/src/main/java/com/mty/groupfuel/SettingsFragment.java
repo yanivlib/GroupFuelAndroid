@@ -53,23 +53,24 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         listDataHeader= new ArrayList<>();
         listDataChild = new HashMap<>();
 
-        listDataHeader.add("Manage Cars");
-        listDataHeader.add("Change personal settings");
-        listDataHeader.add("Account settings");
+        listDataHeader.add(getString(R.string.manage_cars));
+        listDataHeader.add(getString(R.string.change_personal));
+        listDataHeader.add(getString(R.string.account_settings));
 
         List<String> carList = new ArrayList<>();
         Car[] cars = ((MainActivity) getActivity()).getCars();
         for (Car car : cars) {
             carList.add(car.getDisplayName());
         }
-        carList.add("");
+        carList.add(Consts.BUTTON_ADDREMOVE);
 
         List<String> b = new ArrayList<>();
-        b.add("Change password");
-        b.add("Change notification settings ");
+        b.add(getString(R.string.change_password));
+        b.add(getString(R.string.change_notifications));
 
         List<String> c = new ArrayList<>();
-        c.add("Log out");
+        c.add(Consts.BUTTON_UPDATE);
+        c.add(Consts.BUTTON_LOGOUT);
 
         listDataChild.put(listDataHeader.get(0), carList);
         listDataChild.put(listDataHeader.get(1), b);
