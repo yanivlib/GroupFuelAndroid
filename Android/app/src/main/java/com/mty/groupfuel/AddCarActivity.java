@@ -9,11 +9,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.mty.groupfuel.datamodel.Car;
+import com.mty.groupfuel.datamodel.CarModel;
 import com.parse.FunctionCallback;
-import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
@@ -30,8 +28,13 @@ public class AddCarActivity extends ActionBarActivity {
     private Spinner year;
 
     private Spinner spinners[];
+    private ArrayList<CarModel> modelList;
 
     private Button button;
+
+    public void setModelList(ArrayList<CarModel> modelList) {
+        this.modelList = modelList;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,23 +69,6 @@ public class AddCarActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class SpinnerSelect implements AdapterView.OnItemSelectedListener {
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
-            //
-        }
-
-        @Override
-        public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-            String item = adapterView.getItemAtPosition(position).toString();
-            Toast.makeText(adapterView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
-            if (maker.getSelectedItem() != null) {
-                getModels(maker.getSelectedItem().toString());
-            }
-        }
-
-    }
-
     private void findViewsById() {
         maker = (Spinner)findViewById(R.id.add_car_maker);
         model = (Spinner)findViewById(R.id.add_car_model);
@@ -93,6 +79,7 @@ public class AddCarActivity extends ActionBarActivity {
 
     private void updateSpinnerList(Spinner spinner, String[] array) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, array);
+        //new CustomSpinnerAdapter(this, R.layout.spinner_row, arrayForSpinner, defaultTextForSpinner);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
@@ -100,7 +87,15 @@ public class AddCarActivity extends ActionBarActivity {
     private void attachAdapters() {
         for (Spinner spinner : spinners) {
             updateSpinnerList(spinner, new String[0]);
-            spinner.setOnItemSelectedListener(new SpinnerSelect());
+            if (spinner == maker) {
+                spinner.setOnItemSelectedListener(new makerSelectedListener());
+            } else if (spinner == model) {
+                spinner.setOnItemSelectedListener(new modelSelectedListener());
+            } else if (spinner == engine) {
+                spinner.setOnItemSelectedListener(new engineSelectedListener());
+            } else {
+                spinner.setOnItemSelectedListener(new yearSelectedListener());
+            }
         }
     }
 
@@ -134,14 +129,17 @@ public class AddCarActivity extends ActionBarActivity {
     private void getModels (String make) {
         final HashMap<String, Object> params = new HashMap<>();
         params.put(Consts.PARAMS_MAKE, make);
-        ParseCloud.callFunctionInBackground(Consts.GET_CAR_MODELS, params, new FunctionCallback<ArrayList>() {
+        ParseCloud.callFunctionInBackground(Consts.GET_CAR_MODELS, params, new FunctionCallback<HashMap>() {
             @Override
-            public void done(ArrayList result, ParseException e) {
+            public void done(HashMap result, ParseException e) {
                 if (e == null) {
                     System.out.println(result.toString());
-                    String[] models = Arrays.copyOf(result.toArray(), result.size(), String[].class);
+                    ArrayList<CarModel> resultSet = (ArrayList<CarModel>)result.get("resultSet");
+                    ArrayList<String> distinctModels = (ArrayList<String>)result.get("distinctModels");
+                    String[] models = new String[distinctModels.size()];
+                    models = distinctModels.toArray(models);
+                    setModelList(resultSet);
                     updateSpinnerList(model, models);
-                    model.setEnabled(true);
                 } else {
                     switch (e.getCode()) {
                         case 141:
@@ -154,4 +152,84 @@ public class AddCarActivity extends ActionBarActivity {
             }
         });
     }
+
+    private class makerSelectedListener implements AdapterView.OnItemSelectedListener {
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+            //
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+            String maker = adapterView.getItemAtPosition(position).toString();
+            getModels(maker);
+            model.setEnabled(true);
+        }
+    }
+
+    private class modelSelectedListener implements AdapterView.OnItemSelectedListener {
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+            //
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+            String model = adapterView.getItemAtPosition(position).toString();
+            getEngines(model);
+            engine.setEnabled(true);
+        }
+    }
+
+    private class engineSelectedListener implements AdapterView.OnItemSelectedListener {
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+            //
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+            String engine = adapterView.getItemAtPosition(position).toString();
+            getYears(engine, model.getSelectedItem().toString());
+            year.setEnabled(true);
+        }
+    }
+
+    private class yearSelectedListener implements AdapterView.OnItemSelectedListener {
+        @Override
+        public void onNothingSelected(AdapterView<?> adapterView) {
+            //
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+            String year = adapterView.getItemAtPosition(position).toString();
+            //
+        }
+    }
+
+    public void getEngines(String model) {
+        ArrayList<String> engines = new ArrayList<>();
+        for (CarModel currentModel : modelList) {
+            if (currentModel.getModel().equals(model)) {
+                engines.add(currentModel.getVolume().toString());
+            }
+        }
+        String[] enginesArray = new String[engines.size()];
+        enginesArray = engines.toArray(enginesArray);
+        updateSpinnerList(engine, enginesArray);
+    }
+
+    public void getYears(String engine, String model) {
+        ArrayList<String> years = new ArrayList<>();
+        for (CarModel currentModel : modelList) {
+            if (currentModel.getModel().equals(model) && currentModel.getVolume().toString().equals(engine)) {
+                years.add(currentModel.getYear().toString());
+            }
+        }
+        String[] yearsArray = new String[years.size()];
+        yearsArray = years.toArray(yearsArray);
+        updateSpinnerList(year, yearsArray);
+    }
+
 }
