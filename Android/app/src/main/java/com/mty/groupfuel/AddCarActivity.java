@@ -77,16 +77,20 @@ public class AddCarActivity extends ActionBarActivity {
         button = (Button)findViewById(R.id.add_car_button);
     }
 
-    private void updateSpinnerList(Spinner spinner, String[] array) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, array);
-        //new CustomSpinnerAdapter(this, R.layout.spinner_row, arrayForSpinner, defaultTextForSpinner);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+    private void updateSpinnerList(Spinner spinner, ArrayList<String> array) {
+        HintAdapter adapter = (HintAdapter)spinner.getAdapter();
+        ArrayList<String> temp = array;
+        array.add("Please select");
+        adapter.clear();
+        adapter.addAll(array);
     }
 
     private void attachAdapters() {
         for (Spinner spinner : spinners) {
-            updateSpinnerList(spinner, new String[0]);
+            ArrayList<String> array = new ArrayList<>();
+            array.add("Please select");
+            HintAdapter adapter = new HintAdapter(this, android.R.layout.simple_spinner_item, array);
+            spinner.setAdapter(adapter);
             if (spinner == maker) {
                 spinner.setOnItemSelectedListener(new makerSelectedListener());
             } else if (spinner == model) {
@@ -109,9 +113,9 @@ public class AddCarActivity extends ActionBarActivity {
         ParseCloud.callFunctionInBackground(Consts.GET_CAR_MAKES, new HashMap<String, Object>(), new FunctionCallback<ArrayList>() {
             @Override
             public void done(ArrayList result, ParseException e) {
+                System.out.println("getmakers print");
                 if (e == null) {
-                    String[] makes = Arrays.copyOf(result.toArray(), result.size(), String[].class);
-                    updateSpinnerList(maker, makes);
+                    updateSpinnerList(maker, result);
                     maker.setEnabled(true);
                 } else {
                     switch (e.getCode()) {
@@ -136,10 +140,8 @@ public class AddCarActivity extends ActionBarActivity {
                     System.out.println(result.toString());
                     ArrayList<CarModel> resultSet = (ArrayList<CarModel>)result.get("resultSet");
                     ArrayList<String> distinctModels = (ArrayList<String>)result.get("distinctModels");
-                    String[] models = new String[distinctModels.size()];
-                    models = distinctModels.toArray(models);
                     setModelList(resultSet);
-                    updateSpinnerList(model, models);
+                    updateSpinnerList(model, distinctModels);
                 } else {
                     switch (e.getCode()) {
                         case 141:
@@ -215,9 +217,7 @@ public class AddCarActivity extends ActionBarActivity {
                 engines.add(currentModel.getVolume().toString());
             }
         }
-        String[] enginesArray = new String[engines.size()];
-        enginesArray = engines.toArray(enginesArray);
-        updateSpinnerList(engine, enginesArray);
+        updateSpinnerList(engine, engines);
     }
 
     public void getYears(String engine, String model) {
@@ -227,9 +227,6 @@ public class AddCarActivity extends ActionBarActivity {
                 years.add(currentModel.getYear().toString());
             }
         }
-        String[] yearsArray = new String[years.size()];
-        yearsArray = years.toArray(yearsArray);
-        updateSpinnerList(year, yearsArray);
+        updateSpinnerList(year, years);
     }
-
 }
