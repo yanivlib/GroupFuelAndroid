@@ -17,29 +17,28 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fueling_car"
+        android:layout_below="@+id/fueling_top"
+        android:spinnerMode="dropdown"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/fueling_mileage"
-        android:layout_below="@+id/fueling_top"
+        android:layout_below="@+id/fueling_car"
         android:hint="Mileage"
         android:inputType="number"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/fueling_type"
-        android:spinnerMode="dropdown"
-        android:clickable="true"
-        android:focusableInTouchMode="false"
-        android:focusable="false"
-        android:layout_below="@+id/fueling_amount"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -53,16 +52,17 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/fueling_mileage" />
 
-    <Spinner
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/fueling_car"
-        android:layout_below="@+id/fueling_type"
-        android:spinnerMode="dropdown"
+        android:id="@+id/fueling_amount"
+        android:layout_below="@+id/fueling_price"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignRight="@+id/fueling_type"
+        android:layout_alignEnd="@+id/fueling_type"
+        android:hint="Amount (liters)"
+        android:inputType="number" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -74,8 +74,21 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/fueling_car"
+        android:layout_below="@+id/fueling_amount"
         android:hint="Location" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fueling_type"
+        android:spinnerMode="dropdown"
+        android:clickable="true"
+        android:focusableInTouchMode="false"
+        android:focusable="false"
+        android:layout_below="@+id/fueling_location"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 
     <Button
         android:layout_width="wrap_content"
@@ -87,17 +100,6 @@
         android:layout_centerHorizontal="true"
         android:nestedScrollingEnabled="false" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/fueling_amount"
-        android:layout_below="@+id/fueling_price"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/fueling_type"
-        android:layout_alignEnd="@+id/fueling_type"
-        android:hint="Amount (liters)"
-        android:inputType="number"
-        android:layout_alignParentEnd="true" />
+
 
 </RelativeLayout>

@@ -21,6 +21,7 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class FuelingFragment extends android.support.v4.app.Fragment {
     private Car[] cars;
@@ -32,8 +33,10 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     private EditText locationEditText;
     private Spinner carSpinner;
     private Spinner fuelSpinner;
-    private String selectedFuel;
+
     private Car selectedCar;
+
+    private Button sendButton;
 
     public FuelingFragment() {
     }
@@ -46,20 +49,21 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     }
 
     private class SpinnerSelect implements AdapterView.OnItemSelectedListener {
-
         private Class spinnerType;
         SpinnerSelect(Class type) {
             spinnerType = type;
         }
-        public void onItemSelected(AdapterView<?> parent, View view,
-                                   int pos, long id) {
-            if (spinnerType == Fuel.class) {
-                selectedFuel = (String) parent.getItemAtPosition(pos);
-            } else if (spinnerType == Car.class) {
-                try {
-                    selectedCar = cars[pos];
-                } catch (NullPointerException e) {
-                    selectedCar = new Car();
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+            if (spinnerType == Car.class) {
+                if (pos > 0) {
+                    sendButton.setEnabled(true);
+                    try {
+                        selectedCar = cars[pos - 1];
+                    } catch (NullPointerException e) {
+                        selectedCar = new Car();
+                    }
+                } else if (pos == 0) {
+                    sendButton.setEnabled(false);
                 }
             }
         }
@@ -94,7 +98,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             fueling.setMileage(mileage);
             fueling.setPrice(price);
             fueling.setUser(user);
-            fueling.setFuelType(Fuel.fromString(selectedFuel));
+            fueling.setFuelType((Fuel) fuelSpinner.getSelectedItem());
             fueling.put("Car", ParseObject.createWithoutData("Car", selectedCar.getObjectId()));
             fueling.saveEventually();
 
@@ -113,17 +117,23 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     }
 
     private void findViewsById(View view) {
-        carSpinner = (Spinner) view.findViewById(R.id.fueling_car);
-        mileageEditText = (EditText) view.findViewById(R.id.fueling_mileage);
-        priceEditText = (EditText) view.findViewById(R.id.fueling_price);
-        amountEditText = (EditText) view.findViewById(R.id.fueling_amount);
-        locationEditText = (EditText) view.findViewById(R.id.fueling_location);
-        fuelSpinner = (Spinner) view.findViewById(R.id.fueling_type);
+        carSpinner = (Spinner)view.findViewById(R.id.fueling_car);
+        mileageEditText = (EditText)view.findViewById(R.id.fueling_mileage);
+        priceEditText = (EditText)view.findViewById(R.id.fueling_price);
+        amountEditText = (EditText)view.findViewById(R.id.fueling_amount);
+        locationEditText = (EditText)view.findViewById(R.id.fueling_location);
+        fuelSpinner = (Spinner)view.findViewById(R.id.fueling_type);
+        sendButton = (Button)view.findViewById(R.id.fueling_send);
     }
 
-    private void attachAdapter(View view, Class c, String[] array, Spinner spinner) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(),
-                android.R.layout.simple_spinner_item, array);
+    private void attachAdapter(View view, Class c, Object[] array, Spinner spinner) {
+        ArrayList<Object> arrayList = new ArrayList<>();
+        arrayList.add(getString(R.string.please_select));
+        for (Object object : array) {
+            arrayList.add(object);
+        }
+        ArrayAdapter<Object> adapter = new ArrayAdapter<>(view.getContext(),
+                android.R.layout.simple_spinner_item, arrayList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new SpinnerSelect(c));
@@ -153,10 +163,10 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
         String[] carNames = getCarNames();
 
         attachAdapter(view, Car.class, carNames, carSpinner);
-        attachAdapter(view, Fuel.class, Fuel.getNames(), fuelSpinner);
+        attachAdapter(view, Fuel.class, Fuel.values(), fuelSpinner);
 
-        Button sendButton = (Button) view.findViewById(R.id.fueling_send);
         sendButton.setOnClickListener(new SendListener());
+        sendButton.setEnabled(false);
         return view;
 
     }
@@ -177,9 +187,9 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             carNames[i] = cars[i].getDisplayName();
             this.cars[i] = cars[i];
         }
-        ArrayAdapter<String> carSpinnerAdapter = new ArrayAdapter<>(this.context,
-                android.R.layout.simple_spinner_item, carNames);
-        carSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        carSpinner.setAdapter(carSpinnerAdapter);
+        ArrayAdapter<String> carSpinnerAdapter = (ArrayAdapter)carSpinner.getAdapter();
+        carSpinnerAdapter.clear();
+        carSpinnerAdapter.add(getString(R.string.please_select));
+        carSpinnerAdapter.addAll(Arrays.asList(carNames));
     }
 }

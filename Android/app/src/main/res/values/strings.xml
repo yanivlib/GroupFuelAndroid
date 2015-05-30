@@ -41,4 +41,5 @@
     <string name="country">Country</string>
     <string name="apply">Apply</string>
     <string name="fueling_updated">Fueling updated</string>
+    <string name="add_car">Add new car</string>
 </resources>
