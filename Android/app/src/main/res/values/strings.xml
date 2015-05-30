@@ -22,7 +22,9 @@
     <string name="ok">OK</string>
     <string name="username_empty">"Username is empty"</string>
     <string name="password_empty">"Password is empty"</string>
-    <string name="passwords_diff">Passwords are not identical</string>
+    <string name="title_activity_add_car">AddCarActivity</string>
+    <string name="please_select">Please Select</string>
+	<string name="passwords_diff">Passwords are not identical</string>
     <string name="title_activity_personal">PersonalActivity</string>
     <string name="change_password">Change password</string>
     <string name="change_notifications">Change notification settings</string>
@@ -38,5 +40,4 @@
     <string name="gender">Gender</string>
     <string name="country">Country</string>
     <string name="apply">Apply</string>
-
 </resources>

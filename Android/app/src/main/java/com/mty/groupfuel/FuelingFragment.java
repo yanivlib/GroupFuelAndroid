@@ -21,8 +21,6 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 public class FuelingFragment extends android.support.v4.app.Fragment {
-//    private static final String CARS_KEY = "cars_key";
-
     private Car[] cars;
     Context context;
 
@@ -39,7 +37,6 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
 
     public static FuelingFragment newInstance() {
         Bundle args = new Bundle();
-//        args.putSerializable(CARS_KEY, cars);
         FuelingFragment fuelingFragment = new FuelingFragment();
         fuelingFragment.setArguments(args);
         return fuelingFragment;
