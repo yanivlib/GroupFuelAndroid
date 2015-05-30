@@ -1,5 +1,9 @@
 package com.mty.groupfuel;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,9 +18,12 @@ import com.parse.ParseUser;
 
 import android.content.Intent;
 
+import java.util.ArrayList;
+
 
 public class LoginActivity extends ActionBarActivity {
 
+    private ProgressDialog progressDialog;
     private EditText usernameET;
     private EditText passwordET;
 
@@ -52,21 +59,54 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     public void login (View view) {
+        progressDialog = ProgressDialog.show(this, getResources().getString(R.string.wait), getResources().getString(R.string.login_progress));
         String username = usernameET.getText().toString().trim();
         String password = passwordET.getText().toString().trim();
-
-        //TODO: check if username and password are legal and non-empty
-
+        usernameET.setText("");
+        passwordET.setText("");
+        ArrayList<String> error = new ArrayList<>();
+        if (username.isEmpty()) {
+            error.add(getResources().getString(R.string.username_empty));
+        }
+        if (password.isEmpty()) {
+            error.add(getResources().getString(R.string.password_empty));
+        }
+        //TODO add more checks.
+        if (!error.isEmpty()) {
+            progressDialog.dismiss();
+            createErrorAlert(catString(error), this).show();
+            return;
+        }
         User.logInInBackground(username, password, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
+                progressDialog.dismiss();
                 if (user != null) {
-                    // Hooray! The user is logged in.
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
-                    System.out.println(e.getMessage());
-                    // Signup failed. TODO: Look at the ParseException to see what happened.
+                    createErrorAlert(e.getMessage(), LoginActivity.this).show();
                 }
             }
         });
+    }
+
+    private static AlertDialog.Builder createErrorAlert(String message, Context context) {
+        return new AlertDialog.Builder(context)
+            .setTitle(R.string.login_error_title)
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // do nothing
+                    dialog.cancel();
+                }
+            })
+            .setIcon(android.R.drawable.ic_dialog_alert);
+    }
+    private static String catString (ArrayList<String> list) {
+        String result = "";
+            for (String string : list) {
+                result += string;
+                result += "\n";
+            }
+        return result;
     }
 }

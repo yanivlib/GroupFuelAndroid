@@ -64,25 +64,27 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        ViewPager viewPager = (ViewPager)findViewById(R.id.viewpager);
         FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this);
         viewPager.setAdapter(adapter);
         setfragmentPagerAdapter(adapter);
 
-        SlidingTabLayout slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        SlidingTabLayout slidingTabLayout = (SlidingTabLayout)findViewById(R.id.sliding_tabs);
         slidingTabLayout.setDistributeEvenly(true);
         slidingTabLayout.setViewPager(viewPager);
-		
-		getOwnedCars();
+
+ 		getOwnedCars();
         User user = (User)User.getCurrentUser();
         String username = user.getUsername();
-//        setContentView(R.layout.activity_main);
 
-        //if (savedInstanceState == null) {
-        //    getSupportFragmentManager().beginTransaction()
-        //            .add(R.id.container, new PlaceholderFragment())
-        //            .commit();
-        //}
+        String action = getIntent().getAction();
+        if (action != null) {
+            if (action.equals(Consts.OPEN_TAB_SETTINGS)) {
+                viewPager.setCurrentItem(2);
+            } else if (action.equals(Consts.OPEN_TAB_USAGE)) {
+                viewPager.setCurrentItem(0);
+            }
+        }
     }
 
 
@@ -108,11 +110,14 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+    }
+
     private void getOwnedCars() {
         ParseCloud.callFunctionInBackground("getOwnedCars", new HashMap<String, Object>(), new FunctionCallback<ArrayList>() {
             @Override
             public void done(ArrayList result, ParseException e) {
-                System.out.println("getOwnedCars done.");
                 if (e == null) {
                     Car[] new_cars = new Car[result.size()];
                     for (int i = 0; i < result.size(); i++) {
