@@ -29,8 +29,7 @@ public class Application extends android.app.Application {
         ParseObject.registerSubclass(Fueling.class);
         ParseObject.registerSubclass(User.class);
         Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "LkuUmj7OE1C9BzsbhkpMZEgeAT1A0ZACqTUZgN2f", "E6rm9orzoHeg4O36SSm7kToum9I4nb9lUwhlyFjY");
-
+        Parse.initialize(this, Consts.applicationId, Consts.clientKey);
         preferences = getSharedPreferences("com.mty.groupfuel", Context.MODE_PRIVATE);
     }
 }

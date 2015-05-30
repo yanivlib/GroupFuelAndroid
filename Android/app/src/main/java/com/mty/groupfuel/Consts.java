@@ -11,4 +11,7 @@ public class Consts {
 	public final static String GET_CAR_MAKES = "getCarMakes";
     public final static String GET_CAR_MODELS = "getCarModels";
     public final static String PARAMS_MAKE = "Make";
+    public final static String applicationId = "LkuUmj7OE1C9BzsbhkpMZEgeAT1A0ZACqTUZgN2f";
+    public final static String clientKey = "E6rm9orzoHeg4O36SSm7kToum9I4nb9lUwhlyFjY";
+
 }

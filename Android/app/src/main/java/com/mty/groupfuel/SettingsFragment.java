@@ -18,7 +18,8 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     SettingsListAdapter listAdapter;
     ExpandableListView expListView;
     List<String> listDataHeader;
-    HashMap<String, List<String>> listDataChild;
+    HashMap<String, List<Object>> listDataChild;
+    Car[] cars;
 
     public static SettingsFragment newInstance() {
         SettingsFragment fragment = new SettingsFragment();
@@ -34,8 +35,13 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setCars(((MainActivity) getActivity()).getCars());
         prepareListData();
 
+    }
+
+    private void findViewsById(View view) {
+        expListView = (ExpandableListView)view.findViewById(R.id.lvExp);
     }
 
     @Override
@@ -43,10 +49,27 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        expListView = (ExpandableListView)view.findViewById(R.id.lvExp);
+        findViewsById(view);
         listAdapter = new SettingsListAdapter(getActivity(), listDataHeader, listDataChild);
         expListView.setAdapter(listAdapter);
         return view;
+    }
+
+    public void setCars(Car[] cars) {
+       this.cars = cars;
+    }
+
+    public void updateCarList(Car[] cars) {
+        //setCars(((MainActivity) getActivity()).getCars());
+        setCars(cars);
+        List<Object> carList = listDataChild.get(getString(R.string.manage_cars));
+        if (carList == null) {
+            return;
+        }
+        carList.clear();
+        for (Car car : cars) {
+            carList.add(car);
+        }
     }
 
     private void prepareListData() {
@@ -57,20 +80,20 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         listDataHeader.add(getString(R.string.change_personal));
         listDataHeader.add(getString(R.string.account_settings));
 
-        List<String> carList = new ArrayList<>();
-        Car[] cars = ((MainActivity) getActivity()).getCars();
+        List<Object> carList = new ArrayList<>();
+        updateCarList(cars);
         if (cars != null) {
             for (Car car : cars) {
-                carList.add(car.getDisplayName());
+                carList.add(car);
             }
         }
         carList.add(Consts.BUTTON_ADDREMOVE);
 
-        List<String> b = new ArrayList<>();
+        List<Object> b = new ArrayList<>();
         b.add(getString(R.string.change_password));
         b.add(getString(R.string.change_notifications));
 
-        List<String> c = new ArrayList<>();
+        List<Object> c = new ArrayList<>();
         c.add(Consts.BUTTON_UPDATE);
         c.add(Consts.BUTTON_LOGOUT);
 

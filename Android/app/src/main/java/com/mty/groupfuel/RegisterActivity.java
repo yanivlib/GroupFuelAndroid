@@ -23,14 +23,17 @@ public class RegisterActivity extends ActionBarActivity {
     private EditText passwordAgainET;
     private ProgressDialog progressDialog;
 
+    private void findViewsById() {
+        usernameET = (EditText) findViewById(R.id.usernameText);
+        passwordET = (EditText) findViewById(R.id.passwordText);
+        passwordAgainET = (EditText) findViewById(R.id.passwordTextAgain);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
-        usernameET = (EditText) findViewById(R.id.usernameText);
-        passwordET = (EditText) findViewById(R.id.passwordText);
-        passwordAgainET = (EditText) findViewById(R.id.passwordTextAgain);
+        findViewsById();
     }
 
     @Override
@@ -71,7 +74,7 @@ public class RegisterActivity extends ActionBarActivity {
             error += getString(R.string.passwords_diff);
         }
         if (error.length() > 0) {
-            createErrorAlert(error, this).show();
+            MainActivity.createErrorAlert(error, getString(R.string.signup_error_title), this).show();
             return;
         }
         //ParseUser user = new ParseUser();
@@ -87,22 +90,9 @@ public class RegisterActivity extends ActionBarActivity {
                     intent.putExtra(Consts.PARENT_ACTIVITY_NAME, RegisterActivity.class.getName());
                     startActivity(intent);
                 } else {
-                    createErrorAlert(e.getMessage(), RegisterActivity.this).show();
+                    MainActivity.createErrorAlert(e.getMessage(), getString(R.string.signup_error_title), RegisterActivity.this).show();
                 }
             }
         });
-    }
-
-    private static AlertDialog.Builder createErrorAlert(String message, Context context) {
-        return new AlertDialog.Builder(context)
-            .setTitle(R.string.signup_error_title)
-            .setMessage(message)
-            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    // do nothing
-                    dialog.cancel();
-                }
-            })
-            .setIcon(android.R.drawable.ic_dialog_alert);
     }
 }

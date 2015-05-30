@@ -20,6 +20,8 @@ import com.mty.groupfuel.datamodel.User;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
+
 public class FuelingFragment extends android.support.v4.app.Fragment {
     private Car[] cars;
     Context context;
@@ -29,6 +31,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     private EditText amountEditText;
     private EditText locationEditText;
     private Spinner carSpinner;
+    private Spinner fuelSpinner;
     private String selectedFuel;
     private Car selectedCar;
 
@@ -68,10 +71,24 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     private class SendListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
+            ArrayList<String> error = new ArrayList<>();
             Number amount = numberFromEditText(amountEditText);
             Number mileage = numberFromEditText(mileageEditText);
             Number price = numberFromEditText(priceEditText);
             User user = (User) ParseUser.getCurrentUser();
+            if (amount == 0) {
+                error.add("Cannot fuel with empty amount");
+            }
+            if (mileage == 0) {
+                error.add("Cannot fuel with empty mileage");
+            }
+            if (price == 0) {
+                error.add("Cannot fuel for free (price 0)");
+            }
+            if (!error.isEmpty()) {
+                MainActivity.createErrorAlert(error, context).show();
+                return;
+            }
             Fueling fueling = new Fueling();
             fueling.setAmount(amount);
             fueling.setMileage(mileage);
@@ -81,7 +98,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             fueling.put("Car", ParseObject.createWithoutData("Car", selectedCar.getObjectId()));
             fueling.saveEventually();
 
-            Toast.makeText(context,"Fueling updated",Toast.LENGTH_LONG).show();
+            Toast.makeText(context,getString(R.string.fueling_updated),Toast.LENGTH_LONG).show();
             amountEditText.setText(null);
             mileageEditText.setText(null);
             priceEditText.setText(null);
@@ -95,11 +112,24 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
         cars = ((MainActivity) getActivity()).getCars();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_fueling, container, false);
-        this.context = view.getContext();
+    private void findViewsById(View view) {
+        carSpinner = (Spinner) view.findViewById(R.id.fueling_car);
+        mileageEditText = (EditText) view.findViewById(R.id.fueling_mileage);
+        priceEditText = (EditText) view.findViewById(R.id.fueling_price);
+        amountEditText = (EditText) view.findViewById(R.id.fueling_amount);
+        locationEditText = (EditText) view.findViewById(R.id.fueling_location);
+        fuelSpinner = (Spinner) view.findViewById(R.id.fueling_type);
+    }
+
+    private void attachAdapter(View view, Class c, String[] array, Spinner spinner) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(),
+                android.R.layout.simple_spinner_item, array);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new SpinnerSelect(c));
+    }
+
+    private String[] getCarNames() {
         String[] carNames;
         try {
             carNames = new String[cars.length];
@@ -110,23 +140,20 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
         for(int i = 0; i < carNames.length; i++) {
             carNames[i] = cars[i].getDisplayName();
         }
-        ArrayAdapter<String> carSpinnerAdapter = new ArrayAdapter<>(view.getContext(),
-                android.R.layout.simple_spinner_item, carNames);
-        carSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        carSpinner = (Spinner) view.findViewById(R.id.fueling_car);
-        carSpinner.setAdapter(carSpinnerAdapter);
-        carSpinner.setOnItemSelectedListener(new SpinnerSelect(Car.class));
+        return carNames;
+    }
 
-        mileageEditText = (EditText) view.findViewById(R.id.fueling_mileage);
-        priceEditText = (EditText) view.findViewById(R.id.fueling_price);
-        amountEditText = (EditText) view.findViewById(R.id.fueling_amount);
-        locationEditText = (EditText) view.findViewById(R.id.fueling_location);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_fueling, container, false);
+        findViewsById(view);
+        this.context = view.getContext();
 
-        Spinner fuelSpinner = (Spinner) view.findViewById(R.id.fueling_type);
-        ArrayAdapter<String> fuelSpinnerAdapter = new ArrayAdapter<>(view.getContext(),
-                android.R.layout.simple_spinner_item, Fuel.getNames());
-        fuelSpinner.setAdapter(fuelSpinnerAdapter);
-        fuelSpinner.setOnItemSelectedListener(new SpinnerSelect(Fuel.class));
+        String[] carNames = getCarNames();
+
+        attachAdapter(view, Car.class, carNames, carSpinner);
+        attachAdapter(view, Fuel.class, Fuel.getNames(), fuelSpinner);
 
         Button sendButton = (Button) view.findViewById(R.id.fueling_send);
         sendButton.setOnClickListener(new SendListener());
@@ -135,7 +162,12 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     }
 
     private static Number numberFromEditText(EditText editText) {
-        return Integer.parseInt(editText.getText().toString());
+        try {
+            return Integer.parseInt(editText.getText().toString());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+
     }
 
     public void updateCars(Car[] cars) {

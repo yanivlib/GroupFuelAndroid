@@ -1,5 +1,6 @@
 package com.mty.groupfuel;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -304,13 +305,13 @@ public class AddCarActivity extends ActionBarActivity {
         @Override
         public void onClick(View v) {
             CarModel carModel = new CarModel();
-            carModel.setMake((String) maker.getSelectedItem());
-            carModel.setModel((String) maker.getSelectedItem());
-            carModel.setVolume((Number) engine.getSelectedItem());
-            carModel.setYear((Number) year.getSelectedItem());
-            carModel.setGear((Gear) gear.getSelectedItem());
+            carModel.setMake((String)maker.getSelectedItem());
+            carModel.setModel((String) model.getSelectedItem());
+            carModel.setVolume((Number)engine.getSelectedItem());
+            carModel.setYear((Number)year.getSelectedItem());
+            carModel.setGear((Gear)gear.getSelectedItem());
             carModel.setHybrid(hybrid.isChecked());
-            carModel.setFuel((Fuel) fuel.getSelectedItem());
+            carModel.setFuel((Fuel)fuel.getSelectedItem());
 
             Car car = new Car();
             car.setModel(carModel);
@@ -323,6 +324,9 @@ public class AddCarActivity extends ActionBarActivity {
                 public void done(ParseException e) {
                     if (e == null) {
                         disableAll();
+                        Intent intent = new Intent(AddCarActivity.this, MainActivity.class);
+                        intent.setAction(Consts.OPEN_TAB_SETTINGS);
+                        startActivity(intent);
                     } else {
                         throw new RuntimeException(e.getMessage());
                     }

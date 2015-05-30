@@ -23,7 +23,7 @@ public class User extends ParseUser {
     }
 
 	public String getLastName() {
-        return getString("FirstName");
+        return getString("LastName");
     }
 
     public void setLastName(String value) {

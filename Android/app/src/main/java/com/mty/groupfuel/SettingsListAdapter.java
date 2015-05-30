@@ -11,12 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.mty.groupfuel.datamodel.Car;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,18 +27,20 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
     private final int CHILD_TYPE_COUNT = 4;
     private Context context;
     private List<String> listDataHeader;
-    private HashMap<String, List<String>> listDataChild;
+    private HashMap<String, List<Object>> listDataChild;
+    private ArrayList<CheckBox> checkBoxArrayList;
 
-    public SettingsListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<String>> listDataChild) {
+    public SettingsListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<Object>> listDataChild) {
         this.context = context;
         this.listDataHeader = listDataHeader;
         this.listDataChild = listDataChild;
+        this.checkBoxArrayList = new ArrayList<>();
     }
 
 
     @Override
     public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        final String childText = (String)getChild(groupPosition, childPosition);
+        final Object child = getChild(groupPosition, childPosition);
 
         int type = getChildType(groupPosition, childPosition);
         if (convertView == null) {
@@ -48,22 +53,26 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
                 Button addNew = (Button)convertView.findViewById(R.id.add_new_car);
                 addNew.setOnClickListener(addNewCar(this.context));
                 Button remove = (Button)convertView.findViewById(R.id.remove_car);
-                remove.setOnClickListener(removecar());
+                remove.setOnClickListener(removeCar(this.context));
                 break;
             case 1: // settings_car
+                Car car = (Car)child;
                 TextView carText = (TextView) convertView.findViewById(R.id.car_text);
-                carText.setText(childText);
+                carText.setText(((Car) child).getDisplayName());
+                CheckBox cb = (CheckBox)convertView.findViewById(R.id.car_cb);
+                cb.setTag(car);
+                checkBoxArrayList.add((CheckBox)convertView.findViewById(R.id.car_cb));
                 break;
             case 2: // settings_item
                 TextView txtListChild = (TextView) convertView.findViewById(R.id.lblListItem_text);
-                txtListChild.setText(childText);
+                txtListChild.setText((String)child);
                 break;
             case 3: // settings_button
                 Button button = (Button) convertView.findViewById(R.id.settings_button);
-                if (childText == Consts.BUTTON_LOGOUT) {
+                if (child == Consts.BUTTON_LOGOUT) {
                     button.setOnClickListener(signOut(context));
                     button.setText(context.getString(R.string.logout));
-                } else if (childText == Consts.BUTTON_UPDATE) {
+                } else if (child == Consts.BUTTON_UPDATE) {
                     button.setOnClickListener(updatePersonal(context));
                     button.setText(context.getString(R.string.change_personal));
                 }
@@ -168,16 +177,23 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                context.startActivity(new Intent(context, AddCarActivity.class));
+            context.startActivity(new Intent(context, AddCarActivity.class));
             }
         };
     }
 
-    private View.OnClickListener removecar() {
+    private View.OnClickListener removeCar(final Context context) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //
+                for (CheckBox checkBox : checkBoxArrayList) {
+                    if (checkBox.isChecked()) {
+                        Car car = (Car)checkBox.getTag();
+                        car.deleteEventually();
+                        listDataChild.get(context.getString(R.string.manage_cars)).remove(car);
+                    }
+                }
+                notifyDataSetChanged();
             }
         };
     }
