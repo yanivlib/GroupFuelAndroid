@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools" android:layout_width="wrap_content"
-        android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:layout_height="wrap_content" android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         android:paddingBottom="@dimen/activity_vertical_margin"
@@ -25,9 +25,27 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Car Number"
+            android:id="@+id/add_car_number_text"
+            android:layout_below="@+id/add_car_title"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_car_number"
+            android:hint="example: 99-384-06"
+            android:layout_below="@+id/add_car_number_text"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Maker"
             android:id="@+id/add_car_maker_text"
-            android:layout_below="@+id/add_car_title"
+            android:layout_below="@+id/add_car_number"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
@@ -94,45 +112,6 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Car Number"
-            android:id="@+id/add_car_number_text"
-            android:layout_above="@+id/add_car_number"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/add_car_number"
-            android:hint="example: 99-384-06"
-            android:layout_above="@+id/add_car_button"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hybrid"
-            android:id="@+id/add_car_hybrid_text"
-            android:layout_below="@+id/add_car_year"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hybrid"
-            android:id="@+id/add_car_hybrid"
-            android:layout_below="@+id/add_car_hybrid_text"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:checked="false" />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -140,7 +119,7 @@
             android:id="@+id/add_car_gear_text"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/add_car_hybrid"/>
+            android:layout_below="@+id/add_car_year"/>
 
         <Spinner
             android:layout_width="wrap_content"
@@ -169,13 +148,34 @@
             android:id="@+id/add_car_fuel"
             android:layout_below="@+id/add_car_fuel_text"/>
 
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hybrid"
+            android:id="@+id/add_car_hybrid_text"
+            android:layout_below="@+id/add_car_fuel"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hybrid"
+            android:id="@+id/add_car_hybrid"
+            android:layout_below="@+id/add_car_hybrid_text"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:checked="false" />
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add New"
             android:id="@+id/add_car_button"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/add_car_hybrid"/>
 
     </RelativeLayout>
 </ScrollView>

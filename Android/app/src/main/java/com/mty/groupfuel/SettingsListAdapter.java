@@ -46,7 +46,7 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
         switch (getChildType(groupPosition, childPosition)) {
             case 0: // settings_addremove
                 Button addNew = (Button)convertView.findViewById(R.id.add_new_car);
-                addNew.setOnClickListener(addNewCar());
+                addNew.setOnClickListener(addNewCar(this.context));
                 Button remove = (Button)convertView.findViewById(R.id.remove_car);
                 remove.setOnClickListener(removecar());
                 break;
@@ -159,11 +159,11 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
         }
     }
 
-    private View.OnClickListener addNewCar() {
+    private View.OnClickListener addNewCar(final Context context) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //
+                context.startActivity(new Intent(context, AddCarActivity.class));
             }
         };
     }

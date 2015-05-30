@@ -45,7 +45,7 @@ public class MainFragment extends android.support.v4.app.Fragment {
         TextView textView = (TextView) view;
         textView.setText("Fragment #" + mPage);
 
-        startActivity(new Intent(getActivity(), AddCarActivity.class));
+        //startActivity(new Intent(getActivity(), AddCarActivity.class));
 
         return view;
     }
