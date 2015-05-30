@@ -77,7 +77,7 @@ public class LoginActivity extends ActionBarActivity {
         //TODO add more checks.
         if (!error.isEmpty()) {
             progressDialog.dismiss();
-            createErrorAlert(catString(error), this).show();
+            MainActivity.createErrorAlert(error, getString(R.string.login_error_title),this).show();
             return;
         }
         User.logInInBackground(username, password, new LogInCallback() {
@@ -86,30 +86,10 @@ public class LoginActivity extends ActionBarActivity {
                 if (user != null) {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
-                    createErrorAlert(e.getMessage(), LoginActivity.this).show();
+                    MainActivity.createErrorAlert(e.getMessage(), getString(R.string.login_error_title), LoginActivity.this).show();
                 }
             }
         });
     }
-
-    private static AlertDialog.Builder createErrorAlert(String message, Context context) {
-        return new AlertDialog.Builder(context)
-            .setTitle(R.string.login_error_title)
-            .setMessage(message)
-            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    // do nothing
-                    dialog.cancel();
-                }
-            })
-            .setIcon(android.R.drawable.ic_dialog_alert);
-    }
-    private static String catString (ArrayList<String> list) {
-        String result = "";
-            for (String string : list) {
-                result += string;
-                result += "\n";
-            }
-        return result;
-    }
+    
 }

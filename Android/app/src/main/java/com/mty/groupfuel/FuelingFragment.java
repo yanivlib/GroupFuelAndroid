@@ -71,10 +71,24 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     private class SendListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
+            ArrayList<String> error = new ArrayList<>();
             Number amount = numberFromEditText(amountEditText);
             Number mileage = numberFromEditText(mileageEditText);
             Number price = numberFromEditText(priceEditText);
             User user = (User) ParseUser.getCurrentUser();
+            if (amount == 0) {
+                error.add("Cannot fuel with empty amount");
+            }
+            if (mileage == 0) {
+                error.add("Cannot fuel with empty mileage");
+            }
+            if (price == 0) {
+                error.add("Cannot fuel for free (price 0)");
+            }
+            if (!error.isEmpty()) {
+                MainActivity.createErrorAlert(error, context).show();
+                return;
+            }
             Fueling fueling = new Fueling();
             fueling.setAmount(amount);
             fueling.setMileage(mileage);
@@ -148,7 +162,12 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     }
 
     private static Number numberFromEditText(EditText editText) {
-        return Integer.parseInt(editText.getText().toString());
+        try {
+            return Integer.parseInt(editText.getText().toString());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+
     }
 
     public void updateCars(Car[] cars) {

@@ -1,5 +1,8 @@
 package com.mty.groupfuel;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -38,25 +41,29 @@ public class MainActivity extends ActionBarActivity {
     private ViewPager viewPager;
     private SlidingTabLayout slidingTabLayout;
 
-    public static String getUserName () {
-        return user.getUsername();
-    }
     public User getUser () {
         return (User) user;
     }
-
     public Car[] getCars(){
         return this.cars;
     }
 
     public void setCars(Car[] cars) {
         this.cars = cars;
-        for (Car car : cars) {
-            System.out.println(car.getDisplayName());
-        }
-        FuelingFragment fuelingFragment = (FuelingFragment)fragmentPagerAdapter.getRegisteredFragment(1);
-        fuelingFragment.updateCars(cars);
+        //broadcastCarList();
     }
+
+    public void broadcastCarList() {
+        FuelingFragment fuelingFragment = (FuelingFragment)fragmentPagerAdapter.getRegisteredFragment(1);
+        if (fuelingFragment != null) {
+            fuelingFragment.updateCars(cars);
+        }
+        SettingsFragment settingsFragment = (SettingsFragment)fragmentPagerAdapter.getRegisteredFragment(2);
+        if (settingsFragment != null) {
+            settingsFragment.updateCarList(cars);
+        }
+    }
+
     public void setfragmentPagerAdapter(FragmentPagerAdapter adapter) {
         this.fragmentPagerAdapter = adapter;
     }
@@ -79,8 +86,7 @@ public class MainActivity extends ActionBarActivity {
         slidingTabLayout.setViewPager(viewPager);
 
  		getOwnedCars();
-        User user = (User)User.getCurrentUser();
-        String username = user.getUsername();
+        //broadcastCarList();
 
         String action = getIntent().getAction();
         if (action != null) {
@@ -129,6 +135,7 @@ public class MainActivity extends ActionBarActivity {
                         new_cars[i] = (Car) result.get(i);
                     }
                     setCars(new_cars);
+                    broadcastCarList();
                 } else {
                     switch (e.getCode()) {
                         case 141:
@@ -140,5 +147,44 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
+    }
+
+    public static AlertDialog.Builder createErrorAlert(String message, String title,Context context) {
+        return new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert);
+    }
+    public static AlertDialog.Builder createErrorAlert(ArrayList<String> list, String title,Context context) {
+        return createErrorAlert(catString(list), title, context);
+    }
+
+    public static AlertDialog.Builder createErrorAlert(ArrayList<String> list,Context context) {
+        return createErrorAlert(catString(list), context);
+    }
+
+    public static AlertDialog.Builder createErrorAlert(String message,Context context) {
+        return new AlertDialog.Builder(context)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert);
+    }
+
+    private static String catString (ArrayList<String> list) {
+        String result = "";
+        for (String string : list) {
+            result += string;
+            result += "\n";
+        }
+        return result;
     }
 }

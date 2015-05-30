@@ -14,11 +14,11 @@ public class Car extends ParseObject {
     }
 
     public User getOwner() {
-        return (User)getParseUser("User");
+        return (User)getParseUser("Owner");
     }
 
     public void setOwner(User value) {
-        put("User", value);
+        put("Owner", value);
     }
 
     public CarModel getModel() {
