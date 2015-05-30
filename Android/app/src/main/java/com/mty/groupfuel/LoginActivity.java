@@ -27,13 +27,16 @@ public class LoginActivity extends ActionBarActivity {
     private EditText usernameET;
     private EditText passwordET;
 
+    private void findViewsById() {
+        usernameET = (EditText) findViewById(R.id.usernameText);
+        passwordET = (EditText) findViewById(R.id.passwordText);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        usernameET = (EditText) findViewById(R.id.usernameText);
-        passwordET = (EditText) findViewById(R.id.passwordText);
+        findViewsById();
     }
 
     @Override

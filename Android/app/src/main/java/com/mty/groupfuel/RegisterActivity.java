@@ -23,14 +23,17 @@ public class RegisterActivity extends ActionBarActivity {
     private EditText passwordAgainET;
     private ProgressDialog progressDialog;
 
+    private void findViewsById() {
+        usernameET = (EditText) findViewById(R.id.usernameText);
+        passwordET = (EditText) findViewById(R.id.passwordText);
+        passwordAgainET = (EditText) findViewById(R.id.passwordTextAgain);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
-        usernameET = (EditText) findViewById(R.id.usernameText);
-        passwordET = (EditText) findViewById(R.id.passwordText);
-        passwordAgainET = (EditText) findViewById(R.id.passwordTextAgain);
+        findViewsById();
     }
 
     @Override

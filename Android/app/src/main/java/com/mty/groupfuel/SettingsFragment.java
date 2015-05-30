@@ -38,12 +38,16 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
 
     }
 
+    private void findViewsById(View view) {
+        expListView = (ExpandableListView)view.findViewById(R.id.lvExp);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        expListView = (ExpandableListView)view.findViewById(R.id.lvExp);
+        findViewsById(view);
         listAdapter = new SettingsListAdapter(getActivity(), listDataHeader, listDataChild);
         expListView.setAdapter(listAdapter);
         return view;

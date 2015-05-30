@@ -35,6 +35,8 @@ public class MainActivity extends ActionBarActivity {
     static private ParseUser user;
     private Car[] cars;
     private FragmentPagerAdapter fragmentPagerAdapter;
+    private ViewPager viewPager;
+    private SlidingTabLayout slidingTabLayout;
 
     public static String getUserName () {
         return user.getUsername();
@@ -52,24 +54,27 @@ public class MainActivity extends ActionBarActivity {
         for (Car car : cars) {
             System.out.println(car.getDisplayName());
         }
-        FuelingFragment fuelingFragment = (FuelingFragment) fragmentPagerAdapter.getRegisteredFragment(1);
+        FuelingFragment fuelingFragment = (FuelingFragment)fragmentPagerAdapter.getRegisteredFragment(1);
         fuelingFragment.updateCars(cars);
     }
     public void setfragmentPagerAdapter(FragmentPagerAdapter adapter) {
         this.fragmentPagerAdapter = adapter;
     }
 
+    private void findViewsByid() {
+        viewPager = (ViewPager)findViewById(R.id.viewpager);
+        slidingTabLayout = (SlidingTabLayout)findViewById(R.id.sliding_tabs);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        findViewsByid();
 
-        ViewPager viewPager = (ViewPager)findViewById(R.id.viewpager);
         FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this);
         viewPager.setAdapter(adapter);
         setfragmentPagerAdapter(adapter);
-
-        SlidingTabLayout slidingTabLayout = (SlidingTabLayout)findViewById(R.id.sliding_tabs);
         slidingTabLayout.setDistributeEvenly(true);
         slidingTabLayout.setViewPager(viewPager);
 
