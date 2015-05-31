@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
 import com.mty.groupfuel.datamodel.Car;
+import com.parse.ParseFacebookUtils;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,6 +98,9 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         List<Object> c = new ArrayList<>();
         c.add(Consts.BUTTON_UPDATE);
         c.add(Consts.BUTTON_LOGOUT);
+        if (!ParseFacebookUtils.isLinked(ParseUser.getCurrentUser())) {
+            c.add(Consts.BUTTON_FACEBOOK);
+        }
 
         listDataChild.put(listDataHeader.get(0), carList);
         listDataChild.put(listDataHeader.get(1), b);

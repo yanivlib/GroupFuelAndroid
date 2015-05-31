@@ -1,11 +1,13 @@
 package com.mty.groupfuel;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +15,14 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,6 +80,9 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
                 } else if (child == Consts.BUTTON_UPDATE) {
                     button.setOnClickListener(updatePersonal(context));
                     button.setText(context.getString(R.string.change_personal));
+                } else if (child == Consts.BUTTON_FACEBOOK) {
+                    button.setOnClickListener(linkFacebook(ParseUser.getCurrentUser(), context));
+                    button.setText((context.getString(R.string.link_facebook)));
                 }
         }
 
@@ -208,6 +216,7 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
             }
         };
     }
+
     private View.OnClickListener signOut(final Context context) {
         return new View.OnClickListener() {
             final Context mcontext = context;
@@ -236,6 +245,28 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
+            }
+        };
+    }
+    private View.OnClickListener linkFacebook(final ParseUser user, final Context context) {
+        return new View.OnClickListener() {
+            Activity activity = (Activity) context;
+            @Override
+            public void onClick(View v) {
+                v.setEnabled(false);
+                //ParseUser currentUser = ParseUser.getCurrentUser();
+                if (!ParseFacebookUtils.isLinked(user)) {
+                    ParseFacebookUtils.linkWithReadPermissionsInBackground(user, activity, null, new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                Toast.makeText(context, "Facebook account linked successfully!", Toast.LENGTH_LONG).show();
+                            } else {
+                                MainActivity.createErrorAlert(e.getMessage(), context);
+                            }
+                        }
+                    });
+                }
             }
         };
     }
