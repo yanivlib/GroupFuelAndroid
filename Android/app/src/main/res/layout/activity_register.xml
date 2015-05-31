@@ -13,7 +13,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Please choose login details"
+        android:text="@string/enter_register"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/textView2"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
@@ -22,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/usernameText"
-        android:hint="Username"
+        android:hint="@string/username"
         android:layout_below="@+id/textView2"
         android:layout_alignLeft="@+id/passwordText"
         android:layout_alignStart="@+id/passwordText"
@@ -38,7 +39,7 @@
         android:layout_below="@+id/usernameText"
         android:layout_centerHorizontal="true"
         android:selectAllOnFocus="false"
-        android:hint="Password" />
+        android:hint="@string/password" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -47,7 +48,7 @@
         android:ems="10"
         android:id="@+id/passwordTextAgain"
         android:selectAllOnFocus="false"
-        android:hint="Password (again)"
+        android:hint="@string/password_again"
         android:layout_below="@+id/passwordText"
         android:layout_centerHorizontal="true" />
 

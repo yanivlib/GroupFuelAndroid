@@ -10,6 +10,7 @@
 
 
     <TextView
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Please enter fueling details"
@@ -39,7 +40,9 @@
         android:focusable="false"
         android:layout_below="@+id/fueling_amount"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -94,10 +97,9 @@
         android:layout_below="@+id/fueling_price"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/fueling_type"
-        android:layout_alignEnd="@+id/fueling_type"
         android:hint="Amount (liters)"
         android:inputType="number"
+        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Please enter the details below"
+            android:text="@string/please_enter"
             android:id="@+id/add_car_title"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
@@ -25,7 +25,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Car Number"
+            android:text="@string/car_number"
             android:id="@+id/add_car_number_text"
             android:layout_below="@+id/add_car_title"
             android:layout_alignParentLeft="true"
@@ -35,15 +35,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/add_car_number"
-            android:hint="example: 99-384-06"
+            android:hint="@string/car_number_example"
             android:layout_below="@+id/add_car_number_text"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:inputType="number" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Maker"
+            android:text="@string/maker"
             android:id="@+id/add_car_maker_text"
             android:layout_below="@+id/add_car_number"
             android:layout_alignParentLeft="true"
@@ -61,7 +62,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Modle"
+            android:text="@string/model"
             android:layout_below="@+id/add_car_maker"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -79,7 +80,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Year"
+            android:text="@string/year"
             android:id="@+id/add_car_year_text"
             android:layout_below="@+id/add_car_engine"
             android:layout_alignParentLeft="true"
@@ -97,7 +98,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Engine"
+            android:text="@string/engine"
             android:id="@+id/add_car_engine_text"
             android:layout_below="@+id/add_car_model"
             android:layout_alignParentLeft="true"
@@ -115,7 +116,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Gear type"
+            android:text="@string/gear"
             android:id="@+id/add_car_gear_text"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -133,7 +134,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Fuel type"
+            android:text="@string/fuel"
             android:id="@+id/add_car_fuel_text"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -152,7 +153,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hybrid"
+            android:text="@string/hybrid"
             android:id="@+id/add_car_hybrid_text"
             android:layout_below="@+id/add_car_fuel"
             android:layout_alignParentLeft="true"
@@ -161,7 +162,7 @@
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hybrid"
+            android:text="@string/hybrid"
             android:id="@+id/add_car_hybrid"
             android:layout_below="@+id/add_car_hybrid_text"
             android:layout_alignParentLeft="true"
@@ -171,7 +172,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add New"
+            android:text="@string/add_new"
             android:id="@+id/add_car_button"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
