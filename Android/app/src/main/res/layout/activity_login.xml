@@ -11,7 +11,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Please enter login details"
+        android:text="@string/enter_login"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/textView2"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
@@ -20,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/usernameText"
-        android:hint="Username"
+        android:hint="@string/username"
         android:layout_below="@+id/textView2"
         android:layout_alignLeft="@+id/passwordText"
         android:layout_alignStart="@+id/passwordText"
@@ -36,7 +37,7 @@
         android:layout_below="@+id/usernameText"
         android:layout_centerHorizontal="true"
         android:selectAllOnFocus="false"
-        android:hint="Password" />
+        android:hint="@string/password" />
 
     <Button
         android:layout_width="wrap_content"

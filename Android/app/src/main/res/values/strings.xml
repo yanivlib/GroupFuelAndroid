@@ -41,4 +41,25 @@
     <string name="country">Country</string>
     <string name="apply">Apply</string>
     <string name="fueling_updated">Fueling updated</string>
+    <string name="amount_empty">Cannot fuel with empty amount</string>
+    <string name="price_empty">Cannot fuel for free (price 0)</string>
+    <string name="mileage_empty">Cannot fuel with empty mileage</string>
+    <string name="please_enter">Please enter the details below</string>
+    <string name="car_number">Car Number</string>
+    <string name="car_number_example">example: 99&#8211;384&#8211;06</string>
+    <string name="maker">Maker</string>
+    <string name="model">Model</string>
+    <string name="engine">Engine</string>
+    <string name="year">Year</string>
+    <string name="gear">Gear type</string>
+    <string name="fuel">Fuel type</string>
+    <string name="hybrid">Hybrid</string>
+    <string name="add_new">Add new</string>
+    <string name="add_new_car">Add new car</string>
+    <string name="remove_selected">Remove selected</string>
+    <string name="enter_login">Please enter login details</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="password_again">Password (again)</string>
+    <string name="enter_register">Please choose Username and Password</string>
 </resources>
