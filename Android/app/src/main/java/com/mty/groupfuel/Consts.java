@@ -15,4 +15,5 @@ public class Consts {
     public final static String clientKey = "E6rm9orzoHeg4O36SSm7kToum9I4nb9lUwhlyFjY";
     public final static String PACKAGE_NAME = "com.mty.groupfuel";
     public final static String BUTTON_FACEBOOK = "button_facebook";
+    public final static String OBJECTID_NULL = "objectid_null";
 }

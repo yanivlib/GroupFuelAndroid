@@ -21,6 +21,7 @@ import com.mty.groupfuel.datamodel.User;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -41,7 +42,10 @@ public class AddCarActivity extends ActionBarActivity {
     private CheckBox hybrid;
 
     private Spinner spinners[];
+
     private ArrayList<CarModel> modelList;
+    private HashMap<String, ArrayList<CarModel>> makerModels;
+    private HashMap<String, ArrayList<Object>> makerModelNames;
 
     private String pleaseSelect;
 
@@ -53,6 +57,8 @@ public class AddCarActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_car);
+        makerModels = new HashMap<>();
+        makerModelNames = new HashMap<>();
         pleaseSelect = getString(R.string.please_select);
         findViewsById();
         spinners = new Spinner[] {maker, model, engine, year, gear, fuel};
@@ -171,20 +177,33 @@ public class AddCarActivity extends ActionBarActivity {
         });
     }
 
-    private void getModels (String make) {
+    private void getModels (final String make) {
         System.out.println("getModels started");
+        if (makerModels.containsKey(make) && makerModelNames.containsKey(make)) {
+            setModelList(makerModels.get(make));
+            updateSpinnerList(model, makerModelNames.get(make));
+            System.out.println("getModels retrieved from memory");
+            return;
+        }
         final HashMap<String, Object> params = new HashMap<>();
         params.put(Consts.PARAMS_MAKE, make);
+        System.out.println("getModels calls cloud function");
         ParseCloud.callFunctionInBackground(Consts.GET_CAR_MODELS, params, new FunctionCallback<HashMap>() {
             @Override
             public void done(HashMap result, ParseException e) {
-                System.out.println("getModels returned");
+                System.out.println("getModels returned from cloud function");
                 if (e == null) {
                     System.out.println(result.toString());
                     ArrayList<CarModel> resultSet = (ArrayList<CarModel>) result.get("resultSet");
                     ArrayList<Object> distinctModels = (ArrayList<Object>) result.get("distinctModels");
                     setModelList(resultSet);
                     updateSpinnerList(model, distinctModels);
+                    if (!makerModels.containsKey(make)) {
+                        makerModels.put(make, resultSet);
+                    }
+                    if (!makerModelNames.containsKey(make)) {
+                        makerModelNames.put(make, distinctModels);
+                    }
                 } else {
                     switch (e.getCode()) {
                         case 141:
@@ -232,6 +251,34 @@ public class AddCarActivity extends ActionBarActivity {
         }
     }
 
+    private String getCurrentMaker() {
+        return maker.getSelectedItem().toString();
+    }
+
+    private String getCurrentModel() {
+        return model.getSelectedItem().toString();
+    }
+
+    private Number getCurrentEngine() {
+        return (Number)engine.getSelectedItem();
+    }
+
+    private Number getCurrentYear() {
+        return (Number)year.getSelectedItem();
+    }
+
+    private Fuel getCurrentFuel() {
+        return (Fuel)fuel.getSelectedItem();
+    }
+
+    private Gear getCurrentGear() {
+        return (Gear)gear.getSelectedItem();
+    }
+
+    private String getCarNumber() {
+        return number.getText().toString().trim();
+    }
+
     private AdapterView.OnItemSelectedListener getListener(final SpinnerType type) {
         return new AdapterView.OnItemSelectedListener() {
             @Override
@@ -241,19 +288,25 @@ public class AddCarActivity extends ActionBarActivity {
                 if (position > 0) {
                     switch (type) {
                         case maker:
-                            getModels(value.toString());
+                            String maker = value.toString();
+                            getModels(maker);
                             break;
                         case model:
-                            getEngines(value.toString());
+                            String model = value.toString();
+                            getEngines(model);
                             break;
                         case engine:
-                            getYears(value.toString(), model.getSelectedItem().toString());
+                            Number engine = (Number)value;
+                            getYears(getCurrentModel(), engine);
                             break;
                         case year:
-                            getGears(value.toString());
+                            Number year = (Number)value;
+                            getCurrentEngine();
+                            getGears(getCurrentModel(), getCurrentEngine(), year);
                             break;
                         case gear:
-                            getFuels(value.toString());
+                            Gear gear = (Gear)value;
+                            getFuels(getCurrentModel(), getCurrentEngine(), getCurrentYear(), gear);
                             break;
                         case fuel:
                             button.setEnabled(true);
@@ -272,51 +325,92 @@ public class AddCarActivity extends ActionBarActivity {
     public void getEngines(String model) {
         ArrayList<Object> engines = new ArrayList<>();
         for (CarModel currentModel : modelList) {
-            if (currentModel.getModel().equals(model)) {
+            if (currentModel.getModel().equals(model) && !engines.contains(currentModel.getVolume())) {
                 engines.add(currentModel.getVolume());
             }
         }
         updateSpinnerList(engine, engines);
     }
 
-    public void getYears(String engine, String model) {
+    public void getYears(String model, Number engine) {
         ArrayList<Object> years = new ArrayList<>();
         for (CarModel currentModel : modelList) {
-            if (currentModel.getModel().equals(model) && currentModel.getVolume().toString().equals(engine)) {
+            if (currentModel.getModel().equals(model)
+                    && currentModel.getVolume().equals(engine)
+                    && !years.contains(currentModel.getYear())) {
                 years.add(currentModel.getYear());
             }
         }
         updateSpinnerList(year, years);
     }
 
-    public void getFuels(String model) {
+
+    public void getGears(String model, Number engine, Number year) {
+        ArrayList<Object> gears = new ArrayList<>();
+        for (CarModel currentModel : modelList) {
+            if (currentModel.getModel().equals(model)
+                    && currentModel.getVolume().equals(engine)
+                    && currentModel.getYear().equals(year)
+                    && !gears.contains(currentModel.getGear())) {
+                gears.add(currentModel.getGear());
+            }
+        }
+        updateSpinnerList(gear, gears);
+    }
+
+    public void getFuels(String model, Number engine, Number year, Gear gear) {
         ArrayList<Object> fuels = new ArrayList<>();
-        fuels.addAll(Arrays.asList(Fuel.values()));
+        for (CarModel currentModel : modelList) {
+            if (currentModel.getModel().equals(model)
+                    && currentModel.getVolume().equals(engine)
+                    && currentModel.getYear().equals(year)
+                    && currentModel.getGear().equals(gear)
+                    && !fuels.contains(currentModel.getFuelType())) {
+                fuels.add(currentModel.getFuelType());
+            }
+        }
         updateSpinnerList(fuel, fuels);
     }
 
-    public void getGears(String model) {
-        ArrayList<Object> gears = new ArrayList<>();
-        gears.addAll(Arrays.asList(Gear.values()));
-        updateSpinnerList(gear, gears);
+    private CarModel getModel() {
+        for (CarModel model : modelList) {
+            if (model.getMake().equals(getCurrentMaker())
+                    && model.getModel().equals(getCurrentModel())
+                    && model.getVolume().equals(getCurrentEngine())
+                    && model.getYear().equals(getCurrentYear())
+                    && model.getGear().equals(getCurrentGear())
+                    && model.getFuelType().equals(getCurrentFuel())) {
+                //return model;
+                return ParseObject.createWithoutData(CarModel.class, model.getObjectId());
+            }
+        }
+        return ParseObject.createWithoutData(CarModel.class, Consts.OBJECTID_NULL);
     }
 
     private class AddCarListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            CarModel carModel = new CarModel();
-            carModel.setMake((String)maker.getSelectedItem());
-            carModel.setModel((String) model.getSelectedItem());
-            carModel.setVolume((Number)engine.getSelectedItem());
-            carModel.setYear((Number)year.getSelectedItem());
-            carModel.setGear((Gear)gear.getSelectedItem());
-            carModel.setHybrid(hybrid.isChecked());
-            carModel.setFuel((Fuel)fuel.getSelectedItem());
-
+            ArrayList<String> error = new ArrayList<>();
+            CarModel model = getModel();
+            String number = getCarNumber();
+            User user = (User)ParseUser.getCurrentUser();
+            if (model.getObjectId().equals(Consts.OBJECTID_NULL)) {
+                error.add("Invalid car model");
+            }
+            if (number.length() != 7) {
+                error.add("Car number must be exactly 7 digits long");
+            }
+            if (user == null) {
+                error.add("You must be logged in to add a new car");
+            }
+            if (error.size() > 0) {
+                MainActivity.createErrorAlert(error, AddCarActivity.this).show();
+                return;
+            }
             Car car = new Car();
-            car.setModel(carModel);
-            car.setOwner((User) ParseUser.getCurrentUser());
-            car.setCarNumber(number.getText().toString().trim());
+            car.setModel(model);
+            car.setOwner(user);
+            car.setCarNumber(number);
             car.setMileage(0);
 
             car.saveEventually(new SaveCallback() {
