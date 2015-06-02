@@ -81,13 +81,13 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             Number price = numberFromEditText(priceEditText);
             User user = (User) ParseUser.getCurrentUser();
             if (amount == 0) {
-                error.add("Cannot fuel with empty amount");
+                error.add(getString(R.string.amount_empty));
             }
             if (mileage == 0) {
-                error.add("Cannot fuel with empty mileage");
+                error.add(getString(R.string.mileage_empty));
             }
             if (price == 0) {
-                error.add("Cannot fuel for free (price 0)");
+                error.add(getString(R.string.price_empty));
             }
             if (!error.isEmpty()) {
                 MainActivity.createErrorAlert(error, context).show();

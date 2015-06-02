@@ -30,4 +30,14 @@
         android:layout_gravity="center_horizontal"
         android:layout_weight="0.03"
         android:onClick="doRegister" />
+
+    <Button
+        android:layout_width="247dp"
+        android:layout_height="wrap_content"
+        android:text="Login with Facebook"
+        android:id="@+id/facebook_login"
+        android:onClick="doFacebookLogin"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.03"
+        />
 </LinearLayout>
