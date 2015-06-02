@@ -3,6 +3,7 @@ package com.mty.groupfuel;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -42,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
     private SlidingTabLayout slidingTabLayout;
 
     public User getUser () {
-        return (User) user;
+        return (User)user;
     }
     public Car[] getCars(){
         return this.cars;
@@ -50,7 +51,6 @@ public class MainActivity extends ActionBarActivity {
 
     public void setCars(Car[] cars) {
         this.cars = cars;
-        //broadcastCarList();
     }
 
     public void broadcastCarList() {
@@ -86,6 +86,7 @@ public class MainActivity extends ActionBarActivity {
         slidingTabLayout.setViewPager(viewPager);
 
  		getOwnedCars();
+        user = ParseUser.getCurrentUser();
         //broadcastCarList();
 
         String action = getIntent().getAction();
@@ -133,6 +134,23 @@ public class MainActivity extends ActionBarActivity {
                     Car[] new_cars = new Car[result.size()];
                     for (int i = 0; i < result.size(); i++) {
                         new_cars[i] = (Car) result.get(i);
+                    }
+                    if (result.size() == 0) {
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setTitle("No cars found")
+                                .setMessage("You need at least one car to access this function. Would you want to add one now?")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        startActivity(new Intent(MainActivity.this, AddCarActivity.class));
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // do nothing
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
                     }
                     setCars(new_cars);
                     broadcastCarList();

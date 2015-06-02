@@ -18,18 +18,11 @@ import com.parse.ParseUser;
 
 public class WelcomeActivity extends Activity {
 
-//    Button loginButton;
-//    Button registerButton;
     private ProgressDialog progressDialog;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-
-//        loginButton = (Button) findViewById(R.id.login_button);
-//        registerButton = (Button) findViewById(R.id.register_button);
-
     }
 
     public void doLogin (View view) {
