@@ -1,96 +1,152 @@
 /**
  * Created by matansab on 5/21/2015.
  */
-app.controller('AddCarController', function ($scope, $modalInstance, $location, UserService) {
+app.controller('AddCarController', function ($scope, $modalInstance) {
+    // TODO remove console logs
     'use strict';
-    var cleanCarDetails = {
-        car_number : "",
-        mileage : ""
-    };
     var carDetails = {
         car_number: "",
         mileage: "",
         make: "",
-        model: ""
+        model: "",
+        volume: "",
+        fuelType: ""
     };
-    var selectedMake = "";
+
 
     (function () {
-        console.log('A');
         $scope.carDetails = angular.copy(carDetails);
-        //$scope.UserService = UserService;
         $scope.makes = [];
-        $scope.model = [];
-        console.log('B');
+        $scope.parseModels = [];
+        $scope.models = [];
+        $scope.volumes = [];
+        $scope.years = [];
+        $scope.fuelTypes = [];
+        $scope.markedDic = {};
+
         Parse.Cloud.run('getCarMakes', {}, {
             success: function (results) {
-                console.log('C');
-                if (results===undefined){
+                if (results === undefined) {
                     console.log('The query has failed');
                     return;
                 }
-                for (var i=0;i<results.length;i++){
+                for (var i = 0; i < results.length; i++) {
                     $scope.makes.push(results[i]);
                 }
                 $scope.$digest();
             },
             error: function () {
-                console.log('D');
-                // TODO - add notification error
                 console.log("Error: failed to Makes.");
                 console.log(Parse.Error);
             }
         });
     })();
 
-    //$scope.$watch('makes', updateCars );
-    $scope.$watch('carDetails.make', afterMakeSelected );
-    $scope.$watch('carDetails', afterMakeSelected );
+    $scope.$watch('carDetails.make', function (make) {
 
-    function afterMakeSelected() {
-        console.log($scope.carDetails.make);
-    }
-
-    $scope.addCar =  function () {
-
-
-    };
-    $scope.clearCarsForm = function (){
-
-    };
-
-    $scope.close = function (){
-
-    };
-
-    /*
-    $scope.doLogin = function () {
-        var details = $scope.loginDetails;
-        if (details.username == "" || details.password == "") {
+        if (String(make) == "") {
             return;
         }
-        if ($scope.UserService.logged) {
-            return;
-        }
-        Parse.User.logIn(details.username, details.password, {
-            success: function(user) {
-                console.log("login worked");
-                $scope.UserService.logged = true;
-                $scope.UserService.currentUser = user;
-                $modalInstance.close("user " + details.username + " logged in succesfully");
+        console.log('selected make is: ' + make);
+
+        disableFollowingSelects('make', 'model');
+
+        Parse.Cloud.run('getCarModels', {'Make': make}, {
+            success: function (results) {
+                $scope.parseModels = results.resultSet;
+                $scope.models = results.distinctModels;
+                console.log(results.distinctModels);
+                $scope.$digest();
             },
-            error: function(user, error) {
-                $scope.loginDetails.password = "";
-                console.log("login failed with error: " + error);
+            error: function () {
+                console.log("Error: Failed to load models");
+                console.log(Parse.Error);
             }
         });
+    });
+
+    $scope.$watch('carDetails.model', function (model) {
+        if (String(model) == "" || model === undefined)
+            return;
+
+        disableFollowingSelects('model', 'volume');
+
+        $scope.volumes = $scope.parseModels.filter(function (value) {
+            return value.get('Model') == model;
+        }).map(function (value) {
+            return value.get('Volume');
+        }).filter(removeDuplicates);
+
+        console.log('Volumes are:');
+        console.log($scope.volumes);
+    });
+
+    $scope.$watch('carDetails.volume', function (volume) {
+        if (String(volume) == "" || volume === undefined)
+            return;
+
+        disableFollowingSelects('volume', 'year');
+
+        $scope.years = $scope.parseModels.filter(function (value) {
+            var car = $scope.carDetails;
+            return value.get('Model') == car.model && value.get('Volume') == volume;
+        }).map(function (value) {
+            return value.get('Year');
+        }).filter(removeDuplicates);
+    });
+
+    $scope.$watch('carDetails.year', function (year) {
+        if (String(year) == "" || year === undefined)
+            return;
+
+        disableFollowingSelects('year', 'fuelType');
+
+        $scope.fuelTypes = $scope.parseModels.filter(function (value) {
+            var car = $scope.carDetails;
+            return value.get('Model') == car.model && value.get('Volume') == car.volume && value.get('Year') == year;
+        }).map(function (value) {
+            return value.get('FuelType');
+        }).filter(removeDuplicates);
+    });
+
+
+    $scope.addCar = function () {
+        // TODO Validate that all fields are filled
+        Parse.Cloud.run('addCar', {'carDetails': $scope.carDetails}, {
+            success: function (results) {
+                // TODO close the modal
+                console.log('Im here');
+                console.dir(results);
+                $scope.$digest();
+            },
+            error: function () {
+                console.log("Error: Failed to add a car");
+                console.log(Parse.Error);
+            }
+        });
+
+    };
+    $scope.clearCarsForm = function () {
+        $scope.markedDic['make'] = false;
+        $scope.markedDic['model'] = false;
+        $scope.markedDic['volume'] = false;
+        $scope.markedDic['year'] = false;
+
+        $scope.carDetails = angular.copy(carDetails);
     };
 
-    $scope.doCancel = function () {
-        // close modal
-        console.log("cancel login");
-        $modalInstance.dismiss('login canceled');
+    $scope.close = function () {
+        $modalInstance.close();
     };
-*/
-    // TODO - add forgot my password button
+
+    function removeDuplicates(value, index, array) {
+        return array.indexOf(value) == index;
+    }
+
+    function disableFollowingSelects(current, next) {
+        $scope.markedDic[current] = true;
+        $scope.markedDic[next] = false;
+        $scope.carDetails[next] = "";
+
+    }
 });

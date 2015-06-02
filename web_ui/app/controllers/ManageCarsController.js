@@ -14,9 +14,9 @@ app.controller('ManageCarsController', function ($scope, $filter, $modal, ngTabl
             sorting: {
                 make: 'asc'
             }
-        },  {
+        }, {
             total: 0,
-            getData: function($defer, params) {
+            getData: function ($defer, params) {
                 // Binding table's data. $scope.userCars == [] at initialization,
                 // so we actually not showing anything right now.
                 var data = $scope.userCars;
@@ -32,7 +32,7 @@ app.controller('ManageCarsController', function ($scope, $filter, $modal, ngTabl
      * Gets user's car list from server, refine it to a simpler json using refineCars()
      * and reloads table.
      */
-    function updateCars () {
+    function updateCars() {
         Parse.Cloud.run('getOwnedCars', {}, {
             success: function (results) {
                 refineCars(results);
@@ -47,7 +47,7 @@ app.controller('ManageCarsController', function ($scope, $filter, $modal, ngTabl
         });
     }
 
-    $scope.$watch('UserService.logged', updateCars );
+    $scope.$watch('UserService.logged', updateCars);
 
     /*
      * Private function - gets a list of parse car objects and
@@ -66,25 +66,26 @@ app.controller('ManageCarsController', function ($scope, $filter, $modal, ngTabl
             newCar.model = currentModel.get('Model');
             $scope.userCars[i] = angular.copy(newCar);
         }
-            $scope.numCars = $scope.userCars.length;
+        $scope.numCars = $scope.userCars.length;
     }
 
-    $scope.removeCar = function (car){
-        Parse.Cloud.run('removeCar',{'carNumber':car.carNumber},{
-            success: function(results){
+    $scope.removeCar = function (car) {
+        Parse.Cloud.run('removeCar', {'carNumber': car.carNumber}, {
+            success: function (results) {
                 updateCars();
             },
-            error: function() {
+            error: function () {
                 // TODO add notification error
                 console.log("Error: query failed in removeCar");
             }
         });
-    }
-    $scope.addCar = function (){
+    };
+    $scope.addCar = function () {
         console.log('in add a car');
         var modalInstance = $modal.open({
-            templateUrl:'web_ui/app/partials/addCar.html',
-            controller : 'AddCarController'
+            templateUrl: 'web_ui/app/partials/addCar.html',
+            controller: 'AddCarController',
+            backdrop: 'static'
         });
         modalInstance.result.then(
             function (res) {

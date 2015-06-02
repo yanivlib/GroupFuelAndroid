@@ -1,39 +1,83 @@
-<div class="modal-header">
-    <h3 class="modal-title">Add A Car</h3>
+<div class="modal-header>">
+    <h3 class="modal-title">Add a Car</h3>
 </div>
 <div class="modal-body">
     <form>
         <fieldset>
             <div class="form-group required center-block">
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <label class="control-label" for="car_number">Car Number </label>
-                        <input class="form-control col-md-2" required="required" id="car_number" type="text"
+                        <input class="form-control col-md-3" required="required" id="car_number" type="text"
                                ng-model="carDetails.car_number" placeholder="Car Number">
                     </div>
-                    <div class="col-md-5">
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
                         <label class="control-label" for="MakeSelect">Make </label>
                         <select class="form-control col-md-2" id="MakeSelect" name="make" ui-select2
                                 ng-model="carDetails.make">
+                            <option ng-if="!carDetails.make" value="">[SELECT]</option>
                             <option ng-repeat="make in makes" value="{{ make }}">{{ make}}</option>
                         </select>
                     </div>
-                    <div class="col-md-5">
-                    <label class="control-label" for="ModelSelect">Model </label>
-                    <select class="form-control col-md-2" id="ModelSelect" name="make" ui-select2
-                            ng-model="carDetails.make">
-                        <option ng-repeat="model in models" value="{{ model }}">{{ make}}</option>
-                    </select>
                 </div>
-                <div class="col-md-5">
-                    <label for="mileage">Mileage</label>
-                    <input class="form-control col-md-2" id="mileage" type="text" ng-model="carDetails.mileage">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <label class="control-label" for="ModelSelect">Model </label>
+                        <select ng-disabled="markedDic['make']!=true" class="form-control col-md-2" id="ModelSelect"
+                                name="model" ui-select2
+                                ng-model="carDetails.model">
+                            <option ng-if="!carDetails.model" value="">[SELECT]</option>
+                            <option ng-repeat="model in models" value="{{ model }}">{{ model}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <label class="control-label" for="VolumeSelect">Engine </label>
+                        <select ng-disabled="markedDic['model'] != true" class="form-control col-md-2" id="VolumeSelect"
+                                name="volume" ui-select2
+                                ng-model="carDetails.volume">
+                            <option ng-if="!carDetails.volume" value="">[SELECT]</option>
+                            <option ng-repeat="volume in volumes" value="{{ volume }}">{{ volume }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <label class="control-label" for="YearSelect">Year </label>
+                        <select ng-disabled="markedDic['volume'] != true" class="form-control col-lg-4" id="YearSelect"
+                                name="year" ui-select2
+                                ng-model="carDetails.year">
+                            <option ng-if="!carDetails.year" value="">[SELECT]</option>
+                            <option ng-repeat="year in years" value="{{ year }}">{{ year }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <label class="control-label" for="FuelTypeSelect">Fuel Type </label>
+                        <select ng-disabled="markedDic['year'] != true" class="form-control col-md-2"
+                                id="FuelTypeSelect"
+                                name="fuelType" ui-select2
+                                ng-model="carDetails.fuelType">
+                            <option ng-if="!carDetails.fuelType" value="">[SELECT]</option>
+                            <option ng-repeat="fuelType in fuelTypes" value="{{ fuelType }}">{{ fuelType }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <label for="mileage">Mileage</label>
+                        <input class="form-control col-md-2" id="mileage" type="number" ng-model="carDetails.mileage">
+                    </div>
                 </div>
             </div>
+        </fieldset>
+    </form>
 </div>
-</fieldset>
-</form>
-</div>
+
 <div class="modal-footer">
     <button class="btn btn-primary" ng-click="addCar()">Add</button>
     <button class="btn btn-default" ng-click="clearCarsForm()">Clear</button>
