@@ -101,7 +101,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             fueling.setMileage(mileage);
             fueling.setPrice(price);
             fueling.setUser(user);
-            fueling.setFuelType((Fuel) fuelSpinner.getSelectedItem());
+            fueling.setFuelType((Fuel)fuelSpinner.getSelectedItem());
             fueling.put("Car", ParseObject.createWithoutData("Car", selectedCar.getObjectId()));
             fueling.saveEventually();
 
