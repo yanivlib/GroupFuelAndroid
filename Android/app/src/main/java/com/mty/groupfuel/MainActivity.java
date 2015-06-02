@@ -43,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
     private SlidingTabLayout slidingTabLayout;
 
     public User getUser () {
-        return (User) user;
+        return (User)user;
     }
     public Car[] getCars(){
         return this.cars;
@@ -51,7 +51,6 @@ public class MainActivity extends ActionBarActivity {
 
     public void setCars(Car[] cars) {
         this.cars = cars;
-        //broadcastCarList();
     }
 
     public void broadcastCarList() {
@@ -87,6 +86,7 @@ public class MainActivity extends ActionBarActivity {
         slidingTabLayout.setViewPager(viewPager);
 
  		getOwnedCars();
+        user = ParseUser.getCurrentUser();
         //broadcastCarList();
 
         String action = getIntent().getAction();

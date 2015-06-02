@@ -93,6 +93,9 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
                 MainActivity.createErrorAlert(error, context).show();
                 return;
             }
+            if (fuelSpinner.getSelectedItemPosition() == 0) {
+                error.add("Please select fuel type");
+            }
             Fueling fueling = new Fueling();
             fueling.setAmount(amount);
             fueling.setMileage(mileage);
