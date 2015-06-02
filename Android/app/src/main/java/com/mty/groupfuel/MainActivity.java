@@ -37,7 +37,7 @@ import java.util.HashMap;
 public class MainActivity extends ActionBarActivity {
 
     static private ParseUser user;
-    private Car[] cars;
+    private ArrayList<Car> cars;
     private FragmentPagerAdapter fragmentPagerAdapter;
     private ViewPager viewPager;
     private SlidingTabLayout slidingTabLayout;
@@ -45,22 +45,23 @@ public class MainActivity extends ActionBarActivity {
     public User getUser () {
         return (User)user;
     }
-    public Car[] getCars(){
+    public ArrayList<Car> getCars(){
         return this.cars;
     }
 
-    public void setCars(Car[] cars) {
+    public void setCars(ArrayList<Car> cars) {
         this.cars = cars;
     }
 
     public void broadcastCarList() {
+        System.out.println("calling broadcastCarList, while cars length is " + this.cars.size());
         FuelingFragment fuelingFragment = (FuelingFragment)fragmentPagerAdapter.getRegisteredFragment(1);
         if (fuelingFragment != null) {
             fuelingFragment.updateCars(cars);
         }
         SettingsFragment settingsFragment = (SettingsFragment)fragmentPagerAdapter.getRegisteredFragment(2);
         if (settingsFragment != null) {
-            settingsFragment.updateCarList(cars);
+            settingsFragment.setCars(cars);
         }
     }
 
@@ -87,7 +88,7 @@ public class MainActivity extends ActionBarActivity {
 
  		getOwnedCars();
         user = ParseUser.getCurrentUser();
-        //broadcastCarList();
+        //getUsage();
 
         String action = getIntent().getAction();
         if (action != null) {
@@ -131,28 +132,24 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void done(ArrayList result, ParseException e) {
                 if (e == null) {
-                    Car[] new_cars = new Car[result.size()];
-                    for (int i = 0; i < result.size(); i++) {
-                        new_cars[i] = (Car) result.get(i);
-                    }
                     if (result.size() == 0) {
                         new AlertDialog.Builder(MainActivity.this)
-                                .setTitle("No cars found")
-                                .setMessage("You need at least one car to access this function. Would you want to add one now?")
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        startActivity(new Intent(MainActivity.this, AddCarActivity.class));
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // do nothing
-                                    }
-                                })
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
+                            .setTitle("No cars found")
+                            .setMessage("You need at least one car to access this function. Would you want to add one now?")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(MainActivity.this, AddCarActivity.class));
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // do nothing
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
                     }
-                    setCars(new_cars);
+                    setCars(result);
                     broadcastCarList();
                 } else {
                     switch (e.getCode()) {
@@ -162,6 +159,20 @@ public class MainActivity extends ActionBarActivity {
                         default:
                             throw new RuntimeException(e.getMessage());
                     }
+                }
+            }
+        });
+    }
+
+
+    private void getUsage() {
+        ParseCloud.callFunctionInBackground("getUsage", new HashMap<String, Object>(), new FunctionCallback<Object>() {
+            @Override
+            public void done(Object o, ParseException e) {
+                if (e == null) {
+                    System.out.println("getUsage success");
+                } else {
+                    System.out.println(e.getMessage());
                 }
             }
         });

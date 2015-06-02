@@ -21,7 +21,11 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     ExpandableListView expListView;
     List<String> listDataHeader;
     HashMap<String, List<Object>> listDataChild;
-    Car[] cars;
+    ArrayList<Car> cars;
+
+    List<Object> carList;
+    List<Object> personalList;
+    List<Object> accountList;
 
     public static SettingsFragment newInstance() {
         SettingsFragment fragment = new SettingsFragment();
@@ -37,9 +41,9 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setCars(((MainActivity) getActivity()).getCars());
+        cars = new ArrayList<>();
         prepareListData();
-
+        setCars(((MainActivity) getActivity()).getCars());
     }
 
     private void findViewsById(View view) {
@@ -57,20 +61,31 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         return view;
     }
 
-    public void setCars(Car[] cars) {
-       this.cars = cars;
+    public void setCars(ArrayList<Car> cars) {
+        if (this.cars == null) {
+            this.cars = new ArrayList<>();
+        }
+        this.cars.clear();
+        this.cars.addAll(cars);
+        updateCarList();
     }
 
-    public void updateCarList(Car[] cars) {
-        //setCars(((MainActivity) getActivity()).getCars());
-        setCars(cars);
-        List<Object> carList = listDataChild.get(getString(R.string.manage_cars));
-        if (carList == null) {
-            return;
-        }
+    public void updateCarList() {
         carList.clear();
-        for (Car car : cars) {
-            carList.add(car);
+        carList.addAll(this.cars);
+        carList.add(Consts.BUTTON_ADDREMOVE);
+    }
+
+    private void updatePersonalList() {
+        personalList.add(getString(R.string.change_password));
+        personalList.add(getString(R.string.change_notifications));
+    }
+
+    private void updateAccountList() {
+        accountList.add(Consts.BUTTON_UPDATE);
+        accountList.add(Consts.BUTTON_LOGOUT);
+        if (!ParseFacebookUtils.isLinked(ParseUser.getCurrentUser())) {
+            accountList.add(Consts.BUTTON_FACEBOOK);
         }
     }
 
@@ -82,28 +97,16 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         listDataHeader.add(getString(R.string.change_personal));
         listDataHeader.add(getString(R.string.account_settings));
 
-        List<Object> carList = new ArrayList<>();
-        updateCarList(cars);
-        if (cars != null) {
-            for (Car car : cars) {
-                carList.add(car);
-            }
-        }
-        carList.add(Consts.BUTTON_ADDREMOVE);
+        carList = new ArrayList<>();
+        personalList = new ArrayList<>();
+        accountList = new ArrayList<>();
 
-        List<Object> b = new ArrayList<>();
-        b.add(getString(R.string.change_password));
-        b.add(getString(R.string.change_notifications));
-
-        List<Object> c = new ArrayList<>();
-        c.add(Consts.BUTTON_UPDATE);
-        c.add(Consts.BUTTON_LOGOUT);
-        if (!ParseFacebookUtils.isLinked(ParseUser.getCurrentUser())) {
-            c.add(Consts.BUTTON_FACEBOOK);
-        }
+        updateCarList();
+        updatePersonalList();
+        updateAccountList();
 
         listDataChild.put(listDataHeader.get(0), carList);
-        listDataChild.put(listDataHeader.get(1), b);
-        listDataChild.put(listDataHeader.get(2), c);
+        listDataChild.put(listDataHeader.get(1), personalList);
+        listDataChild.put(listDataHeader.get(2), accountList);
     }
 }

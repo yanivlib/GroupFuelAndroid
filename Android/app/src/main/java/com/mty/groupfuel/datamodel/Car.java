@@ -24,10 +24,7 @@ public class Car extends ParseObject {
     public CarModel getModel() {
         CarModel model;
         try {
-            model = (CarModel)getParseObject("Model");
-            if (model != null) {
-                model.fetchIfNeeded();
-            }
+            model = getParseObject("Model").fetchIfNeeded();
         } catch (ParseException e) {
             throw new RuntimeException(e.getMessage());
         }

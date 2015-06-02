@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class FuelingFragment extends android.support.v4.app.Fragment {
-    private Car[] cars;
+    private ArrayList<Car> cars;
     Context context;
 
     private EditText mileageEditText;
@@ -37,6 +37,14 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     private Car selectedCar;
 
     private Button sendButton;
+
+    public void setCars(ArrayList<Car> cars) {
+        if (this.cars == null) {
+            this.cars = new ArrayList<>();
+        }
+        this.cars.clear();
+        this.cars.addAll(cars);
+    }
 
     public FuelingFragment() {
     }
@@ -58,7 +66,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
                 if (pos > 0) {
                     sendButton.setEnabled(true);
                     try {
-                        selectedCar = cars[pos - 1];
+                        selectedCar = cars.get(pos - 1);
                     } catch (NullPointerException e) {
                         selectedCar = new Car();
                     }
@@ -145,13 +153,13 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     private String[] getCarNames() {
         String[] carNames;
         try {
-            carNames = new String[cars.length];
+            carNames = new String[cars.size()];
         } catch (java.lang.NullPointerException e) {
             carNames = new String[0];
         }
 
         for(int i = 0; i < carNames.length; i++) {
-            carNames[i] = cars[i].getDisplayName();
+            carNames[i] = cars.get(i).getDisplayName();
         }
         return carNames;
     }
@@ -183,16 +191,17 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
 
     }
 
-    public void updateCars(Car[] cars) {
-        String[] carNames = new String[cars.length];
-        this.cars = new Car[cars.length];
-        for(int i = 0; i < cars.length; i++) {
-            carNames[i] = cars[i].getDisplayName();
-            this.cars[i] = cars[i];
+    public void updateCars(ArrayList<Car> cars) {
+        ArrayList<String> carNames = new ArrayList<>();
+        setCars(cars);
+        this.cars.clear();
+        this.cars.addAll(cars);
+        for(Car car : this.cars) {
+            carNames.add(car.getDisplayName());
         }
         ArrayAdapter<String> carSpinnerAdapter = (ArrayAdapter)carSpinner.getAdapter();
         carSpinnerAdapter.clear();
         carSpinnerAdapter.add(getString(R.string.please_select));
-        carSpinnerAdapter.addAll(Arrays.asList(carNames));
+        carSpinnerAdapter.addAll(carNames);
     }
 }
