@@ -22,9 +22,10 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class FuelingFragment extends android.support.v4.app.Fragment {
-    private ArrayList<Car> cars;
+    private List<Car> cars;
     Context context;
 
     private EditText mileageEditText;
@@ -38,7 +39,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
 
     private Button sendButton;
 
-    public void setCars(ArrayList<Car> cars) {
+    public void setCars(List<Car> cars) {
         if (this.cars == null) {
             this.cars = new ArrayList<>();
         }
@@ -83,7 +84,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     private class SendListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            ArrayList<String> error = new ArrayList<>();
+            List<String> error = new ArrayList<>();
             Number amount = numberFromEditText(amountEditText);
             Number mileage = numberFromEditText(mileageEditText);
             Number price = numberFromEditText(priceEditText);
@@ -138,7 +139,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     }
 
     private void attachAdapter(View view, Class c, Object[] array, Spinner spinner) {
-        ArrayList<Object> arrayList = new ArrayList<>();
+        List<Object> arrayList = new ArrayList<>();
         arrayList.add(getString(R.string.please_select));
         for (Object object : array) {
             arrayList.add(object);
@@ -191,8 +192,8 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
 
     }
 
-    public void updateCars(ArrayList<Car> cars) {
-        ArrayList<String> carNames = new ArrayList<>();
+    public void updateCars(List<Car> cars) {
+        List<String> carNames = new ArrayList<>();
         setCars(cars);
         this.cars.clear();
         this.cars.addAll(cars);

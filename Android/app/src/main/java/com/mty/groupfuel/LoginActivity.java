@@ -19,6 +19,7 @@ import com.parse.ParseUser;
 import android.content.Intent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class LoginActivity extends ActionBarActivity {
@@ -67,7 +68,7 @@ public class LoginActivity extends ActionBarActivity {
         String password = passwordET.getText().toString().trim();
         usernameET.setText("");
         passwordET.setText("");
-        ArrayList<String> error = new ArrayList<>();
+        List<String> error = new ArrayList<>();
         if (username.isEmpty()) {
             error.add(getResources().getString(R.string.username_empty));
         }

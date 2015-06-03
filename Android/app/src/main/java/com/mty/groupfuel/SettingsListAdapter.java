@@ -27,15 +27,16 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SettingsListAdapter extends BaseExpandableListAdapter{
     private final int CHILD_TYPE_COUNT = 4;
     private Context context;
     private List<String> listDataHeader;
-    private HashMap<String, List<Object>> listDataChild;
-    private ArrayList<CheckBox> checkBoxArrayList;
+    private Map<String, List<Object>> listDataChild;
+    private List<CheckBox> checkBoxArrayList;
 
-    public SettingsListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<Object>> listDataChild) {
+    public SettingsListAdapter(Context context, List<String> listDataHeader, Map<String, List<Object>> listDataChild) {
         this.context = context;
         this.listDataHeader = listDataHeader;
         this.listDataChild = listDataChild;
@@ -207,33 +208,31 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
     }
     private View.OnClickListener updatePersonal(final Context context) {
         return new View.OnClickListener() {
-            final Context mcontext = context;
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mcontext, PersonalActivity.class);
+                Intent intent = new Intent(context, PersonalActivity.class);
                 intent.putExtra(Consts.PARENT_ACTIVITY_NAME, SettingsFragment.class.getName());
-                mcontext.startActivity(intent);
+                context.startActivity(intent);
             }
         };
     }
 
     private View.OnClickListener signOut(final Context context) {
         return new View.OnClickListener() {
-            final Context mcontext = context;
             ProgressDialog progress;
 
             @Override
             public void onClick(View view) {
-                new AlertDialog.Builder(mcontext)
+                new AlertDialog.Builder(context)
                     .setMessage("Are you sure you want to log out?")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            progress = ProgressDialog.show(mcontext, "Logging you out", "Please Wait...");
+                            progress = ProgressDialog.show(context, "Logging you out", "Please Wait...");
                             ParseUser.logOutInBackground(new LogOutCallback() {
                                 @Override
                                 public void done(ParseException e) {
                                     progress.dismiss();
-                                    mcontext.startActivity(new Intent(mcontext, DispatchActivity.class));
+                                    context.startActivity(new Intent(context, DispatchActivity.class));
                                 }
                             });
                         }
@@ -250,7 +249,7 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
     }
     private View.OnClickListener linkFacebook(final ParseUser user, final Context context) {
         return new View.OnClickListener() {
-            Activity activity = (Activity) context;
+            Activity activity = (Activity)context;
             @Override
             public void onClick(View v) {
                 v.setEnabled(false);

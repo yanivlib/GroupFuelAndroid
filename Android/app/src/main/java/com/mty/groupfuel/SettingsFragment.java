@@ -14,14 +14,15 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SettingsFragment extends android.support.v4.app.Fragment {
 
     SettingsListAdapter listAdapter;
     ExpandableListView expListView;
     List<String> listDataHeader;
-    HashMap<String, List<Object>> listDataChild;
-    ArrayList<Car> cars;
+    Map<String, List<Object>> listDataChild;
+    List<Car> cars;
 
     List<Object> carList;
     List<Object> personalList;
@@ -61,7 +62,7 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         return view;
     }
 
-    public void setCars(ArrayList<Car> cars) {
+    public void setCars(List<Car> cars) {
         if (this.cars == null) {
             this.cars = new ArrayList<>();
         }

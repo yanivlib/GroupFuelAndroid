@@ -32,12 +32,13 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
 
     static private ParseUser user;
-    private ArrayList<Car> cars;
+    private List<Car> cars;
     private FragmentPagerAdapter fragmentPagerAdapter;
     private ViewPager viewPager;
     private SlidingTabLayout slidingTabLayout;
@@ -45,11 +46,11 @@ public class MainActivity extends ActionBarActivity {
     public User getUser () {
         return (User)user;
     }
-    public ArrayList<Car> getCars(){
+    public List<Car> getCars(){
         return this.cars;
     }
 
-    public void setCars(ArrayList<Car> cars) {
+    public void setCars(List<Car> cars) {
         this.cars = cars;
     }
 
@@ -88,7 +89,6 @@ public class MainActivity extends ActionBarActivity {
 
  		getOwnedCars();
         user = ParseUser.getCurrentUser();
-        //getUsage();
 
         String action = getIntent().getAction();
         if (action != null) {
@@ -189,11 +189,11 @@ public class MainActivity extends ActionBarActivity {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert);
     }
-    public static AlertDialog.Builder createErrorAlert(ArrayList<String> list, String title,Context context) {
+    public static AlertDialog.Builder createErrorAlert(List<String> list, String title,Context context) {
         return createErrorAlert(catString(list), title, context);
     }
 
-    public static AlertDialog.Builder createErrorAlert(ArrayList<String> list,Context context) {
+    public static AlertDialog.Builder createErrorAlert(List<String> list,Context context) {
         return createErrorAlert(catString(list), context);
     }
 
@@ -208,7 +208,7 @@ public class MainActivity extends ActionBarActivity {
                 .setIcon(android.R.drawable.ic_dialog_alert);
     }
 
-    private static String catString (ArrayList<String> list) {
+    private static String catString (List<String> list) {
         String result = "";
         for (String string : list) {
             result += string;

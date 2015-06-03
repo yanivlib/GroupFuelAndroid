@@ -28,8 +28,44 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AddCarActivity extends ActionBarActivity {
+
+    private enum SpinnerType {
+        maker, model, engine, year, gear, fuel;
+
+        Spinner toSpinner(AddCarActivity addCarActivity) {
+            switch (this) {
+                case maker: return addCarActivity.maker;
+                case model: return addCarActivity.model;
+                case engine: return addCarActivity.engine;
+                case year: return addCarActivity.year;
+                case gear: return addCarActivity.gear;
+                case fuel: return addCarActivity.fuel;
+                default: return null;
+            }
+        }
+
+        static SpinnerType fromSpinner(Spinner spinner, final AddCarActivity addCarActivity) {
+            if (spinner == addCarActivity.maker) {
+                return maker;
+            } else if (spinner == addCarActivity.model) {
+                return model;
+            } else if (spinner == addCarActivity.engine) {
+                return engine;
+            } else if (spinner == addCarActivity.year) {
+                return year;
+            } else if (spinner == addCarActivity.gear) {
+                return gear;
+            } else if (spinner == addCarActivity.fuel) {
+                return fuel;
+            } else {
+                return null;
+            }
+        }
+    }
 
     private Spinner maker;
     private Spinner model;
@@ -43,13 +79,13 @@ public class AddCarActivity extends ActionBarActivity {
 
     private Spinner spinners[];
 
-    private ArrayList<CarModel> modelList;
-    private HashMap<String, ArrayList<CarModel>> makerModels;
-    private HashMap<String, ArrayList<Object>> makerModelNames;
+    private List<CarModel> modelList;
+    private Map<String, List<CarModel>> makerModels;
+    private Map<String, List<Object>> makerModelNames;
 
     private String pleaseSelect;
 
-    public void setModelList(ArrayList<CarModel> modelList) {
+    public void setModelList(List<CarModel> modelList) {
         this.modelList = modelList;
     }
 
@@ -128,7 +164,7 @@ public class AddCarActivity extends ActionBarActivity {
         }
     }
 
-    private void updateSpinnerList(Spinner spinner, ArrayList<Object> array) {
+    private void updateSpinnerList(Spinner spinner, List<Object> array) {
         ArrayAdapter<Object> adapter = (ArrayAdapter<Object>)spinner.getAdapter();
         adapter.clear();
         adapter.add(pleaseSelect);
@@ -140,9 +176,10 @@ public class AddCarActivity extends ActionBarActivity {
 
     private void attachAdapters() {
         for (Spinner spinner : spinners) {
-            ArrayList<String> array = new ArrayList<>();
+            List<String> array = new ArrayList<>();
             array.add(pleaseSelect);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, array);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                    this, android.R.layout.simple_spinner_item, array);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapter);
             spinner.setSelection(0);
@@ -158,7 +195,9 @@ public class AddCarActivity extends ActionBarActivity {
     }
 
     private void getMakers () {
-        ParseCloud.callFunctionInBackground(Consts.GET_CAR_MAKES, new HashMap<String, Object>(), new FunctionCallback<ArrayList<Object>>() {
+        ParseCloud.callFunctionInBackground(
+                Consts.GET_CAR_MAKES, new HashMap<String, Object>(),
+                new FunctionCallback<ArrayList<Object>>() {
             @Override
             public void done(ArrayList<Object> result, ParseException e) {
                 System.out.println("getmakers print");
@@ -185,7 +224,7 @@ public class AddCarActivity extends ActionBarActivity {
             System.out.println("getModels retrieved from memory");
             return;
         }
-        final HashMap<String, Object> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
         params.put(Consts.PARAMS_MAKE, make);
         System.out.println("getModels calls cloud function");
         ParseCloud.callFunctionInBackground(Consts.GET_CAR_MODELS, params, new FunctionCallback<HashMap>() {
@@ -194,8 +233,8 @@ public class AddCarActivity extends ActionBarActivity {
                 System.out.println("getModels returned from cloud function");
                 if (e == null) {
                     System.out.println(result.toString());
-                    ArrayList<CarModel> resultSet = (ArrayList<CarModel>) result.get("resultSet");
-                    ArrayList<Object> distinctModels = (ArrayList<Object>) result.get("distinctModels");
+                    ArrayList<CarModel> resultSet = (ArrayList<CarModel>)result.get("resultSet");
+                    ArrayList<Object> distinctModels = (ArrayList<Object>)result.get("distinctModels");
                     setModelList(resultSet);
                     updateSpinnerList(model, distinctModels);
                     if (!makerModels.containsKey(make)) {
@@ -217,39 +256,7 @@ public class AddCarActivity extends ActionBarActivity {
         });
     }
 
-    private enum SpinnerType {
-        maker, model, engine, year, gear, fuel;
 
-        Spinner toSpinner(AddCarActivity addCarActivity) {
-            switch (this) {
-                case maker: return addCarActivity.maker;
-                case model: return addCarActivity.model;
-                case engine: return addCarActivity.engine;
-                case year: return addCarActivity.year;
-                case gear: return addCarActivity.gear;
-                case fuel: return addCarActivity.fuel;
-                default: return null;
-            }
-        }
-
-        static SpinnerType fromSpinner(Spinner spinner, final AddCarActivity addCarActivity) {
-            if (spinner == addCarActivity.maker) {
-                return maker;
-            } else if (spinner == addCarActivity.model) {
-                return model;
-            } else if (spinner == addCarActivity.engine) {
-                return engine;
-            } else if (spinner == addCarActivity.year) {
-                return year;
-            } else if (spinner == addCarActivity.gear) {
-                return gear;
-            } else if (spinner == addCarActivity.fuel) {
-                return fuel;
-            } else {
-                return null;
-            }
-        }
-    }
 
     private String getCurrentMaker() {
         return maker.getSelectedItem().toString();
@@ -323,22 +330,24 @@ public class AddCarActivity extends ActionBarActivity {
     }
 
     public void getEngines(String model) {
-        ArrayList<Object> engines = new ArrayList<>();
+        List<Object> engines = new ArrayList<>();
         for (CarModel currentModel : modelList) {
-            if (currentModel.getModel().equals(model) && !engines.contains(currentModel.getVolume())) {
-                engines.add(currentModel.getVolume());
+            Number volume = currentModel.getVolume();
+            if (currentModel.getModel().equals(model) && !engines.contains(volume)) {
+                engines.add(volume);
             }
         }
         updateSpinnerList(engine, engines);
     }
 
     public void getYears(String model, Number engine) {
-        ArrayList<Object> years = new ArrayList<>();
+        List<Object> years = new ArrayList<>();
         for (CarModel currentModel : modelList) {
+            Number year = currentModel.getYear();
             if (currentModel.getModel().equals(model)
                     && currentModel.getVolume().equals(engine)
-                    && !years.contains(currentModel.getYear())) {
-                years.add(currentModel.getYear());
+                    && !years.contains(year)) {
+                years.add(year);
             }
         }
         updateSpinnerList(year, years);
@@ -346,27 +355,29 @@ public class AddCarActivity extends ActionBarActivity {
 
 
     public void getGears(String model, Number engine, Number year) {
-        ArrayList<Object> gears = new ArrayList<>();
+        List<Object> gears = new ArrayList<>();
         for (CarModel currentModel : modelList) {
+            Gear gear = currentModel.getGear();
             if (currentModel.getModel().equals(model)
                     && currentModel.getVolume().equals(engine)
                     && currentModel.getYear().equals(year)
-                    && !gears.contains(currentModel.getGear())) {
-                gears.add(currentModel.getGear());
+                    && !gears.contains(gear)) {
+                gears.add(gear);
             }
         }
         updateSpinnerList(gear, gears);
     }
 
     public void getFuels(String model, Number engine, Number year, Gear gear) {
-        ArrayList<Object> fuels = new ArrayList<>();
+        List<Object> fuels = new ArrayList<>();
         for (CarModel currentModel : modelList) {
+            Fuel fuel = currentModel.getFuelType();
             if (currentModel.getModel().equals(model)
                     && currentModel.getVolume().equals(engine)
                     && currentModel.getYear().equals(year)
                     && currentModel.getGear().equals(gear)
-                    && !fuels.contains(currentModel.getFuelType())) {
-                fuels.add(currentModel.getFuelType());
+                    && !fuels.contains(fuel)) {
+                fuels.add(fuel);
             }
         }
         updateSpinnerList(fuel, fuels);
@@ -390,7 +401,7 @@ public class AddCarActivity extends ActionBarActivity {
     private class AddCarListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            ArrayList<String> error = new ArrayList<>();
+            List<String> error = new ArrayList<>();
             CarModel model = getModel();
             String number = getCarNumber();
             User user = (User)ParseUser.getCurrentUser();
