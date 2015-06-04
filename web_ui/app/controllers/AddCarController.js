@@ -45,9 +45,8 @@ app.controller('AddCarController', function ($scope, $modalInstance) {
         if (String(make) == "") {
             return;
         }
-        if ($scope.carDetails['model'] != "") {
-            disableFollowingSelects('make', 'model');
-        }
+        disableFollowingSelects('make', 'model');
+
         Parse.Cloud.run('getCarModels', {'Make': make}, {
             success: function (results) {
                 $scope.parseModels = results.resultSet;
@@ -63,27 +62,32 @@ app.controller('AddCarController', function ($scope, $modalInstance) {
     $scope.$watch('carDetails.model', function (model) {
         if (String(model) == "" || model === undefined)
             return;
-        if ($scope.carDetails['volume'] != "") {
-            disableFollowingSelects('model', 'volume');
-        }
+        disableFollowingSelects('model', 'volume');
+
         fillDictionary($scope.modelsDic[model], $scope.volumesDic, 'Volume');
     });
 
     $scope.$watch('carDetails.volume', function (volume) {
         if (String(volume) == "" || volume === undefined)
             return;
-        if ($scope.carDetails['year'] != "") {
-            disableFollowingSelects('volume', 'year');
-        }
+        disableFollowingSelects('volume', 'year');
+
         fillDictionary($scope.volumesDic[volume], $scope.yearsDic, 'Year');
     });
 
     $scope.$watch('carDetails.year', function (year) {
         if (String(year) == "" || year === undefined)
             return;
-        if ($scope.carDetails['year'] != "") {
-            disableFollowingSelects('year', 'fuelType');
-        }
+        disableFollowingSelects('year', 'fuelType');
+
+        fillDictionary($scope.yearsDic[year], $scope.fuelTypesDic, 'FuelType');
+    });
+
+    $scope.$watch('carDetails.fuelType', function (year) {
+        if (String(year) == "" || year === undefined)
+            return;
+        disableFollowingSelects('fuelType', '');
+
         fillDictionary($scope.yearsDic[year], $scope.fuelTypesDic, 'FuelType');
     });
 
@@ -114,9 +118,9 @@ app.controller('AddCarController', function ($scope, $modalInstance) {
 
     };
     $scope.clearCarsForm = function () {
-        var marked = $scope.markedDic
+        var marked = $scope.markedDic;
         for (var key in marked) {
-            if (dictionary.hasOwnProperty(key)) {
+            if (marked.hasOwnProperty(key)) {
                 marked[key] = false;
             }
         }

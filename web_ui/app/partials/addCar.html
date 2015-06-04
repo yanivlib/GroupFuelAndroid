@@ -50,7 +50,7 @@
                         <select ng-disabled="markedDic['volume'] != true" class="form-control col-lg-4" id="YearSelect"
                                 name="year" ui-select2
                                 ng-model="carDetails.year">
-                            <option ng-if="!carDetails.year" value="">[SELECT]</option>
+                            <option ng-if="carDetails.year == ''" value="">[SELECT]</option>
                             <option ng-repeat="(year, value) in yearsDic" value="{{ year }}">{{ year }}</option>
                         </select>
                     </div>
