@@ -13,16 +13,15 @@ app.controller('AddCarController', function ($scope, $modalInstance) {
         fuelType: ""
     };
 
-
     (function () {
         $scope.carDetails = angular.copy(carDetails);
         $scope.makes = [];
         $scope.parseModels = [];
-        $scope.models = [];
-        $scope.volumes = [];
-        $scope.years = [];
-        $scope.fuelTypes = [];
         $scope.markedDic = {};
+        $scope.modelsDic = {};
+        $scope.volumesDic = {};
+        $scope.yearsDic = {};
+        $scope.fuelTypesDic = {};
 
         Parse.Cloud.run('getCarMakes', {}, {
             success: function (results) {
@@ -43,72 +42,60 @@ app.controller('AddCarController', function ($scope, $modalInstance) {
     })();
 
     $scope.$watch('carDetails.make', function (make) {
-
         if (String(make) == "") {
             return;
         }
-        console.log('selected make is: ' + make);
-
-        disableFollowingSelects('make', 'model');
-
+        if ($scope.carDetails['model'] != "") {
+            disableFollowingSelects('make', 'model');
+        }
         Parse.Cloud.run('getCarModels', {'Make': make}, {
             success: function (results) {
                 $scope.parseModels = results.resultSet;
-                $scope.models = results.distinctModels;
-                console.log(results.distinctModels);
+                fillDictionary($scope.parseModels, $scope.modelsDic, 'Model');
                 $scope.$digest();
             },
-            error: function () {
+            error: function (message) {
                 console.log("Error: Failed to load models");
-                console.log(Parse.Error);
+                console.log(Parse.Error + message);
             }
         });
     });
-
     $scope.$watch('carDetails.model', function (model) {
         if (String(model) == "" || model === undefined)
             return;
-
-        disableFollowingSelects('model', 'volume');
-
-        $scope.volumes = $scope.parseModels.filter(function (value) {
-            return value.get('Model') == model;
-        }).map(function (value) {
-            return value.get('Volume');
-        }).filter(removeDuplicates);
-
-        console.log('Volumes are:');
-        console.log($scope.volumes);
+        if ($scope.carDetails['volume'] != "") {
+            disableFollowingSelects('model', 'volume');
+        }
+        fillDictionary($scope.modelsDic[model], $scope.volumesDic, 'Volume');
     });
 
     $scope.$watch('carDetails.volume', function (volume) {
         if (String(volume) == "" || volume === undefined)
             return;
-
-        disableFollowingSelects('volume', 'year');
-
-        $scope.years = $scope.parseModels.filter(function (value) {
-            var car = $scope.carDetails;
-            return value.get('Model') == car.model && value.get('Volume') == volume;
-        }).map(function (value) {
-            return value.get('Year');
-        }).filter(removeDuplicates);
+        if ($scope.carDetails['year'] != "") {
+            disableFollowingSelects('volume', 'year');
+        }
+        fillDictionary($scope.volumesDic[volume], $scope.yearsDic, 'Year');
     });
 
     $scope.$watch('carDetails.year', function (year) {
         if (String(year) == "" || year === undefined)
             return;
-
-        disableFollowingSelects('year', 'fuelType');
-
-        $scope.fuelTypes = $scope.parseModels.filter(function (value) {
-            var car = $scope.carDetails;
-            return value.get('Model') == car.model && value.get('Volume') == car.volume && value.get('Year') == year;
-        }).map(function (value) {
-            return value.get('FuelType');
-        }).filter(removeDuplicates);
+        if ($scope.carDetails['year'] != "") {
+            disableFollowingSelects('year', 'fuelType');
+        }
+        fillDictionary($scope.yearsDic[year], $scope.fuelTypesDic, 'FuelType');
     });
 
+    function fillDictionary(fromArray, toDic, parseKey) {
+        for (var i = 0; i < fromArray.length; i++) {
+            var current = fromArray[i].get(parseKey);
+            if (toDic[current] === undefined) {
+                toDic[current] = [];
+            }
+            toDic[current].push(fromArray[i]);
+        }
+    }
 
     $scope.addCar = function () {
         // TODO Validate that all fields are filled
@@ -127,26 +114,35 @@ app.controller('AddCarController', function ($scope, $modalInstance) {
 
     };
     $scope.clearCarsForm = function () {
-        $scope.markedDic['make'] = false;
-        $scope.markedDic['model'] = false;
-        $scope.markedDic['volume'] = false;
-        $scope.markedDic['year'] = false;
-
+        var marked = $scope.markedDic
+        for (var key in marked) {
+            if (dictionary.hasOwnProperty(key)) {
+                marked[key] = false;
+            }
+        }
         $scope.carDetails = angular.copy(carDetails);
     };
-
     $scope.close = function () {
         $modalInstance.close();
     };
 
-    function removeDuplicates(value, index, array) {
-        return array.indexOf(value) == index;
-    }
 
     function disableFollowingSelects(current, next) {
         $scope.markedDic[current] = true;
-        $scope.markedDic[next] = false;
-        $scope.carDetails[next] = "";
-
+        switch (next) {
+            case 'model':
+                $scope.markedDic['model'] = false;
+                $scope.carDetails['model'] = "";
+            case 'volume':
+                $scope.markedDic['volume'] = false;
+                $scope.carDetails['volume'] = "";
+            case 'year':
+                $scope.markedDic['year'] = false;
+                $scope.carDetails['year'] = "";
+            case 'fuelType':
+                $scope.markedDic['fuelType'] = false;
+                $scope.carDetails['fuelType'] = "";
+                break;
+        }
     }
 });

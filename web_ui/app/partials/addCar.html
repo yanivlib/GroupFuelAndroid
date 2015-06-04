@@ -9,7 +9,7 @@
                     <div class="col-md-4">
                         <label class="control-label" for="car_number">Car Number </label>
                         <input class="form-control col-md-3" required="required" id="car_number" type="text"
-                               ng-model="carDetails.car_number" placeholder="Car Number">
+                               ng-model="carDetails.car_number" placeholder="e.g 11122233">
                     </div>
                 </div>
                 <div class="row">
@@ -29,7 +29,7 @@
                                 name="model" ui-select2
                                 ng-model="carDetails.model">
                             <option ng-if="!carDetails.model" value="">[SELECT]</option>
-                            <option ng-repeat="model in models" value="{{ model }}">{{ model}}</option>
+                            <option ng-repeat="(model, value) in modelsDic" value="{{ model }}">{{ model}}</option>
                         </select>
                     </div>
                 </div>
@@ -40,7 +40,7 @@
                                 name="volume" ui-select2
                                 ng-model="carDetails.volume">
                             <option ng-if="!carDetails.volume" value="">[SELECT]</option>
-                            <option ng-repeat="volume in volumes" value="{{ volume }}">{{ volume }}</option>
+                            <option ng-repeat="(volume, value) in volumesDic" value="{{ volume }}">{{ volume }}</option>
                         </select>
                     </div>
                 </div>
@@ -51,19 +51,19 @@
                                 name="year" ui-select2
                                 ng-model="carDetails.year">
                             <option ng-if="!carDetails.year" value="">[SELECT]</option>
-                            <option ng-repeat="year in years" value="{{ year }}">{{ year }}</option>
+                            <option ng-repeat="(year, value) in yearsDic" value="{{ year }}">{{ year }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-4">
                         <label class="control-label" for="FuelTypeSelect">Fuel Type </label>
-                        <select ng-disabled="markedDic['year'] != true" class="form-control col-md-2"
+                        <select ng-disabled="markedDic['fuelType'] != true" class="form-control col-md-2"
                                 id="FuelTypeSelect"
                                 name="fuelType" ui-select2
                                 ng-model="carDetails.fuelType">
                             <option ng-if="!carDetails.fuelType" value="">[SELECT]</option>
-                            <option ng-repeat="fuelType in fuelTypes" value="{{ fuelType }}">{{ fuelType }}</option>
+                            <option ng-repeat="(fuelType, value) in fuelTypesDic" value="{{ fuelType }}">{{ fuelType }}</option>
                         </select>
                     </div>
                 </div>
