@@ -233,8 +233,8 @@ public class AddCarActivity extends ActionBarActivity {
                 System.out.println("getModels returned from cloud function");
                 if (e == null) {
                     System.out.println(result.toString());
-                    ArrayList<CarModel> resultSet = (ArrayList<CarModel>)result.get("resultSet");
-                    ArrayList<Object> distinctModels = (ArrayList<Object>)result.get("distinctModels");
+                    ArrayList<CarModel> resultSet = (ArrayList<CarModel>) result.get("resultSet");
+                    ArrayList<Object> distinctModels = (ArrayList<Object>) result.get("distinctModels");
                     setModelList(resultSet);
                     updateSpinnerList(model, distinctModels);
                     if (!makerModels.containsKey(make)) {
@@ -300,20 +300,24 @@ public class AddCarActivity extends ActionBarActivity {
                             break;
                         case model:
                             String model = value.toString();
-                            getEngines(model);
+                            List<Object> engines = getEngines(model, modelList);
+                            updateSpinnerList(engine, engines);
                             break;
                         case engine:
                             Number engine = (Number)value;
-                            getYears(getCurrentModel(), engine);
+                            List<Object> years = getYears(getCurrentModel(), engine, modelList);
+                            updateSpinnerList(year, years);
                             break;
                         case year:
                             Number year = (Number)value;
                             getCurrentEngine();
-                            getGears(getCurrentModel(), getCurrentEngine(), year);
+                            List<Object> gears = getGears(getCurrentModel(), getCurrentEngine(), year, modelList);
+                            updateSpinnerList(gear, gears);
                             break;
                         case gear:
                             Gear gear = (Gear)value;
-                            getFuels(getCurrentModel(), getCurrentEngine(), getCurrentYear(), gear);
+                            List<Object> fuels = getFuels(getCurrentModel(), getCurrentEngine(), getCurrentYear(), gear, modelList);
+                            updateSpinnerList(fuel, fuels);
                             break;
                         case fuel:
                             button.setEnabled(true);
@@ -329,7 +333,7 @@ public class AddCarActivity extends ActionBarActivity {
         };
     }
 
-    public void getEngines(String model) {
+    private static List<Object> getEngines(String model, List<CarModel> modelList) {
         List<Object> engines = new ArrayList<>();
         for (CarModel currentModel : modelList) {
             Number volume = currentModel.getVolume();
@@ -337,10 +341,10 @@ public class AddCarActivity extends ActionBarActivity {
                 engines.add(volume);
             }
         }
-        updateSpinnerList(engine, engines);
+        return engines;
     }
 
-    public void getYears(String model, Number engine) {
+    private static List<Object> getYears(String model, Number engine, List<CarModel> modelList) {
         List<Object> years = new ArrayList<>();
         for (CarModel currentModel : modelList) {
             Number year = currentModel.getYear();
@@ -350,11 +354,12 @@ public class AddCarActivity extends ActionBarActivity {
                 years.add(year);
             }
         }
-        updateSpinnerList(year, years);
+        return years;
+
     }
 
 
-    public void getGears(String model, Number engine, Number year) {
+    private static List<Object> getGears(String model, Number engine, Number year, List<CarModel> modelList) {
         List<Object> gears = new ArrayList<>();
         for (CarModel currentModel : modelList) {
             Gear gear = currentModel.getGear();
@@ -365,10 +370,10 @@ public class AddCarActivity extends ActionBarActivity {
                 gears.add(gear);
             }
         }
-        updateSpinnerList(gear, gears);
+        return gears;
     }
 
-    public void getFuels(String model, Number engine, Number year, Gear gear) {
+    private static List<Object> getFuels(String model, Number engine, Number year, Gear gear, List<CarModel> modelList) {
         List<Object> fuels = new ArrayList<>();
         for (CarModel currentModel : modelList) {
             Fuel fuel = currentModel.getFuelType();
@@ -380,19 +385,23 @@ public class AddCarActivity extends ActionBarActivity {
                 fuels.add(fuel);
             }
         }
-        updateSpinnerList(fuel, fuels);
+        return fuels;
     }
 
     private CarModel getModel() {
-        for (CarModel model : modelList) {
-            if (model.getMake().equals(getCurrentMaker())
-                    && model.getModel().equals(getCurrentModel())
-                    && model.getVolume().equals(getCurrentEngine())
-                    && model.getYear().equals(getCurrentYear())
-                    && model.getGear().equals(getCurrentGear())
-                    && model.getFuelType().equals(getCurrentFuel())) {
-                //return model;
-                return ParseObject.createWithoutData(CarModel.class, model.getObjectId());
+        return getModel(getCurrentMaker(), getCurrentModel(), getCurrentEngine(),
+                getCurrentYear(), getCurrentGear(), getCurrentFuel(), modelList);
+    }
+
+    private static CarModel getModel(String maker, String model, Number volume, Number year, Gear gear, Fuel fuel, List<CarModel> modelList) {
+        for (CarModel carModel : modelList) {
+            if (carModel.getMake().equals(maker)
+                    && carModel.getModel().equals(model)
+                    && carModel.getVolume().equals(volume)
+                    && carModel.getYear().equals(year)
+                    && carModel.getGear().equals(gear)
+                    && carModel.getFuelType().equals(fuel)) {
+                return ParseObject.createWithoutData(CarModel.class, carModel.getObjectId());
             }
         }
         return ParseObject.createWithoutData(CarModel.class, Consts.OBJECTID_NULL);
