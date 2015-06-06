@@ -57,7 +57,7 @@ public class Car extends ParseObject {
 
     public String getDisplayName() {
         try {
-            return getCarNumber() + "(" + getModel().getMake() + ")";
+            return getCarNumber() + " (" + getModel().getMake() + ")";
         } catch (NullPointerException npe) {
             return "null object";
         }

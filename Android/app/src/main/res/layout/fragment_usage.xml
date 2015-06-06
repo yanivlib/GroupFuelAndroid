@@ -1,15 +1,38 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mty.groupfuel.UsageFragment">
+    android:stretchColumns="1"
+    android:id="@+id/displayTable">
+    <TableRow
+        android:id="@+id/usage_title_row"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment"
-        android:id="@+id/usage_text"/>
+        <TextView
+            android:text="@string/car_number"
+            android:gravity="right"
+            android:padding="3dip" />
 
-</FrameLayout>
+        <TextView
+            android:text="@string/total_price"
+            android:gravity="right"
+            android:padding="3dip" />
+
+        <TextView
+            android:text="@string/total_amount"
+            android:gravity="right"
+            android:padding="3dip" />
+
+        <TextView
+            android:text="@string/starting_mileage"
+            android:gravity="right"
+            android:padding="3dip" />
+
+        <TextView
+            android:text="@string/current_mileage"
+            android:gravity="right"
+            android:padding="3dip" />
+    </TableRow>
+
+</TableLayout>

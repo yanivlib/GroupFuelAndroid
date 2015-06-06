@@ -1,15 +1,19 @@
 package com.mty.groupfuel;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mty.groupfuel.datamodel.Car;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -20,43 +24,35 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link UsageFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link UsageFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class UsageFragment extends android.support.v4.app.Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private final static String STARTING_MILEAGE = "startingMileage";
+    private final static String TOTAL_PRICE = "totalPrice";
+    private final static String TOTAL_AMOUNT = "totalAmount";
+    private final static String NUM_OF_EVENTS = "numOfEvents";
+    private final static String CURRENT_MILEAGE = "currentMileage";
+
+    private TableLayout tl;
+    private Context context;
+
+    private Map<String,Map<String, Number>> datamap;
+    private List<Car> cars;
+
+    public void updateCars(List<Car> cars) {
+        this.cars = cars;
+        getUsage(cars);
+    }
 
     private OnFragmentInteractionListener mListener;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment UsageFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static UsageFragment newInstance(String param1, String param2) {
+    public static UsageFragment newInstance() {
         UsageFragment fragment = new UsageFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,26 +64,16 @@ public class UsageFragment extends android.support.v4.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        this.cars = new ArrayList<>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         View view = inflater.inflate(R.layout.fragment_usage, container, false);
-        TextView textView = (TextView) view.findViewById(R.id.usage_text);
-
-        getCarMakes();
-        getCarModels("Audi");
-        getOwnedCars();
-        getOwnedCars_2();
-
-        textView.setText("This is the new text\n");
+        context = view.getContext();
+        tl = (TableLayout) view.findViewById(R.id.displayTable);
         return view;
     }
 
@@ -99,7 +85,7 @@ public class UsageFragment extends android.support.v4.app.Fragment {
     }
 
 //    @Override
- //   public void onAttach(Activity activity) {
+    //   public void onAttach(Activity activity) {
 //        super.onAttach(activity);
 //        try {
 //            mListener = (OnFragmentInteractionListener) activity;
@@ -130,102 +116,76 @@ public class UsageFragment extends android.support.v4.app.Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
-    void getCarMakes() {
-        ParseCloud.callFunctionInBackground("getCarMakes", new HashMap<String, Object>(), new FunctionCallback<ArrayList>() {
+    public static JSONObject getPointer(String cls, String objectID) {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("__type", "Pointer");
+            result.put("className", cls);
+            result.put("objectId", objectID);
+        } catch (JSONException j) {
+            return null;
+        }
+        return result;
+    }
+
+    public void getUsage(final List<Car> cars) {
+        System.out.println("cars length is " + cars.size());
+        //ArrayList<Car> carPointers = new ArrayList<>();
+        JSONArray carPointers = new JSONArray();
+        for (Car car : cars) {
+            carPointers.put(getPointer("Car", car.getObjectId()));;
+        }
+        //final Map<String, ArrayList<Car>> params = new HashMap<>();
+        final Map<String, Object> params = new HashMap<>();
+        params.put("cars", carPointers);
+        ParseCloud.callFunctionInBackground("getUsage", params, new FunctionCallback<Map<String, Map<String, Number>>>() {
             @Override
-            public void done(ArrayList arrayList, ParseException e) {
+            public void done(Map<String, Map<String, Number>> result, ParseException e) {
                 if (e == null) {
-                    for(int i = 0; i < arrayList.size(); i++) {
-                        ParseObject parseObject = (ParseObject) arrayList.get(i);
-
-                        System.out.println("getCarMakes: ");
-                        System.out.println("as an array list, item (" + i + "): " + arrayList.get(i));
-                        System.out.println("make is: " + parseObject.getString("Make"));
-                    }
-
-                    System.out.println("got a response from parse cloud: " + arrayList.toString());
-                    Toast.makeText(getActivity().getBaseContext(), arrayList.toString(), Toast.LENGTH_LONG).show();
-                    //Toast.makeText(getBaseContext(), mapObject.toString(), Toast.LENGTH_LONG).show();
+                    datamap = result;
+                    populateTable(context, result, cars, tl);
                 } else {
-                    Toast.makeText(getActivity().getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                     System.out.println(e.getMessage());
                 }
             }
         });
     }
 
-    void getOwnedCars() {
-        ParseCloud.callFunctionInBackground("getOwnedCars", new HashMap<String, Object>(), new FunctionCallback<ArrayList>() {
-            @Override
-            public void done(ArrayList arrayList, ParseException e) {
-                if (e == null) {
-                    for(int i = 0; i < arrayList.size(); i++) {
-                        ParseObject parseObject = (ParseObject) arrayList.get(i);
-
-                        System.out.println("getOwnedCars: ");
-                        System.out.println("as an array list, item (" + i + "): " + arrayList.get(i));
-                        System.out.println("object is: " + parseObject.toString());
-
-                    }
-
-                    System.out.println("got a response from parse cloud: " + arrayList.toString());
-                    Toast.makeText(getActivity().getBaseContext(), arrayList.toString(), Toast.LENGTH_LONG).show();
-                    //Toast.makeText(getBaseContext(), mapObject.toString(), Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getActivity().getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                    System.out.println(e.getMessage());
-                }
-            }
-        });
+    private static TextView getTextView(Context context, String text) {
+        TextView result = new TextView(context);
+        result.setText(text);
+        return result;
     }
 
-    void getOwnedCars_2() {
-        ParseCloud.callFunctionInBackground("getOwnedCars_2", new HashMap<String, Object>(), new FunctionCallback<ArrayList>() {
-            @Override
-            public void done(ArrayList arrayList, ParseException e) {
-                if (e == null) {
-                    for(int i = 0; i < arrayList.size(); i++) {
-                        ParseObject parseObject = (ParseObject) arrayList.get(i);
-
-                        System.out.println("getOwnedCars_2: ");
-                        System.out.println("as an array list, item (" + i + "): " + arrayList.get(i));
-                        System.out.println("object is: " + parseObject.toString());
-
-                    }
-
-                    System.out.println("got a response from parse cloud: " + arrayList.toString());
-                    Toast.makeText(getActivity().getBaseContext(), arrayList.toString(), Toast.LENGTH_LONG).show();
-                    //Toast.makeText(getBaseContext(), mapObject.toString(), Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getActivity().getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                    System.out.println(e.getMessage());
-                }
-            }
-        });
+    private static TableRow getRow(Context context, List<String> list) {
+        TableRow row = new TableRow(context);
+        row.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT));
+        for (int i = 0; i < list.size(); i++) {
+            row.addView(getTextView(context,list.get(i)), i);
+        }
+        return row;
     }
 
-    void getCarModels(String make) {
-        final Map<String, String> params = new HashMap<>();
-        params.put("Make", make);
-        ParseCloud.callFunctionInBackground("getCarModels", params, new FunctionCallback<ArrayList>() {
-            @Override
-            public void done(ArrayList arrayList, ParseException e) {
-                if (e == null) {
-                    for(int i = 0; i < arrayList.size(); i++) {
-                        ParseObject parseObject = (ParseObject) arrayList.get(i);
-                        System.out.println("as an array list, item (" + i + "): " + arrayList.get(i));
-                        System.out.println("object is: " + parseObject.toString());
-
-                    }
-
-                    System.out.println("got a response from parse cloud: " + arrayList.toString());
-                    Toast.makeText(getActivity().getBaseContext(), arrayList.toString(), Toast.LENGTH_LONG).show();
-                    //Toast.makeText(getBaseContext(), mapObject.toString(), Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getActivity().getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                    System.out.println(e.getMessage());
-                }
-            }
-        });
+    private static void populateTable(Context context, Map<String,Map<String, Number>> datamap, List<Car> cars, TableLayout tl) {
+        for (Car car : cars) {
+            Map<String, Number> map = datamap.get(car.getObjectId());
+            ArrayList<String> list = new ArrayList<>(
+                    Arrays.asList(
+                            car.getDisplayName(),
+                            map.get(TOTAL_PRICE).toString(),
+                            map.get(TOTAL_AMOUNT).toString(),
+                            map.get(STARTING_MILEAGE).toString(),
+                            map.get(CURRENT_MILEAGE).toString()
+                    )
+            );
+            tl.addView(getRow(context, list));
+        }
+        Map<String, Number> map = datamap.get("total");
+        ArrayList<String> list = new ArrayList<>(Arrays.asList("Total",
+                map.get(TOTAL_PRICE).toString(),
+                map.get(TOTAL_AMOUNT).toString(),
+                map.get(STARTING_MILEAGE).toString(),
+                map.get(CURRENT_MILEAGE).toString()));
+        tl.addView(getRow(context, list));
     }
 }
