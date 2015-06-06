@@ -1,38 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:stretchColumns="1"
-    android:id="@+id/displayTable">
-    <TableRow
-        android:id="@+id/usage_title_row"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:text="@string/car_number"
-            android:gravity="right"
-            android:padding="3dip" />
+        <TableLayout
+            android:id="@+id/displayTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1"></TableLayout>
 
-        <TextView
-            android:text="@string/total_price"
-            android:gravity="right"
-            android:padding="3dip" />
-
-        <TextView
-            android:text="@string/total_amount"
-            android:gravity="right"
-            android:padding="3dip" />
-
-        <TextView
-            android:text="@string/starting_mileage"
-            android:gravity="right"
-            android:padding="3dip" />
-
-        <TextView
-            android:text="@string/current_mileage"
-            android:gravity="right"
-            android:padding="3dip" />
-    </TableRow>
-
-</TableLayout>
+        <TableLayout
+            android:id="@+id/logTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1"></TableLayout>
+    </RelativeLayout>
+</ScrollView>

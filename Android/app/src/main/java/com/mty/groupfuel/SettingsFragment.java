@@ -67,7 +67,9 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
             this.cars = new ArrayList<>();
         }
         this.cars.clear();
-        this.cars.addAll(cars);
+        if (cars != null) {
+            this.cars.addAll(cars);
+        }
         updateCarList();
     }
 

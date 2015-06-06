@@ -4,13 +4,22 @@ import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @ParseClassName("Car")
 public class Car extends ParseObject {
 
     public Car () {
 
+    }
+
+    public static ParseQuery<Car> getQuery() {
+        return ParseQuery.getQuery(Car.class);
     }
 
     public User getOwner() {
@@ -51,16 +60,27 @@ public class Car extends ParseObject {
         put("Mileage", value);
     }
 
-    public static ParseQuery<Car> getQuery() {
-        return ParseQuery.getQuery(Car.class);
-    }
-
     public String getDisplayName() {
         try {
-            return getCarNumber() + " (" + getModel().getMake() + ")";
+            return getCarNumber() + " (" + getModel().getMake() + " " + getModel().getModel() + ")";
         } catch (NullPointerException npe) {
             return "null object";
         }
 
+    }
+
+    public List<Fueling> getFuelingEvents() {
+        JSONArray array = getJSONArray("FuelEvent");
+        List<Fueling> list = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            Fueling fueling;
+            try {
+                fueling = (Fueling) array.get(i);
+                list.add((Fueling) fueling.fetchIfNeeded());
+            } catch (JSONException | ParseException e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+        return list;
     }
 }
