@@ -5,12 +5,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.util.ArrayList;
-import java.util.List;
-
 @ParseClassName("Car")
 public class Car extends ParseObject {
 
@@ -69,18 +63,4 @@ public class Car extends ParseObject {
 
     }
 
-    public List<Fueling> getFuelingEvents() {
-        JSONArray array = getJSONArray("FuelEvent");
-        List<Fueling> list = new ArrayList<>();
-        for (int i = 0; i < array.length(); i++) {
-            Fueling fueling;
-            try {
-                fueling = (Fueling) array.get(i);
-                list.add((Fueling) fueling.fetchIfNeeded());
-            } catch (JSONException | ParseException e) {
-                throw new RuntimeException(e.getMessage());
-            }
-        }
-        return list;
-    }
 }

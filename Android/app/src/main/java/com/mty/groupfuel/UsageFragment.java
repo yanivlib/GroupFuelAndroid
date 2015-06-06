@@ -12,9 +12,12 @@ import android.widget.TableLayout;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.Fueling;
+import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +76,7 @@ public class UsageFragment extends android.support.v4.app.Fragment {
     private static List<Fueling> mergeFuelings(List<Car> cars) {
         List<Fueling> fuelings = new ArrayList<>();
         for (Car car : cars) {
-            fuelings.addAll(car.getFuelingEvents());
+            //fuelings.addAll(car.getFuelingEvents());
         }
         return fuelings;
     }
@@ -125,6 +128,9 @@ public class UsageFragment extends android.support.v4.app.Fragment {
         View view = inflater.inflate(R.layout.fragment_usage, container, false);
         context = view.getContext();
         displayTable = (TableLayout) view.findViewById(R.id.displayTable);
+        logTable = (TableLayout) view.findViewById(R.id.logTable);
+        getFuelings(context);
+
         return view;
     }
 
@@ -164,11 +170,30 @@ public class UsageFragment extends android.support.v4.app.Fragment {
             }
         });
     }
-    //private static void populateLogTable(Context context, List<Fueling> list, TableLayout tl) {
-    //    for (Fueling fueling : list) {
 
-    //    }
+    private void populateLogTable(Context context, List<Fueling> list, TableLayout tl) {
+        if (tl == null) {
+            tl = this.logTable;
+        }
+        for (Fueling fueling : list) {
+            tl.addView(new FuelingUsage(context, fueling));
+        }
+    }
 
-    // }
+    private void getFuelings(final Context context) {
+        ParseQuery<Fueling> query = Fueling.getQuery();
+        query.whereEqualTo("User", ParseUser.getCurrentUser());
+        query.include("Car");
+        query.findInBackground(new FindCallback<Fueling>() {
+            @Override
+            public void done(List<Fueling> list, ParseException e) {
+                if (e == null) {
+                    populateLogTable(context, list, null);
+                } else {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        });
+    }
 
 }
