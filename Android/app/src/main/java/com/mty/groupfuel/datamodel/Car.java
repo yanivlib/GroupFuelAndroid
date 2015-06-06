@@ -4,13 +4,16 @@ import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 @ParseClassName("Car")
 public class Car extends ParseObject {
 
     public Car () {
 
+    }
+
+    public static ParseQuery<Car> getQuery() {
+        return ParseQuery.getQuery(Car.class);
     }
 
     public User getOwner() {
@@ -51,16 +54,13 @@ public class Car extends ParseObject {
         put("Mileage", value);
     }
 
-    public static ParseQuery<Car> getQuery() {
-        return ParseQuery.getQuery(Car.class);
-    }
-
     public String getDisplayName() {
         try {
-            return getCarNumber() + "(" + getModel().getMake() + ")";
+            return getCarNumber() + " (" + getModel().getMake() + " " + getModel().getModel() + ")";
         } catch (NullPointerException npe) {
             return "null object";
         }
 
     }
+
 }

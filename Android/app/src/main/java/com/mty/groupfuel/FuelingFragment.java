@@ -17,8 +17,10 @@ import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.Fuel;
 import com.mty.groupfuel.datamodel.Fueling;
 import com.mty.groupfuel.datamodel.User;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,8 +65,8 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             spinnerType = type;
         }
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            if (spinnerType == Car.class) {
-                if (pos > 0) {
+            if (pos > 0) {
+                if (spinnerType == Car.class) {
                     sendButton.setEnabled(true);
                     try {
                         selectedCar = cars.get(pos - 1);
@@ -110,11 +112,18 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             fueling.setMileage(mileage);
             fueling.setPrice(price);
             fueling.setUser(user);
-            fueling.setFuelType((Fuel)fuelSpinner.getSelectedItem());
+            fueling.setFuelType((Fuel) fuelSpinner.getSelectedItem());
             fueling.put("Car", ParseObject.createWithoutData("Car", selectedCar.getObjectId()));
-            fueling.saveEventually();
-
-            Toast.makeText(context,getString(R.string.fueling_updated),Toast.LENGTH_LONG).show();
+            fueling.saveEventually(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e != null) {
+                        MainActivity.createErrorAlert(e.getMessage(), context).show();
+                    } else {
+                        Toast.makeText(context, getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
             amountEditText.setText(null);
             mileageEditText.setText(null);
             priceEditText.setText(null);

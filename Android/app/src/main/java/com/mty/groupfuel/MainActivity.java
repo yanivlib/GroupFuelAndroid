@@ -56,6 +56,10 @@ public class MainActivity extends ActionBarActivity {
 
     public void broadcastCarList() {
         System.out.println("calling broadcastCarList, while cars length is " + this.cars.size());
+        UsageFragment usageFragment = (UsageFragment)fragmentPagerAdapter.getRegisteredFragment(0);
+        if (usageFragment != null) {
+            usageFragment.updateCars(cars);
+        }
         FuelingFragment fuelingFragment = (FuelingFragment)fragmentPagerAdapter.getRegisteredFragment(1);
         if (fuelingFragment != null) {
             fuelingFragment.updateCars(cars);
@@ -159,20 +163,6 @@ public class MainActivity extends ActionBarActivity {
                         default:
                             throw new RuntimeException(e.getMessage());
                     }
-                }
-            }
-        });
-    }
-
-
-    private void getUsage() {
-        ParseCloud.callFunctionInBackground("getUsage", new HashMap<String, Object>(), new FunctionCallback<Object>() {
-            @Override
-            public void done(Object o, ParseException e) {
-                if (e == null) {
-                    System.out.println("getUsage success");
-                } else {
-                    System.out.println(e.getMessage());
                 }
             }
         });

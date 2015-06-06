@@ -33,7 +33,7 @@ public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAd
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return MainFragment.newInstance(position + 1);
+                return UsageFragment.newInstance();
             case 1:
                 return FuelingFragment.newInstance();
             case 2:
