@@ -16,10 +16,21 @@
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
+
+        <item name="android:buttonStyle">@style/ButtonAppTheme</item>
     </style>
 
-    <style name="Button" parent="android:style/Widget.Material.Button">
-        <item name="android:background">@drawable/raised_button_background</item>
+    <style name="ButtonAppTheme" parent="android:style/Widget.Material.Button">
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:minWidth">88dp</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:elevation">1dp</item>
+        <item name="android:translationZ">1dp</item>
+        <item name="android:background">@drawable/primary_round</item>
     </style>
+
+
 
 </resources>

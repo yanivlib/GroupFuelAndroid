@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\ylibal\.gradle\caches\modules-2\files-2.1\com.parse.bolts\bolts-android\1.2.0\6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd\bolts-android-1.2.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd">
+        <dex dex="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\build\intermediates\pre-dexed\debug\bolts-android-1.2.0-9b0977929a4da4b062ac78192ba6e6ff1ac1d4f8.jar" />
+    </item>
+    <item
+        jar="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\build\intermediates\exploded-aar\com.facebook.android\facebook-android-sdk\4.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="40da745b1ae1f5b7562242e27dbc91a6b0fab3e9">
+        <dex dex="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\build\intermediates\pre-dexed\debug\classes-22b7a05fd1327f7b3a3516faac7ee2fe84f07b8a.jar" />
+    </item>
+    <item
+        jar="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="c95ba8152923e4872e86a82cfcba9a51c0214328">
+        <dex dex="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\build\intermediates\pre-dexed\debug\classes-3089e3ee903719bb6ab96f28df58b9a88bb6227c.jar" />
+    </item>
+    <item
+        jar="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="d84409890828e07d344a3b9b1da545dba9897b51">
+        <dex dex="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\build\intermediates\pre-dexed\debug\classes-261e9dce5eae40ec3cf78ea1494f331cce39454b.jar" />
+    </item>
+    <item
+        jar="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.1.1\jars\libs\internal_impl-22.1.1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="9e070ad32b2700b0343e8e0cccc437733d91ba3a">
+        <dex dex="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\build\intermediates\pre-dexed\debug\internal_impl-22.1.1-b67082c2a2a02d10a3b11d62b65a3ebf9053d1b5.jar" />
+    </item>
+    <item
+        jar="C:\Users\ylibal\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.1.1\support-annotations-22.1.1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01d051a6bfb1218b1db2d3a5af0480ac2c25c42a">
+        <dex dex="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\build\intermediates\pre-dexed\debug\support-annotations-22.1.1-1df43d03d4b02941ce257646724227a4bb79dd98.jar" />
+    </item>
+    <item
+        jar="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\libs\ParseFacebookUtilsV4-1.9.2.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="bab281cc21f6a68152e11ab53b053790ccfd6764">
+        <dex dex="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\build\intermediates\pre-dexed\debug\ParseFacebookUtilsV4-1.9.2-20dc8e1a621585747760a1416724fe0f4891a9ee.jar" />
+    </item>
+    <item
+        jar="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\libs\Parse-1.9.2.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="fe739334780fe321141e62720822c2d456061899">
+        <dex dex="C:\Users\ylibal\GitHub\GroupFuelAndroid\app\build\intermediates\pre-dexed\debug\Parse-1.9.2-8cdea12a00be058488d8c9e1075c5d845201fd27.jar" />
+    </item>
+
+</items>
