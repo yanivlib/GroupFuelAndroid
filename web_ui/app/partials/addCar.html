@@ -28,7 +28,7 @@
                         <select ng-disabled="markedDic['make']!=true" class="form-control col-md-2" id="ModelSelect"
                                 name="model" ui-select2
                                 ng-model="carDetails.model">
-                            <option ng-if="!carDetails.model" value="">[SELECT]</option>
+                            <option ng-if="carDetails.model !== null && carDetails.model !== undefined" value="">[SELECT]</option>
                             <option ng-repeat="(model, value) in modelsDic" value="{{ model }}">{{ model}}</option>
                         </select>
                     </div>
@@ -39,7 +39,7 @@
                         <select ng-disabled="markedDic['model'] != true" class="form-control col-md-2" id="VolumeSelect"
                                 name="volume" ui-select2
                                 ng-model="carDetails.volume">
-                            <option ng-if="!carDetails.volume" value="">[SELECT]</option>
+                            <option ng-if="carDetails.volume !== null && carDetails.volume !== undefined" value="">[SELECT]</option>
                             <option ng-repeat="(volume, value) in volumesDic" value="{{ volume }}">{{ volume }}</option>
                         </select>
                     </div>
@@ -50,7 +50,7 @@
                         <select ng-disabled="markedDic['volume'] != true" class="form-control col-lg-4" id="YearSelect"
                                 name="year" ui-select2
                                 ng-model="carDetails.year">
-                            <option ng-if="carDetails.year == ''" value="">[SELECT]</option>
+                            <option ng-if="carDetails.year !== null && carDetails.year !== undefined" value="">[SELECT]</option>
                             <option ng-repeat="(year, value) in yearsDic" value="{{ year }}">{{ year }}</option>
                         </select>
                     </div>
@@ -58,12 +58,24 @@
                 <div class="row">
                     <div class="col-lg-4">
                         <label class="control-label" for="FuelTypeSelect">Fuel Type </label>
-                        <select ng-disabled="markedDic['fuelType'] != true" class="form-control col-md-2"
+                        <select ng-disabled="markedDic['year'] != true" class="form-control col-md-2"
                                 id="FuelTypeSelect"
                                 name="fuelType" ui-select2
                                 ng-model="carDetails.fuelType">
-                            <option ng-if="!carDetails.fuelType" value="">[SELECT]</option>
+                            <option ng-if="carDetails.fuelType !== null && carDetails.fuelType !== undefined" value="">[SELECT]</option>
                             <option ng-repeat="(fuelType, value) in fuelTypesDic" value="{{ fuelType }}">{{ fuelType }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <label class="control-label" for="TypeSelect"> Type </label>
+                        <select ng-disabled="markedDic['fuelType'] != true" class="form-control col-md-2"
+                                id="TypeSelect"
+                                name="type" ui-select2
+                                ng-model="carDetails.type">
+                            <option ng-if="carDetails.type !== null && carDetails.type !== undefined" value="">[SELECT]</option>
+                            <option ng-repeat="(type, value) in typesDic" value="{{ type }}">{{ type }}</option>
                         </select>
                     </div>
                 </div>

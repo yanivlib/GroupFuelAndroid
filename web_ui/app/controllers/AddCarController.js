@@ -10,7 +10,9 @@ app.controller('AddCarController', function ($scope, $modalInstance) {
         make: "",
         model: "",
         volume: "",
-        fuelType: ""
+        year: "",
+        fuelType: "",
+        type: ""
     };
 
     (function () {
@@ -22,6 +24,7 @@ app.controller('AddCarController', function ($scope, $modalInstance) {
         $scope.volumesDic = {};
         $scope.yearsDic = {};
         $scope.fuelTypesDic = {};
+        $scope.typesDic = {};
 
         Parse.Cloud.run('getCarMakes', {}, {
             success: function (results) {
@@ -83,15 +86,23 @@ app.controller('AddCarController', function ($scope, $modalInstance) {
         fillDictionary($scope.yearsDic[year], $scope.fuelTypesDic, 'FuelType');
     });
 
-    $scope.$watch('carDetails.fuelType', function (year) {
-        if (String(year) == "" || year === undefined)
+    $scope.$watch('carDetails.fuelType', function (fuelType) {
+        if (String(fuelType) == "" || fuelType === undefined)
             return;
-        disableFollowingSelects('fuelType', '');
+        disableFollowingSelects('fuelType', 'type');
 
-        fillDictionary($scope.yearsDic[year], $scope.fuelTypesDic, 'FuelType');
+        fillDictionary($scope.fuelTypesDic[fuelType], $scope.typesDic, 'Type');
     });
 
+    $scope.$watch('carDetails.type', function (type) {
+        if (String(type) == "" || type === undefined)
+            return;
+        disableFollowingSelects('type', '');
+    });
+
+
     function fillDictionary(fromArray, toDic, parseKey) {
+        // toDic = {};
         for (var i = 0; i < fromArray.length; i++) {
             var current = fromArray[i].get(parseKey);
             if (toDic[current] === undefined) {
@@ -99,22 +110,38 @@ app.controller('AddCarController', function ($scope, $modalInstance) {
             }
             toDic[current].push(fromArray[i]);
         }
+        console.dir(toDic);
     }
 
     $scope.addCar = function () {
-        // TODO Validate that all fields are filled
-        Parse.Cloud.run('addCar', {'carDetails': $scope.carDetails}, {
-            success: function (results) {
-                // TODO close the modal
-                console.log('Im here');
-                console.dir(results);
-                $scope.$digest();
-            },
-            error: function () {
-                console.log("Error: Failed to add a car");
-                console.log(Parse.Error);
+        for(var p in x) {
+            if(x.hasOwnProperty(p)) {
+                if(x[p] === 0) {
+                    //Found it!
+                }
             }
-        });
+        }
+        var type, array, model;
+        type = $scope.carDetails.type;
+        array = $scope.typesDic[type];
+        model = array[0];
+        console.log(type);
+        console.dir($scope.typesDic);
+        console.dir(array);
+        console.dir(model);
+        // TODO Validate that all fields are filled
+        /* Parse.Cloud.run('addCar', {'carDetails': $scope.carDetails, 'model': }, {
+         success: function (results) {
+         // TODO close the modal
+         console.log('Im here');
+         console.dir(results);
+         $scope.$digest();
+         },
+         error: function () {
+         console.log("Error: Failed to add a car");
+         console.log(Parse.Error);
+         }
+         });*/
 
     };
     $scope.clearCarsForm = function () {
@@ -133,6 +160,7 @@ app.controller('AddCarController', function ($scope, $modalInstance) {
 
     function disableFollowingSelects(current, next) {
         $scope.markedDic[current] = true;
+        //noinspection FallThroughInSwitchStatementJS
         switch (next) {
             case 'model':
                 $scope.markedDic['model'] = false;
@@ -147,6 +175,9 @@ app.controller('AddCarController', function ($scope, $modalInstance) {
                 $scope.markedDic['fuelType'] = false;
                 $scope.carDetails['fuelType'] = "";
                 break;
+            case 'type':
+                $scope.markedDic['type'] = false;
+                $scope.carDetails['type'] = "";
         }
     }
 });
