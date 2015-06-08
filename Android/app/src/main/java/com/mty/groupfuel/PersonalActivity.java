@@ -1,8 +1,8 @@
 package com.mty.groupfuel;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 
 import com.mty.groupfuel.datamodel.User;
-
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -23,22 +22,18 @@ import java.util.Calendar;
 import java.util.Locale;
 
 
-public class PersonalActivity extends ActionBarActivity {
+public class PersonalActivity extends Activity {
 
+    final Calendar myCalendar = Calendar.getInstance();
+    final private User user = (User) ParseUser.getCurrentUser();
+    private final SimpleDateFormat sdf = new SimpleDateFormat(Consts.DATE_FORMAT, Locale.US);
     private EditText editTextBirth;
     private EditText editTextFirst;
     private EditText editTextLast;
     private EditText editTextCountry;
     private RadioGroup radioGroupGender;
     private Button buttonApply;
-
-    final Calendar myCalendar = Calendar.getInstance();
-
-    final private User user = (User)ParseUser.getCurrentUser();
-
     private String prevActivity;
-
-    private final SimpleDateFormat sdf = new SimpleDateFormat(Consts.DATE_FORMAT, Locale.US);
 
     private void findViewsById() {
         editTextBirth = (EditText)findViewById(R.id.update_birth);
