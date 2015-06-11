@@ -100,8 +100,16 @@ public class UsageFragment extends android.support.v4.app.Fragment {
             Number mileage = map.get(CURRENT_MILEAGE);
 
             int miles = (mileage.intValue() - starting.intValue());
-            String dpg = String.valueOf(miles / price.intValue());
-            String mpg = String.valueOf(miles / amount.intValue());
+            int intPrice = price.intValue();
+            if (intPrice == 0) {
+                intPrice++;
+            }
+            int intAmount = amount.intValue();
+            if (intAmount == 0) {
+                intAmount++;
+            }
+            String dpg = String.valueOf(miles /intPrice);
+            String mpg = String.valueOf(miles /intAmount);
 
             tl.addView(getCarView(context, name, mpg, mileage.toString(), dpg));
         }

@@ -1,12 +1,16 @@
 package com.mty.groupfuel;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -29,6 +33,7 @@ public class MainActivity extends FragmentActivity {
     private FragmentPagerAdapter fragmentPagerAdapter;
     private ViewPager viewPager;
     private SlidingTabLayout slidingTabLayout;
+    private Toolbar toolbar;
 
     public static AlertDialog.Builder createErrorAlert(String message, String title, Context context) {
         return new AlertDialog.Builder(context)
@@ -105,6 +110,7 @@ public class MainActivity extends FragmentActivity {
     private void findViewsByid() {
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        toolbar = (Toolbar)findViewById(R.id.tool_bar);
     }
 
     @Override
@@ -113,11 +119,19 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
         findViewsByid();
 
+        //setSupportActionBar(toolbar);
+
         FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this);
         viewPager.setAdapter(adapter);
         setfragmentPagerAdapter(adapter);
         slidingTabLayout.setDistributeEvenly(true);
         slidingTabLayout.setViewPager(viewPager);
+        slidingTabLayout.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+            @Override
+            public int getIndicatorColor(int position) {
+                return getResources().getColor(R.color.accent);
+            }
+        });
 
         getOwnedCars();
         user = ParseUser.getCurrentUser();
