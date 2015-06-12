@@ -1,18 +1,17 @@
 package com.mty.groupfuel;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.User;
@@ -30,9 +29,9 @@ public class MainActivity extends FragmentActivity {
 
     static private ParseUser user;
     private List<Car> cars;
-    private FragmentPagerAdapter fragmentPagerAdapter;
-    private ViewPager viewPager;
-    private SlidingTabLayout slidingTabLayout;
+    private FragmentPagerAdapter adapter;
+    private ViewPager pager;
+    private SlidingTabLayout tabs;
     private Toolbar toolbar;
 
     public static AlertDialog.Builder createErrorAlert(String message, String title, Context context) {
@@ -89,27 +88,27 @@ public class MainActivity extends FragmentActivity {
 
     public void broadcastCarList() {
         System.out.println("calling broadcastCarList, while cars length is " + this.cars.size());
-        UsageFragment usageFragment = (UsageFragment) fragmentPagerAdapter.getRegisteredFragment(0);
+        UsageFragment usageFragment = (UsageFragment) adapter.getRegisteredFragment(0);
         if (usageFragment != null) {
             usageFragment.updateCars(cars);
         }
-        FuelingFragment fuelingFragment = (FuelingFragment) fragmentPagerAdapter.getRegisteredFragment(1);
+        FuelingFragment fuelingFragment = (FuelingFragment) adapter.getRegisteredFragment(1);
         if (fuelingFragment != null) {
             fuelingFragment.updateCars(cars);
         }
-        SettingsFragment settingsFragment = (SettingsFragment) fragmentPagerAdapter.getRegisteredFragment(2);
+        SettingsFragment settingsFragment = (SettingsFragment) adapter.getRegisteredFragment(2);
         if (settingsFragment != null) {
             settingsFragment.setCars(cars);
         }
     }
 
     public void setfragmentPagerAdapter(FragmentPagerAdapter adapter) {
-        this.fragmentPagerAdapter = adapter;
+        this.adapter = adapter;
     }
 
     private void findViewsByid() {
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        pager = (ViewPager) findViewById(R.id.viewpager);
+        tabs = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         toolbar = (Toolbar)findViewById(R.id.tool_bar);
     }
 
@@ -121,27 +120,33 @@ public class MainActivity extends FragmentActivity {
 
         //setSupportActionBar(toolbar);
 
-        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this);
-        viewPager.setAdapter(adapter);
-        setfragmentPagerAdapter(adapter);
-        slidingTabLayout.setDistributeEvenly(true);
-        slidingTabLayout.setViewPager(viewPager);
-        slidingTabLayout.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+        adapter = new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this);
+        pager.setAdapter(adapter);
+        tabs.setDistributeEvenly(true);
+        tabs.setViewPager(pager);
+        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
             public int getIndicatorColor(int position) {
                 return getResources().getColor(R.color.accent);
             }
         });
-
+        tabs.setCustomTabView(R.layout.tab_item, R.id.tab);
+        for (int i = 0; i < tabs.getChildCount(); i++) {
+            View nextChild = tabs.getChildAt(i);
+            if (nextChild instanceof TextView) {
+                TextView textViewToConvert = (TextView) nextChild;
+                textViewToConvert.setTextColor(getResources().getColor(R.color.md_red_100));
+            }
+        }
         getOwnedCars();
         user = ParseUser.getCurrentUser();
 
         String action = getIntent().getAction();
         if (action != null) {
             if (action.equals(Consts.OPEN_TAB_SETTINGS)) {
-                viewPager.setCurrentItem(2);
+                pager.setCurrentItem(2);
             } else if (action.equals(Consts.OPEN_TAB_USAGE)) {
-                viewPager.setCurrentItem(0);
+                pager.setCurrentItem(0);
             }
         }
     }

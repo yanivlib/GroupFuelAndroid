@@ -7,13 +7,11 @@ import android.support.v4.app.FragmentManager;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
-import com.mty.groupfuel.datamodel.Car;
-
 public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter{
     final int PAGE_COUNT = 3;
+    SparseArray<Fragment> registeredFragments = new SparseArray<>(3);
     private String tabTitles[];
     private Context context;
-    SparseArray<Fragment> registeredFragments = new SparseArray<>(3);
 
     public FragmentPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
@@ -63,4 +61,5 @@ public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAd
     public Fragment getRegisteredFragment(int position) {
         return registeredFragments.get(position);
     }
+
 }
