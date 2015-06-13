@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -116,9 +116,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         findViewsByid();
 
-        setSupportActionBar(toolbar);
-
-        adapter = new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this);
+        String[] tabTitles = new String[]{
+                getString(R.string.usage_title),
+                getString(R.string.fueling_title),
+                getString(R.string.settings_title)};
+        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this);
         pager.setAdapter(adapter);
         tabs.setDistributeEvenly(true);
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {

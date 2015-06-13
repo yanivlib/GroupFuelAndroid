@@ -1,30 +1,24 @@
 package com.mty.groupfuel;
 
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
 public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter{
-    final int PAGE_COUNT = 3;
     SparseArray<Fragment> registeredFragments = new SparseArray<>(3);
     private String tabTitles[];
-    private Context context;
 
-    public FragmentPagerAdapter(FragmentManager fm, Context context) {
+    public FragmentPagerAdapter(FragmentManager fm, int tabCount, String[] tabTitles) {
         super(fm);
-        this.context = context;
-        tabTitles = new String[PAGE_COUNT];
-        tabTitles[0] = context.getString(R.string.usage_title);
-        tabTitles[1] = context.getString(R.string.fueling_title);
-        tabTitles[2] = context.getString(R.string.settings_title);
+        this.tabCount = tabCount;
+        this.tabTitles = tabTitles;
     }
 
     @Override
     public int getCount() {
-        return PAGE_COUNT;
+        return tabCount;
     }
 
     @Override
