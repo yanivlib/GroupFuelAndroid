@@ -5,13 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.User;
@@ -25,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends AppCompatActivity {
 
     static private ParseUser user;
     private List<Car> cars;
@@ -118,26 +116,18 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
         findViewsByid();
 
-        //setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
 
         adapter = new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this);
         pager.setAdapter(adapter);
         tabs.setDistributeEvenly(true);
-        tabs.setViewPager(pager);
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
             public int getIndicatorColor(int position) {
                 return getResources().getColor(R.color.accent);
             }
         });
-        tabs.setCustomTabView(R.layout.tab_item, R.id.tab);
-        for (int i = 0; i < tabs.getChildCount(); i++) {
-            View nextChild = tabs.getChildAt(i);
-            if (nextChild instanceof TextView) {
-                TextView textViewToConvert = (TextView) nextChild;
-                textViewToConvert.setTextColor(getResources().getColor(R.color.md_red_100));
-            }
-        }
+        tabs.setViewPager(pager);
         getOwnedCars();
         user = ParseUser.getCurrentUser();
 
