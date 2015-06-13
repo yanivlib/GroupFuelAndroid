@@ -6,7 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -22,13 +23,14 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     static private ParseUser user;
     private List<Car> cars;
-    private FragmentPagerAdapter fragmentPagerAdapter;
-    private ViewPager viewPager;
-    private SlidingTabLayout slidingTabLayout;
+    private FragmentPagerAdapter adapter;
+    private ViewPager pager;
+    private SlidingTabLayout tabs;
+    private Toolbar toolbar;
 
     public static AlertDialog.Builder createErrorAlert(String message, String title, Context context) {
         return new AlertDialog.Builder(context)
@@ -84,27 +86,28 @@ public class MainActivity extends ActionBarActivity {
 
     public void broadcastCarList() {
         System.out.println("calling broadcastCarList, while cars length is " + this.cars.size());
-        UsageFragment usageFragment = (UsageFragment) fragmentPagerAdapter.getRegisteredFragment(0);
+        UsageFragment usageFragment = (UsageFragment) adapter.getRegisteredFragment(0);
         if (usageFragment != null) {
             usageFragment.updateCars(cars);
         }
-        FuelingFragment fuelingFragment = (FuelingFragment) fragmentPagerAdapter.getRegisteredFragment(1);
+        FuelingFragment fuelingFragment = (FuelingFragment) adapter.getRegisteredFragment(1);
         if (fuelingFragment != null) {
             fuelingFragment.updateCars(cars);
         }
-        SettingsFragment settingsFragment = (SettingsFragment) fragmentPagerAdapter.getRegisteredFragment(2);
+        SettingsFragment settingsFragment = (SettingsFragment) adapter.getRegisteredFragment(2);
         if (settingsFragment != null) {
             settingsFragment.setCars(cars);
         }
     }
 
     public void setfragmentPagerAdapter(FragmentPagerAdapter adapter) {
-        this.fragmentPagerAdapter = adapter;
+        this.adapter = adapter;
     }
 
     private void findViewsByid() {
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        slidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        pager = (ViewPager) findViewById(R.id.viewpager);
+        tabs = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
+        toolbar = (Toolbar)findViewById(R.id.tool_bar);
     }
 
     @Override
@@ -113,26 +116,29 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         findViewsByid();
 
-        final int tabCount = 3;
         String[] tabTitles = new String[]{
                 getString(R.string.usage_title),
                 getString(R.string.fueling_title),
                 getString(R.string.settings_title)};
-        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager(), tabCount, tabTitles);
-        viewPager.setAdapter(adapter);
-        setfragmentPagerAdapter(adapter);
-        slidingTabLayout.setDistributeEvenly(true);
-        slidingTabLayout.setViewPager(viewPager);
-
+        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this);
+        pager.setAdapter(adapter);
+        tabs.setDistributeEvenly(true);
+        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
+            @Override
+            public int getIndicatorColor(int position) {
+                return getResources().getColor(R.color.accent);
+            }
+        });
+        tabs.setViewPager(pager);
         getOwnedCars();
         user = ParseUser.getCurrentUser();
 
         String action = getIntent().getAction();
         if (action != null) {
             if (action.equals(Consts.OPEN_TAB_SETTINGS)) {
-                viewPager.setCurrentItem(2);
+                pager.setCurrentItem(2);
             } else if (action.equals(Consts.OPEN_TAB_USAGE)) {
-                viewPager.setCurrentItem(0);
+                pager.setCurrentItem(0);
             }
         }
     }

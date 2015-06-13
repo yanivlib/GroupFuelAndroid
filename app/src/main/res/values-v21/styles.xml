@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:navigationBarColor">@color/primary_dark</item>
+        <item name="android:divider">@color/divider</item>
+        <item name="android:icon">@color/text</item>
+
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
+        <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
+
+        <item name="android:editTextStyle">@style/EditTextAppTheme</item>
+        <item name="android:toolbarStyle">@android:style/Widget.Material.Toolbar</item>
+        <item name="android:buttonStyle">@android:style/Widget.Material.Button</item>
+    </style>
+
+    <style name="EditTextAppTheme" parent="android:style/Widget.Material.EditText">
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+</resources><!--
+
+        <item name="android:buttonStyle">@style/ButtonAppTheme</item>
+
+<style name="ButtonAppTheme" parent="android:style/Widget.Material.Button">
+<item name="android:textColor">@color/text_primary</item>
+<item name="android:padding">5dp</item>
+<item name="android:minWidth">88dp</item>
+<item name="android:minHeight">36dp</item>
+<item name="android:elevation">1dp</item>
+<item name="android:translationZ">1dp</item>
+<item name="android:background">@drawable/primary_round</item>
+<item name="android:layout_margin">@dimen/abc_button_inset_horizontal_material</item>
+</style>!-->

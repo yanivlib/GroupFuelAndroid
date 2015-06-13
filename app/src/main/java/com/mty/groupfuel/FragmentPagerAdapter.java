@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter{
     SparseArray<Fragment> registeredFragments = new SparseArray<>(3);
-    private int tabCount;
     private String tabTitles[];
 
     public FragmentPagerAdapter(FragmentManager fm, int tabCount, String[] tabTitles) {
@@ -56,4 +55,5 @@ public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAd
     public Fragment getRegisteredFragment(int position) {
         return registeredFragments.get(position);
     }
+
 }

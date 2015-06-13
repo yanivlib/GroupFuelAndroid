@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.03"
+        android:text="@string/login_or_register"
+        android:textAppearance="@android:style/TextAppearance.Material.Headline" />
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="247dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:onClick="doLogin"
+        android:layout_margin="@dimen/abc_button_inset_horizontal_material"
+        android:text="@string/login" />
+
+    <Button
+        android:id="@+id/register_button"
+        android:layout_width="247dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:onClick="doRegister"
+        android:layout_margin="@dimen/abc_button_inset_horizontal_material"
+        android:text="@string/register" />
+
+    <Button
+        android:id="@+id/facebook_login"
+        android:layout_width="247dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:onClick="doFacebookLogin"
+        android:layout_margin="@dimen/abc_button_inset_horizontal_material"
+        android:text="Login with Facebook" />
+</LinearLayout>

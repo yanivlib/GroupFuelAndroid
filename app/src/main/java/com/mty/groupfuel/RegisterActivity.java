@@ -1,11 +1,8 @@
 package com.mty.groupfuel;
 
-import android.app.AlertDialog;
+import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,10 +10,10 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.mty.groupfuel.datamodel.User;
-import com.parse.SignUpCallback;
 import com.parse.ParseException;
+import com.parse.SignUpCallback;
 
-public class RegisterActivity extends ActionBarActivity {
+public class RegisterActivity extends Activity {
 
     private EditText usernameET;
     private EditText passwordET;

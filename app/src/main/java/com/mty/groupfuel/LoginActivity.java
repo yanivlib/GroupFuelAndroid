@@ -1,10 +1,8 @@
 package com.mty.groupfuel;
 
-import android.app.AlertDialog;
+import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,13 +14,11 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
-import android.content.Intent;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class LoginActivity extends ActionBarActivity {
+public class LoginActivity extends Activity {
 
     private ProgressDialog progressDialog;
     private EditText usernameET;

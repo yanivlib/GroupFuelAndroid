@@ -1,8 +1,8 @@
 package com.mty.groupfuel;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,46 +26,11 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AddCarActivity extends ActionBarActivity {
-
-    private enum SpinnerType {
-        maker, model, engine, year, gear, fuel;
-
-        Spinner toSpinner(AddCarActivity addCarActivity) {
-            switch (this) {
-                case maker: return addCarActivity.maker;
-                case model: return addCarActivity.model;
-                case engine: return addCarActivity.engine;
-                case year: return addCarActivity.year;
-                case gear: return addCarActivity.gear;
-                case fuel: return addCarActivity.fuel;
-                default: return null;
-            }
-        }
-
-        static SpinnerType fromSpinner(Spinner spinner, final AddCarActivity addCarActivity) {
-            if (spinner == addCarActivity.maker) {
-                return maker;
-            } else if (spinner == addCarActivity.model) {
-                return model;
-            } else if (spinner == addCarActivity.engine) {
-                return engine;
-            } else if (spinner == addCarActivity.year) {
-                return year;
-            } else if (spinner == addCarActivity.gear) {
-                return gear;
-            } else if (spinner == addCarActivity.fuel) {
-                return fuel;
-            } else {
-                return null;
-            }
-        }
-    }
+public class AddCarActivity extends Activity {
 
     private Spinner maker;
     private Spinner model;
@@ -76,14 +41,79 @@ public class AddCarActivity extends ActionBarActivity {
     private EditText number;
     private Button button;
     private CheckBox hybrid;
-
     private Spinner spinners[];
-
     private List<CarModel> modelList;
     private Map<String, List<CarModel>> makerModels;
     private Map<String, List<Object>> makerModelNames;
-
     private String pleaseSelect;
+
+    private static List<Object> getEngines(String model, List<CarModel> modelList) {
+        List<Object> engines = new ArrayList<>();
+        for (CarModel currentModel : modelList) {
+            Number volume = currentModel.getVolume();
+            if (currentModel.getModel().equals(model) && !engines.contains(volume)) {
+                engines.add(volume);
+            }
+        }
+        return engines;
+    }
+
+    private static List<Object> getYears(String model, Number engine, List<CarModel> modelList) {
+        List<Object> years = new ArrayList<>();
+        for (CarModel currentModel : modelList) {
+            Number year = currentModel.getYear();
+            if (currentModel.getModel().equals(model)
+                    && currentModel.getVolume().equals(engine)
+                    && !years.contains(year)) {
+                years.add(year);
+            }
+        }
+        return years;
+
+    }
+
+    private static List<Object> getGears(String model, Number engine, Number year, List<CarModel> modelList) {
+        List<Object> gears = new ArrayList<>();
+        for (CarModel currentModel : modelList) {
+            Gear gear = currentModel.getGear();
+            if (currentModel.getModel().equals(model)
+                    && currentModel.getVolume().equals(engine)
+                    && currentModel.getYear().equals(year)
+                    && !gears.contains(gear)) {
+                gears.add(gear);
+            }
+        }
+        return gears;
+    }
+
+    private static List<Object> getFuels(String model, Number engine, Number year, Gear gear, List<CarModel> modelList) {
+        List<Object> fuels = new ArrayList<>();
+        for (CarModel currentModel : modelList) {
+            Fuel fuel = currentModel.getFuelType();
+            if (currentModel.getModel().equals(model)
+                    && currentModel.getVolume().equals(engine)
+                    && currentModel.getYear().equals(year)
+                    && currentModel.getGear().equals(gear)
+                    && !fuels.contains(fuel)) {
+                fuels.add(fuel);
+            }
+        }
+        return fuels;
+    }
+
+    private static CarModel getModel(String maker, String model, Number volume, Number year, Gear gear, Fuel fuel, List<CarModel> modelList) {
+        for (CarModel carModel : modelList) {
+            if (carModel.getMake().equals(maker)
+                    && carModel.getModel().equals(model)
+                    && carModel.getVolume().equals(volume)
+                    && carModel.getYear().equals(year)
+                    && carModel.getGear().equals(gear)
+                    && carModel.getFuelType().equals(fuel)) {
+                return ParseObject.createWithoutData(CarModel.class, carModel.getObjectId());
+            }
+        }
+        return ParseObject.createWithoutData(CarModel.class, Consts.OBJECTID_NULL);
+    }
 
     public void setModelList(List<CarModel> modelList) {
         this.modelList = modelList;
@@ -256,8 +286,6 @@ public class AddCarActivity extends ActionBarActivity {
         });
     }
 
-
-
     private String getCurrentMaker() {
         return maker.getSelectedItem().toString();
     }
@@ -333,78 +361,50 @@ public class AddCarActivity extends ActionBarActivity {
         };
     }
 
-    private static List<Object> getEngines(String model, List<CarModel> modelList) {
-        List<Object> engines = new ArrayList<>();
-        for (CarModel currentModel : modelList) {
-            Number volume = currentModel.getVolume();
-            if (currentModel.getModel().equals(model) && !engines.contains(volume)) {
-                engines.add(volume);
-            }
-        }
-        return engines;
-    }
-
-    private static List<Object> getYears(String model, Number engine, List<CarModel> modelList) {
-        List<Object> years = new ArrayList<>();
-        for (CarModel currentModel : modelList) {
-            Number year = currentModel.getYear();
-            if (currentModel.getModel().equals(model)
-                    && currentModel.getVolume().equals(engine)
-                    && !years.contains(year)) {
-                years.add(year);
-            }
-        }
-        return years;
-
-    }
-
-
-    private static List<Object> getGears(String model, Number engine, Number year, List<CarModel> modelList) {
-        List<Object> gears = new ArrayList<>();
-        for (CarModel currentModel : modelList) {
-            Gear gear = currentModel.getGear();
-            if (currentModel.getModel().equals(model)
-                    && currentModel.getVolume().equals(engine)
-                    && currentModel.getYear().equals(year)
-                    && !gears.contains(gear)) {
-                gears.add(gear);
-            }
-        }
-        return gears;
-    }
-
-    private static List<Object> getFuels(String model, Number engine, Number year, Gear gear, List<CarModel> modelList) {
-        List<Object> fuels = new ArrayList<>();
-        for (CarModel currentModel : modelList) {
-            Fuel fuel = currentModel.getFuelType();
-            if (currentModel.getModel().equals(model)
-                    && currentModel.getVolume().equals(engine)
-                    && currentModel.getYear().equals(year)
-                    && currentModel.getGear().equals(gear)
-                    && !fuels.contains(fuel)) {
-                fuels.add(fuel);
-            }
-        }
-        return fuels;
-    }
-
     private CarModel getModel() {
         return getModel(getCurrentMaker(), getCurrentModel(), getCurrentEngine(),
                 getCurrentYear(), getCurrentGear(), getCurrentFuel(), modelList);
     }
 
-    private static CarModel getModel(String maker, String model, Number volume, Number year, Gear gear, Fuel fuel, List<CarModel> modelList) {
-        for (CarModel carModel : modelList) {
-            if (carModel.getMake().equals(maker)
-                    && carModel.getModel().equals(model)
-                    && carModel.getVolume().equals(volume)
-                    && carModel.getYear().equals(year)
-                    && carModel.getGear().equals(gear)
-                    && carModel.getFuelType().equals(fuel)) {
-                return ParseObject.createWithoutData(CarModel.class, carModel.getObjectId());
+    private enum SpinnerType {
+        maker, model, engine, year, gear, fuel;
+
+        static SpinnerType fromSpinner(Spinner spinner, final AddCarActivity addCarActivity) {
+            if (spinner == addCarActivity.maker) {
+                return maker;
+            } else if (spinner == addCarActivity.model) {
+                return model;
+            } else if (spinner == addCarActivity.engine) {
+                return engine;
+            } else if (spinner == addCarActivity.year) {
+                return year;
+            } else if (spinner == addCarActivity.gear) {
+                return gear;
+            } else if (spinner == addCarActivity.fuel) {
+                return fuel;
+            } else {
+                return null;
             }
         }
-        return ParseObject.createWithoutData(CarModel.class, Consts.OBJECTID_NULL);
+
+        Spinner toSpinner(AddCarActivity addCarActivity) {
+            switch (this) {
+                case maker:
+                    return addCarActivity.maker;
+                case model:
+                    return addCarActivity.model;
+                case engine:
+                    return addCarActivity.engine;
+                case year:
+                    return addCarActivity.year;
+                case gear:
+                    return addCarActivity.gear;
+                case fuel:
+                    return addCarActivity.fuel;
+                default:
+                    return null;
+            }
+        }
     }
 
     private class AddCarListener implements View.OnClickListener {
