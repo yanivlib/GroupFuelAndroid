@@ -217,7 +217,7 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
         };
     }
 
-    private View.OnClickListener signOut(final Context context) {
+    public static View.OnClickListener signOut(final Context context) {
         return new View.OnClickListener() {
             ProgressDialog progress;
 

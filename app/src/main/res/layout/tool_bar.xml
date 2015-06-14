@@ -3,6 +3,5 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/primary"
-    android:elevation="2dp"
     android:textColor="@color/tab_color_selector"
     android:theme="@style/Base.ThemeOverlay.AppCompat.Dark" />

@@ -1,5 +1,6 @@
 package com.mty.groupfuel;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,14 +37,14 @@ public class UsageFragment extends android.support.v4.app.Fragment {
     private final static String CURRENT_MILEAGE = "currentMileage";
 
     private TableLayout displayTable;
-    private TableLayout logTable;
     private Context context;
 
     private Map<String,Map<String, Number>> datamap;
     private List<Car> cars;
 
+    getCarsListener mCallback;
+
     public UsageFragment() {
-        // Required empty public constructor
     }
 
     public static UsageFragment newInstance() {
@@ -71,14 +72,6 @@ public class UsageFragment extends android.support.v4.app.Fragment {
             res.add(getPointer("Car", car.getObjectId()));
         }
         return res;
-    }
-
-    private static List<Fueling> mergeFuelings(List<Car> cars) {
-        List<Fueling> fuelings = new ArrayList<>();
-        for (Car car : cars) {
-            //fuelings.addAll(car.getFuelingEvents());
-        }
-        return fuelings;
     }
 
     private static CarUsage getCarView(Context context, String name, String mpg, String mileage, String dpg) {
@@ -115,37 +108,36 @@ public class UsageFragment extends android.support.v4.app.Fragment {
         }
     }
 
-    public void updateCars(List<Car> cars) {
-        if (!cars.equals(this.cars)) {
-            this.cars = cars;
-            getUsage(cars);
-            //populateLogTable(context, mergeFuelings(cars), logTable);
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mCallback = (getCarsListener)activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement getCarsListener");
         }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.cars = new ArrayList<>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_usage, container, false);
         context = view.getContext();
         displayTable = (TableLayout) view.findViewById(R.id.displayTable);
-        logTable = (TableLayout) view.findViewById(R.id.logTable);
-        getFuelings(context);
-
+        this.cars = mCallback.getCars();
+        if (cars != null) {
+            getUsage(cars);
+        }
         return view;
     }
 
     public void getUsage(final List<Car> cars) {
-        if ((this.datamap != null) && (this.datamap.size() == cars.size() + 1)) {
-            return;
-        }
         if (cars.size() == 0) {
             new AlertDialog.Builder(context)
                     .setTitle(context.getString(R.string.no_cars))
@@ -178,30 +170,4 @@ public class UsageFragment extends android.support.v4.app.Fragment {
             }
         });
     }
-
-    private void populateLogTable(Context context, List<Fueling> list, TableLayout tl) {
-        if (tl == null) {
-            tl = this.logTable;
-        }
-        for (Fueling fueling : list) {
-            tl.addView(new FuelingUsage(context, fueling));
-        }
-    }
-
-    private void getFuelings(final Context context) {
-        ParseQuery<Fueling> query = Fueling.getQuery();
-        query.whereEqualTo("User", ParseUser.getCurrentUser());
-        query.include("Car");
-        query.findInBackground(new FindCallback<Fueling>() {
-            @Override
-            public void done(List<Fueling> list, ParseException e) {
-                if (e == null) {
-                    populateLogTable(context, list, null);
-                } else {
-                    throw new RuntimeException(e.getMessage());
-                }
-            }
-        });
-    }
-
 }

@@ -1,6 +1,7 @@
 package com.mty.groupfuel;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -38,6 +39,8 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
 
     private String pleaseSelect;
 
+    getCarsListener mCallback;
+
     public FuelingFragment() {
     }
 
@@ -66,9 +69,20 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mCallback = (getCarsListener)activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement getCarsListener");
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cars = ((MainActivity) getActivity()).getCars();
+        cars = mCallback.getCars();
         pleaseSelect = getString(R.string.please_select);
     }
 
@@ -119,10 +133,18 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
 
         attachAdapter(view, carNames, carSpinner);
 
+        MainActivity.fab.setVisibility(View.INVISIBLE);
+
         sendButton.setOnClickListener(new SendListener());
         sendButton.setEnabled(false);
         return view;
 
+    }
+
+    @Override
+    public void onPause() {
+        MainActivity.fab.setVisibility(View.VISIBLE);
+        super.onPause();
     }
 
     public void updateCars(List<Car> cars) {

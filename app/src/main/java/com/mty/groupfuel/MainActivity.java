@@ -1,11 +1,14 @@
 package com.mty.groupfuel;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.User;
 import com.parse.FunctionCallback;
+import com.parse.LogOutCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -25,16 +29,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements getCarsListener {
 
     static private ParseUser user;
     private List<Car> cars;
-    private FragmentPagerAdapter adapter;
-    private ViewPager pager;
-    private SlidingTabLayout tabs;
     private Toolbar toolbar;
-    private FloatingActionButton fab;
+    static FloatingActionButton fab;
+    private static ProgressDialog progress;
 
     public static AlertDialog.Builder createErrorAlert(String message, String title, Context context) {
         return new AlertDialog.Builder(context)
@@ -90,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void broadcastCarList() {
         System.out.println("calling broadcastCarList, while cars length is " + this.cars.size());
-        UsageFragment usageFragment = (UsageFragment) adapter.getRegisteredFragment(0);
+        /*UsageFragment usageFragment = (UsageFragment) adapter.getRegisteredFragment(0);
         if (usageFragment != null) {
             usageFragment.updateCars(cars);
         }
@@ -101,14 +103,24 @@ public class MainActivity extends AppCompatActivity {
         SettingsFragment settingsFragment = (SettingsFragment) adapter.getRegisteredFragment(2);
         if (settingsFragment != null) {
             settingsFragment.setCars(cars);
-        }
+        }*/
     }
 
     private void findViewsByid() {
-        pager = (ViewPager) findViewById(R.id.viewpager);
-        tabs = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
-        toolbar = (Toolbar)findViewById(R.id.tool_bar);
+        toolbar = (Toolbar) findViewById(R.id.tool_bar);
         fab = (FloatingActionButton) findViewById(R.id.fab);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        ViewPagerContainerFragment topbarFragment = (ViewPagerContainerFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
+        if(topbarFragment == null) {
+            topbarFragment = new ViewPagerContainerFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, topbarFragment).commit();
+            getSupportFragmentManager().executePendingTransactions();
+        }
     }
 
     @Override
@@ -119,49 +131,20 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
-        final int tabCount = 3;
-        String[] tabTitles = new String[]{
-                getString(R.string.usage_title),
-                getString(R.string.fueling_title),
-                getString(R.string.settings_title)};
-        adapter = new FragmentPagerAdapter(getSupportFragmentManager(), tabCount, tabTitles);
-
-        pager.setAdapter(adapter);
-
-        tabs.setDistributeEvenly(true);
-        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-            @Override
-            public int getIndicatorColor(int position) {
-                return getResources().getColor(R.color.accent);
-            }
-        });
-        tabs.setViewPager(pager);
-        /*
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP){
-            fab.setElevation(8);
-            fab.setBackgroundDrawable(getDrawable(R.drawable.fab_background));
-        }
-        */
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "FAB Clicked", Toast.LENGTH_LONG).show();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content_frame, FuelingFragment.newInstance());
+                transaction.addToBackStack(null);
+
+                transaction.commit();
             }
         });
-
 
         getOwnedCars();
         user = ParseUser.getCurrentUser();
 
-        String action = getIntent().getAction();
-        if (action != null) {
-            if (action.equals(Consts.OPEN_TAB_SETTINGS)) {
-                pager.setCurrentItem(2);
-            } else if (action.equals(Consts.OPEN_TAB_USAGE)) {
-                pager.setCurrentItem(0);
-            }
-        }
     }
 
     @Override
@@ -177,17 +160,44 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                //Toast.makeText(MainActivity.this, "Opening settings...", Toast.LENGTH_SHORT).show();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content_frame, SettingsFragment.newInstance());
+                transaction.addToBackStack(null);
+                transaction.commit();
+                return true;
+            case R.id.action_logout:
+                logOut(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed() {
+    private static void logOut(final Context context) {
+        new AlertDialog.Builder(context)
+                .setMessage("Are you sure you want to log out?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        progress = ProgressDialog.show(context, "Logging you out", "Please Wait...");
+                        ParseUser.logOutInBackground(new LogOutCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                progress.dismiss();
+                                context.startActivity(new Intent(context, DispatchActivity.class));
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 
     private void getOwnedCars() {
