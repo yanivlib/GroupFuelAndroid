@@ -5,11 +5,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.User;
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager pager;
     private SlidingTabLayout tabs;
     private Toolbar toolbar;
+    private FloatingActionButton fab;
 
     public static AlertDialog.Builder createErrorAlert(String message, String title, Context context) {
         return new AlertDialog.Builder(context)
@@ -100,14 +104,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setfragmentPagerAdapter(FragmentPagerAdapter adapter) {
-        this.adapter = adapter;
-    }
-
     private void findViewsByid() {
         pager = (ViewPager) findViewById(R.id.viewpager);
         tabs = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
         toolbar = (Toolbar)findViewById(R.id.tool_bar);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
     }
 
     @Override
@@ -116,12 +117,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         findViewsByid();
 
+        setSupportActionBar(toolbar);
+
+        final int tabCount = 3;
         String[] tabTitles = new String[]{
                 getString(R.string.usage_title),
                 getString(R.string.fueling_title),
                 getString(R.string.settings_title)};
-        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager(), MainActivity.this);
+        adapter = new FragmentPagerAdapter(getSupportFragmentManager(), tabCount, tabTitles);
+
         pager.setAdapter(adapter);
+
         tabs.setDistributeEvenly(true);
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
@@ -130,6 +136,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         tabs.setViewPager(pager);
+        /*
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP){
+            fab.setElevation(8);
+            fab.setBackgroundDrawable(getDrawable(R.drawable.fab_background));
+        }
+        */
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "FAB Clicked", Toast.LENGTH_LONG).show();
+            }
+        });
+
+
         getOwnedCars();
         user = ParseUser.getCurrentUser();
 

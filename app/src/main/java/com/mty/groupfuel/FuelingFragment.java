@@ -34,8 +34,9 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     private Spinner carSpinner;
 
     private Car selectedCar;
-
     private Button sendButton;
+
+    private String pleaseSelect;
 
     public FuelingFragment() {
     }
@@ -68,6 +69,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         cars = ((MainActivity) getActivity()).getCars();
+        pleaseSelect = getString(R.string.please_select);
     }
 
     private void findViewsById(View view) {
@@ -81,7 +83,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
 
     private void attachAdapter(View view, Object[] array, Spinner spinner) {
         List<Object> arrayList = new ArrayList<>();
-        arrayList.add(getString(R.string.please_select));
+        arrayList.add(pleaseSelect);
         for (Object object : array) {
             arrayList.add(object);
         }
@@ -133,7 +135,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
         }
         ArrayAdapter<String> carSpinnerAdapter = (ArrayAdapter) carSpinner.getAdapter();
         carSpinnerAdapter.clear();
-        carSpinnerAdapter.add(getString(R.string.please_select));
+        carSpinnerAdapter.add(pleaseSelect);
         carSpinnerAdapter.addAll(carNames);
     }
 
