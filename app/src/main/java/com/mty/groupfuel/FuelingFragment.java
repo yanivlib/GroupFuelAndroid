@@ -27,19 +27,16 @@ import java.util.List;
 
 public class FuelingFragment extends android.support.v4.app.Fragment {
     Context context;
+    getCarsListener mCallback;
     private List<Car> cars;
     private EditText mileageEditText;
     private EditText priceEditText;
     private EditText amountEditText;
     private EditText locationEditText;
     private Spinner carSpinner;
-
     private Car selectedCar;
     private Button sendButton;
-
     private String pleaseSelect;
-
-    getCarsListener mCallback;
 
     public FuelingFragment() {
     }
@@ -227,6 +224,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             mileageEditText.setText(null);
             priceEditText.setText(null);
             locationEditText.setText(null);
+            getActivity().getSupportFragmentManager().popBackStack();
         }
     }
 }

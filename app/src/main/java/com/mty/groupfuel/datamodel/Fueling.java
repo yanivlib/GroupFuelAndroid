@@ -1,16 +1,35 @@
 package com.mty.groupfuel.datamodel;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 @ParseClassName("Fueling")
-public class Fueling extends ParseObject {
+public class Fueling extends ParseObject implements Parcelable {
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Fueling createFromParcel(Parcel in) {
+            return new Fueling(in);
+        }
+
+        public Fueling[] newArray(int size) {
+            return new Fueling[size];
+        }
+    };
 
     public Fueling() {
 
+    }
+
+    public Fueling(Parcel in) {
+
+    }
+
+    public static ParseQuery<Fueling> getQuery() {
+        return ParseQuery.getQuery(Fueling.class);
     }
 
     public Car getCar() {
@@ -22,7 +41,7 @@ public class Fueling extends ParseObject {
     }
 
     public User getUser() {
-        return (User)getParseUser("User");
+        return (User) getParseUser("User");
     }
 
     public void setUser(User value) {
@@ -79,7 +98,15 @@ public class Fueling extends ParseObject {
         put("Location", value);
     }
 
-    public static ParseQuery<Fueling> getQuery() {
-        return ParseQuery.getQuery(Fueling.class);
+    @Override
+    public int describeContents() {
+        return 0;
     }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+    }
+
+
 }

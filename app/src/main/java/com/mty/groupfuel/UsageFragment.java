@@ -1,10 +1,7 @@
 package com.mty.groupfuel;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +9,9 @@ import android.view.ViewGroup;
 import android.widget.TableLayout;
 
 import com.mty.groupfuel.datamodel.Car;
-import com.mty.groupfuel.datamodel.Fueling;
-import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,14 +28,11 @@ public class UsageFragment extends android.support.v4.app.Fragment {
     private final static String TOTAL_AMOUNT = "totalAmount";
     private final static String NUM_OF_EVENTS = "numOfEvents";
     private final static String CURRENT_MILEAGE = "currentMileage";
-
+    getCarsListener mCallback;
     private TableLayout displayTable;
     private Context context;
-
     private Map<String,Map<String, Number>> datamap;
     private List<Car> cars;
-
-    getCarsListener mCallback;
 
     public UsageFragment() {
     }
@@ -101,10 +91,21 @@ public class UsageFragment extends android.support.v4.app.Fragment {
             if (intAmount == 0) {
                 intAmount++;
             }
-            String dpg = String.valueOf(miles /intPrice);
-            String mpg = String.valueOf(miles /intAmount);
+            String dpg = String.valueOf(miles / intPrice);
+            String mpg = String.valueOf(miles / intAmount);
 
             tl.addView(getCarView(context, name, mpg, mileage.toString(), dpg));
+        }
+    }
+
+    public void setCars(List<Car> cars) {
+        if (!cars.equals(this.cars)) {
+            this.cars = cars;
+            if (datamap == null) {
+                getUsage(cars);
+            } else {
+                populateDisplayTable(context, datamap, cars, displayTable);
+            }
         }
     }
 
@@ -130,7 +131,9 @@ public class UsageFragment extends android.support.v4.app.Fragment {
         View view = inflater.inflate(R.layout.fragment_usage, container, false);
         context = view.getContext();
         displayTable = (TableLayout) view.findViewById(R.id.displayTable);
-        this.cars = mCallback.getCars();
+        if (cars == null) {
+            this.cars = mCallback.getCars();
+        }
         if (cars != null) {
             getUsage(cars);
         }
@@ -138,22 +141,8 @@ public class UsageFragment extends android.support.v4.app.Fragment {
     }
 
     public void getUsage(final List<Car> cars) {
-        if (cars.size() == 0) {
-            new AlertDialog.Builder(context)
-                    .setTitle(context.getString(R.string.no_cars))
-                    .setMessage(context.getString(R.string.add_car_q))
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            startActivity(new Intent(context, AddCarActivity.class));
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
+        if (datamap != null) {
+            return;
         }
         List<JSONObject> carPointers = new ArrayList<>(getPointers(cars));
         final Map<String, List<JSONObject>> params = new HashMap<>();

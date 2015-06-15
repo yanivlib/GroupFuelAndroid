@@ -6,16 +6,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.User;
@@ -32,11 +30,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements getCarsListener {
 
+    static FloatingActionButton fab;
     static private ParseUser user;
+    private static ProgressDialog progress;
     private List<Car> cars;
     private Toolbar toolbar;
-    static FloatingActionButton fab;
-    private static ProgressDialog progress;
+    private Fragment mContent;
 
     public static AlertDialog.Builder createErrorAlert(String message, String title, Context context) {
         return new AlertDialog.Builder(context)
@@ -78,6 +77,30 @@ public class MainActivity extends AppCompatActivity
         return result;
     }
 
+    private static void logOut(final Context context) {
+        new AlertDialog.Builder(context)
+                .setMessage("Are you sure you want to log out?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        progress = ProgressDialog.show(context, "Logging you out", "Please Wait...");
+                        ParseUser.logOutInBackground(new LogOutCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                progress.dismiss();
+                                context.startActivity(new Intent(context, DispatchActivity.class));
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
     public User getUser() {
         return (User) user;
     }
@@ -91,19 +114,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void broadcastCarList() {
+        ViewPagerContainerFragment.FragmentPagerAdapter adapter = ViewPagerContainerFragment.adapter;
         System.out.println("calling broadcastCarList, while cars length is " + this.cars.size());
-        /*UsageFragment usageFragment = (UsageFragment) adapter.getRegisteredFragment(0);
+        UsageFragment usageFragment = (UsageFragment) adapter.getRegisteredFragment(0);
         if (usageFragment != null) {
-            usageFragment.updateCars(cars);
+            usageFragment.setCars(cars);
         }
-        FuelingFragment fuelingFragment = (FuelingFragment) adapter.getRegisteredFragment(1);
-        if (fuelingFragment != null) {
-            fuelingFragment.updateCars(cars);
-        }
-        SettingsFragment settingsFragment = (SettingsFragment) adapter.getRegisteredFragment(2);
-        if (settingsFragment != null) {
-            settingsFragment.setCars(cars);
-        }*/
     }
 
     private void findViewsByid() {
@@ -115,10 +131,10 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        ViewPagerContainerFragment topbarFragment = (ViewPagerContainerFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
-        if(topbarFragment == null) {
-            topbarFragment = new ViewPagerContainerFragment();
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, topbarFragment).commit();
+        ViewPagerContainerFragment viewPagerContainerFragment = (ViewPagerContainerFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
+        if (viewPagerContainerFragment == null) {
+            viewPagerContainerFragment = new ViewPagerContainerFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, viewPagerContainerFragment).commit();
             getSupportFragmentManager().executePendingTransactions();
         }
     }
@@ -144,7 +160,10 @@ public class MainActivity extends AppCompatActivity
 
         getOwnedCars();
         user = ParseUser.getCurrentUser();
-
+        if (savedInstanceState != null) {
+            mContent = getSupportFragmentManager().getFragment(
+                    savedInstanceState, "mContent");
+        }
     }
 
     @Override
@@ -174,30 +193,6 @@ public class MainActivity extends AppCompatActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private static void logOut(final Context context) {
-        new AlertDialog.Builder(context)
-                .setMessage("Are you sure you want to log out?")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        progress = ProgressDialog.show(context, "Logging you out", "Please Wait...");
-                        ParseUser.logOutInBackground(new LogOutCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                progress.dismiss();
-                                context.startActivity(new Intent(context, DispatchActivity.class));
-                            }
-                        });
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do nothing
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
     }
 
     private void getOwnedCars() {
@@ -235,5 +230,13 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        getSupportFragmentManager().putFragment(outState, "mContent", mContent);
+
+
     }
 }

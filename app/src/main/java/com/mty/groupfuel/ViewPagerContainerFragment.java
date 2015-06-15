@@ -4,7 +4,6 @@ package com.mty.groupfuel;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,16 +14,18 @@ import android.view.ViewGroup;
 
 public class ViewPagerContainerFragment extends Fragment {
 
+    static FragmentPagerAdapter adapter;
     private ViewPager pager;
     private SlidingTabLayout tabs;
-    private FragmentPagerAdapter adapter;
     private AppCompatActivity context;
 
-    public ViewPagerContainerFragment() {   }
+    public ViewPagerContainerFragment() {
+
+    }
 
     @Override
     public void onAttach(Activity activity) {
-        context=(AppCompatActivity) activity;
+        context = (AppCompatActivity) activity;
         super.onAttach(activity);
     }
 
@@ -38,12 +39,11 @@ public class ViewPagerContainerFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_view_pager_container, container, false);
-
         getViewsById(root);
 
         final int tabCount = 2;
         String[] tabTitles = new String[]{ getString(R.string.usage_title), "Fuel Log"};
-        adapter = new FragmentPagerAdapter(context.getSupportFragmentManager(), tabCount, tabTitles);
+        adapter = new FragmentPagerAdapter(getChildFragmentManager(), tabCount, tabTitles);
 
         pager.setAdapter(adapter);
 
@@ -56,17 +56,10 @@ public class ViewPagerContainerFragment extends Fragment {
         });
         tabs.setViewPager(pager);
 
-       /* String action = getIntent().getAction();
-        if (action != null) {
-            if (action.equals(Consts.OPEN_TAB_SETTINGS)) {
-                pager.setCurrentItem(2);
-            } else if (action.equals(Consts.OPEN_TAB_USAGE)) {
-                pager.setCurrentItem(0);
-            }
-        }*/
         return root;
     }
-    private class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter{
+
+    public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter {
         private int tabCount;
         private SparseArray<Fragment> registeredFragments;
         private String tabTitles[];
