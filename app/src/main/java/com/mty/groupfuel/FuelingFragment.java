@@ -216,7 +216,8 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
                     if (e != null) {
                         MainActivity.createErrorAlert(e.getMessage(), context).show();
                     } else {
-                        Toast.makeText(context, getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
+                        getActivity().getSupportFragmentManager().popBackStack();
                     }
                 }
             });
@@ -224,7 +225,6 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
             mileageEditText.setText(null);
             priceEditText.setText(null);
             locationEditText.setText(null);
-            getActivity().getSupportFragmentManager().popBackStack();
         }
     }
 }

@@ -244,9 +244,11 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, PersonalActivity.class);
-                intent.putExtra(Consts.PARENT_ACTIVITY_NAME, SettingsFragment.class.getName());
-                context.startActivity(intent);
+                final MainActivity activity = (MainActivity) context;
+                FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content_frame, new PersonalFragment());
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         };
     }

@@ -83,7 +83,7 @@ public class RegisterActivity extends Activity {
             public void done(ParseException e) {
                 progressDialog.dismiss();
                 if (e == null) {
-                    Intent intent = new Intent(RegisterActivity.this, PersonalActivity.class);
+                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                     intent.putExtra(Consts.PARENT_ACTIVITY_NAME, RegisterActivity.class.getName());
                     startActivity(intent);
                 } else {

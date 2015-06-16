@@ -125,7 +125,7 @@ public class AddCarFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_add_car, container, false);
+        View view = inflater.inflate(R.layout.fragment_add_car, container, false);
         findViewsById(view);
         context = view.getContext();
         spinners = new Spinner[]{maker, model, engine, year, gear, fuel};
