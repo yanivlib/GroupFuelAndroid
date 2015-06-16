@@ -126,6 +126,12 @@ public class UsageFragment extends android.support.v4.app.Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //outState.putParcelableArrayList("cars", cars);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_usage, container, false);

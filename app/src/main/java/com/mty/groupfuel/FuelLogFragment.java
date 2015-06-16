@@ -2,11 +2,11 @@ package com.mty.groupfuel;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
+import android.widget.ArrayAdapter;
 
 import com.mty.groupfuel.datamodel.Fueling;
 import com.parse.FindCallback;
@@ -18,10 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FuelLogFragment extends Fragment {
+public class FuelLogFragment extends ListFragment {
     private static final String FUELING_LIST = "fueling_list";
-    private static TableLayout logTable;
-    private static Context context;
     private static List<Fueling> fuelingList;
 
     public FuelLogFragment() {
@@ -35,10 +33,9 @@ public class FuelLogFragment extends Fragment {
         return fragment;
     }
 
-    private static void populateLogTable(Context context, List<Fueling> list, TableLayout tl) {
-        for (Fueling fueling : list) {
-            tl.addView(new FuelingUsage(context, fueling));
-        }
+    public void setFuelingList(List<Fueling> fuelingList) {
+        FuelLogFragment.fuelingList = fuelingList;
+        ((FuelingAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
     @Override
@@ -50,45 +47,44 @@ public class FuelLogFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-            fuelingList = savedInstanceState.getParcelableArrayList(FUELING_LIST);
+            ArrayList<Fueling> fuelingList = savedInstanceState.getParcelableArrayList(FUELING_LIST);
+            setFuelingList(fuelingList);
         }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fuelingList = new ArrayList<>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.fragment_fuel_log, container, false);
-        logTable = (TableLayout)view.findViewById(R.id.logTable);
-        context = view.getContext();
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        setListAdapter(new FuelingAdapter(view.getContext(), fuelingList));
         if (savedInstanceState != null) {
-            fuelingList = savedInstanceState.getParcelableArrayList(FUELING_LIST);
+            ArrayList<Fueling> fuelingList = savedInstanceState.getParcelableArrayList(FUELING_LIST);
+            setFuelingList(fuelingList);
         }
-        if (fuelingList == null) {
-            getFuelings(context);
-        } else {
-            populateLogTable(context, fuelingList, logTable);
+        if (fuelingList.isEmpty()) {
+            getFuelings();
         }
         return view;
     }
 
-    private void getFuelings(final Context context) {
-        if (fuelingList != null) {
-            return;
-        }
+    private void getFuelings() {
+        System.out.println("got to getFueling");
         ParseQuery<Fueling> query = Fueling.getQuery();
         query.whereEqualTo("User", ParseUser.getCurrentUser());
         query.include("Car");
         query.findInBackground(new FindCallback<Fueling>() {
             @Override
             public void done(List<Fueling> list, ParseException e) {
+                System.out.println("got answer");
                 if (e == null) {
-                    fuelingList = list;
-                    populateLogTable(context, list, FuelLogFragment.logTable);
+                    System.out.println("updating getFueling");
+                    setFuelingList(list);
                 } else {
                     throw new RuntimeException(e.getMessage());
                 }
@@ -96,4 +92,20 @@ public class FuelLogFragment extends Fragment {
         });
     }
 
+
+    public class FuelingAdapter extends ArrayAdapter<Fueling> {
+        public FuelingAdapter(Context c, List<Fueling> items) {
+            super(c, 0, items);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            FuelLogItem fuelLogItem = (FuelLogItem) convertView;
+            if (null == fuelLogItem) {
+                fuelLogItem = FuelLogItem.inflate(parent);
+            }
+            fuelLogItem.setFueling(getItem(position));
+            return fuelLogItem;
+        }
+    }
 }

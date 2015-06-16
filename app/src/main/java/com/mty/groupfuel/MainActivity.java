@@ -30,6 +30,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements getCarsListener {
 
+    private static final String CURRENT_FRAGMENT = "current_fragment";
     static FloatingActionButton fab;
     static private ParseUser user;
     private static ProgressDialog progress;
@@ -162,7 +163,7 @@ public class MainActivity extends AppCompatActivity
         user = ParseUser.getCurrentUser();
         if (savedInstanceState != null) {
             mContent = getSupportFragmentManager().getFragment(
-                    savedInstanceState, "mContent");
+                    savedInstanceState, CURRENT_FRAGMENT);
         }
     }
 
@@ -175,13 +176,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch (id) {
             case R.id.action_settings:
-                //Toast.makeText(MainActivity.this, "Opening settings...", Toast.LENGTH_SHORT).show();
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.content_frame, SettingsFragment.newInstance());
                 transaction.addToBackStack(null);
@@ -235,8 +232,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        getSupportFragmentManager().putFragment(outState, "mContent", mContent);
-
-
+        //getSupportFragmentManager().putFragment(outState, CURRENT_FRAGMENT, mContent);
     }
 }

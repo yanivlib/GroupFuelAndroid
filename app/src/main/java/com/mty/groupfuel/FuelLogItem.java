@@ -2,7 +2,9 @@ package com.mty.groupfuel;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.TableRow;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mty.groupfuel.datamodel.Car;
@@ -12,25 +14,33 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class FuelingUsage extends TableRow {
+public class FuelLogItem extends RelativeLayout {
     private TextView carName;
     private TextView date;
     private TextView amount;
     private TextView price;
 
-    FuelingUsage(Context context) {
-        super(context);
-        init();
+    public FuelLogItem(Context context) {
+        this(context, null);
     }
 
-    FuelingUsage(Context context, AttributeSet attributeSet) {
-        super(context, attributeSet);
-        init();
+    public FuelLogItem(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
     }
 
-    FuelingUsage(Context context, Fueling fueling) {
-        super(context);
-        init();
+    public FuelLogItem(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        LayoutInflater.from(context).inflate(R.layout.fueling_log_item_children, this, true);
+        setupChildren();
+    }
+
+    public static FuelLogItem inflate(ViewGroup parent) {
+        FuelLogItem fuelLogItem = (FuelLogItem) LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.fueling_log_item, parent, false);
+        return fuelLogItem;
+    }
+
+    void setFueling(Fueling fueling) {
         setCarName(fueling.getCar().getDisplayName());
         setDate(fueling.getCreatedAt());
         setAmount(fueling.getAmount().toString());
@@ -61,8 +71,7 @@ public class FuelingUsage extends TableRow {
         this.carName.setText(car.getDisplayName());
     }
 
-    private void init() {
-        inflate(getContext(), R.layout.usage_fueling, this);
+    private void setupChildren() {
         this.carName = (TextView) findViewById(R.id.usage_log_car);
         this.date = (TextView) findViewById(R.id.usage_log_date);
         this.amount = (TextView) findViewById(R.id.usage_log_amount);
