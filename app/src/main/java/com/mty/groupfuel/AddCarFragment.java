@@ -1,17 +1,19 @@
 package com.mty.groupfuel;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.CarModel;
@@ -30,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AddCarActivity extends Activity {
+public class AddCarFragment extends Fragment {
 
     private Spinner maker;
     private Spinner model;
@@ -46,6 +48,7 @@ public class AddCarActivity extends Activity {
     private Map<String, List<CarModel>> makerModels;
     private Map<String, List<Object>> makerModelNames;
     private String pleaseSelect;
+    private Context context;
 
     private static List<Object> getEngines(String model, List<CarModel> modelList) {
         List<Object> engines = new ArrayList<>();
@@ -119,53 +122,38 @@ public class AddCarActivity extends Activity {
         this.modelList = modelList;
     }
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_car);
-        makerModels = new HashMap<>();
-        makerModelNames = new HashMap<>();
-        pleaseSelect = getString(R.string.please_select);
-        findViewsById();
-        spinners = new Spinner[] {maker, model, engine, year, gear, fuel};
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_add_car, container, false);
+        findViewsById(view);
+        context = view.getContext();
+        spinners = new Spinner[]{maker, model, engine, year, gear, fuel};
         attachAdapters();
         disableAll();
         getMakers();
         button.setOnClickListener(new AddCarListener());
+        return view;
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_add_car, menu);
-        return true;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        makerModels = new HashMap<>();
+        makerModelNames = new HashMap<>();
+        pleaseSelect = getString(R.string.please_select);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void findViewsById() {
-        maker = (Spinner)findViewById(R.id.add_car_maker);
-        model = (Spinner)findViewById(R.id.add_car_model);
-        engine = (Spinner)findViewById(R.id.add_car_engine);
-        year = (Spinner)findViewById(R.id.add_car_year);
-        number = (EditText)findViewById(R.id.add_car_number);
-        button = (Button)findViewById(R.id.add_car_button);
-        hybrid = (CheckBox)findViewById(R.id.add_car_hybrid);
-        gear = (Spinner)findViewById(R.id.add_car_gear);
-        fuel = (Spinner)findViewById(R.id.add_car_fuel);
+    private void findViewsById(View view) {
+        maker = (Spinner) view.findViewById(R.id.add_car_maker);
+        model = (Spinner) view.findViewById(R.id.add_car_model);
+        engine = (Spinner) view.findViewById(R.id.add_car_engine);
+        year = (Spinner) view.findViewById(R.id.add_car_year);
+        number = (EditText) view.findViewById(R.id.add_car_number);
+        button = (Button) view.findViewById(R.id.add_car_button);
+        hybrid = (CheckBox) view.findViewById(R.id.add_car_hybrid);
+        gear = (Spinner) view.findViewById(R.id.add_car_gear);
+        fuel = (Spinner) view.findViewById(R.id.add_car_fuel);
     }
 
     private void disableFollowing(Spinner spinner) {
@@ -195,7 +183,7 @@ public class AddCarActivity extends Activity {
     }
 
     private void updateSpinnerList(Spinner spinner, List<Object> array) {
-        ArrayAdapter<Object> adapter = (ArrayAdapter<Object>)spinner.getAdapter();
+        ArrayAdapter<Object> adapter = (ArrayAdapter<Object>) spinner.getAdapter();
         adapter.clear();
         adapter.add(pleaseSelect);
         adapter.addAll(array);
@@ -209,7 +197,7 @@ public class AddCarActivity extends Activity {
             List<String> array = new ArrayList<>();
             array.add(pleaseSelect);
             ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                    this, android.R.layout.simple_spinner_item, array);
+                    context, android.R.layout.simple_spinner_item, array);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapter);
             spinner.setSelection(0);
@@ -224,29 +212,29 @@ public class AddCarActivity extends Activity {
         button.setEnabled(false);
     }
 
-    private void getMakers () {
+    private void getMakers() {
         ParseCloud.callFunctionInBackground(
                 Consts.GET_CAR_MAKES, new HashMap<String, Object>(),
                 new FunctionCallback<ArrayList<Object>>() {
-            @Override
-            public void done(ArrayList<Object> result, ParseException e) {
-                System.out.println("getmakers print");
-                if (e == null) {
-                    updateSpinnerList(maker, result);
-                } else {
-                    switch (e.getCode()) {
-                        case 141:
-                            System.out.println(e.getMessage());
-                            break;
-                        default:
-                            throw new RuntimeException(e.getMessage());
+                    @Override
+                    public void done(ArrayList<Object> result, ParseException e) {
+                        System.out.println("getmakers print");
+                        if (e == null) {
+                            updateSpinnerList(maker, result);
+                        } else {
+                            switch (e.getCode()) {
+                                case 141:
+                                    System.out.println(e.getMessage());
+                                    break;
+                                default:
+                                    throw new RuntimeException(e.getMessage());
+                            }
+                        }
                     }
-                }
-            }
-        });
+                });
     }
 
-    private void getModels (final String make) {
+    private void getModels(final String make) {
         System.out.println("getModels started");
         if (makerModels.containsKey(make) && makerModelNames.containsKey(make)) {
             setModelList(makerModels.get(make));
@@ -295,19 +283,19 @@ public class AddCarActivity extends Activity {
     }
 
     private Number getCurrentEngine() {
-        return (Number)engine.getSelectedItem();
+        return (Number) engine.getSelectedItem();
     }
 
     private Number getCurrentYear() {
-        return (Number)year.getSelectedItem();
+        return (Number) year.getSelectedItem();
     }
 
     private Fuel getCurrentFuel() {
-        return (Fuel)fuel.getSelectedItem();
+        return (Fuel) fuel.getSelectedItem();
     }
 
     private Gear getCurrentGear() {
-        return (Gear)gear.getSelectedItem();
+        return (Gear) gear.getSelectedItem();
     }
 
     private String getCarNumber() {
@@ -319,7 +307,7 @@ public class AddCarActivity extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 Object value = adapterView.getItemAtPosition(position);
-                disableFollowing(type.toSpinner(AddCarActivity.this));
+                disableFollowing(type.toSpinner(AddCarFragment.this));
                 if (position > 0) {
                     switch (type) {
                         case maker:
@@ -332,18 +320,18 @@ public class AddCarActivity extends Activity {
                             updateSpinnerList(engine, engines);
                             break;
                         case engine:
-                            Number engine = (Number)value;
+                            Number engine = (Number) value;
                             List<Object> years = getYears(getCurrentModel(), engine, modelList);
                             updateSpinnerList(year, years);
                             break;
                         case year:
-                            Number year = (Number)value;
+                            Number year = (Number) value;
                             getCurrentEngine();
                             List<Object> gears = getGears(getCurrentModel(), getCurrentEngine(), year, modelList);
                             updateSpinnerList(gear, gears);
                             break;
                         case gear:
-                            Gear gear = (Gear)value;
+                            Gear gear = (Gear) value;
                             List<Object> fuels = getFuels(getCurrentModel(), getCurrentEngine(), getCurrentYear(), gear, modelList);
                             updateSpinnerList(fuel, fuels);
                             break;
@@ -369,25 +357,25 @@ public class AddCarActivity extends Activity {
     private enum SpinnerType {
         maker, model, engine, year, gear, fuel;
 
-        static SpinnerType fromSpinner(Spinner spinner, final AddCarActivity addCarActivity) {
-            if (spinner == addCarActivity.maker) {
+        static SpinnerType fromSpinner(Spinner spinner, final AddCarFragment addCarFragment) {
+            if (spinner == addCarFragment.maker) {
                 return maker;
-            } else if (spinner == addCarActivity.model) {
+            } else if (spinner == addCarFragment.model) {
                 return model;
-            } else if (spinner == addCarActivity.engine) {
+            } else if (spinner == addCarFragment.engine) {
                 return engine;
-            } else if (spinner == addCarActivity.year) {
+            } else if (spinner == addCarFragment.year) {
                 return year;
-            } else if (spinner == addCarActivity.gear) {
+            } else if (spinner == addCarFragment.gear) {
                 return gear;
-            } else if (spinner == addCarActivity.fuel) {
+            } else if (spinner == addCarFragment.fuel) {
                 return fuel;
             } else {
                 return null;
             }
         }
 
-        Spinner toSpinner(AddCarActivity addCarActivity) {
+        Spinner toSpinner(AddCarFragment addCarActivity) {
             switch (this) {
                 case maker:
                     return addCarActivity.maker;
@@ -413,7 +401,7 @@ public class AddCarActivity extends Activity {
             List<String> error = new ArrayList<>();
             CarModel model = getModel();
             String number = getCarNumber();
-            User user = (User)ParseUser.getCurrentUser();
+            User user = (User) ParseUser.getCurrentUser();
             if (model.getObjectId().equals(Consts.OBJECTID_NULL)) {
                 error.add("Invalid car model");
             }
@@ -424,7 +412,7 @@ public class AddCarActivity extends Activity {
                 error.add("You must be logged in to add a new car");
             }
             if (error.size() > 0) {
-                MainActivity.createErrorAlert(error, AddCarActivity.this).show();
+                MainActivity.createErrorAlert(error, context).show();
                 return;
             }
             Car car = new Car();
@@ -438,9 +426,8 @@ public class AddCarActivity extends Activity {
                 public void done(ParseException e) {
                     if (e == null) {
                         disableAll();
-                        Intent intent = new Intent(AddCarActivity.this, MainActivity.class);
-                        intent.setAction(Consts.OPEN_TAB_SETTINGS);
-                        startActivity(intent);
+                        Toast.makeText(context, "New car successfully added!", Toast.LENGTH_LONG).show();
+                        getActivity().getSupportFragmentManager().popBackStack();
                     } else {
                         throw new RuntimeException(e.getMessage());
                     }

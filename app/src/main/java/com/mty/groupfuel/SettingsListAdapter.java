@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.util.Log;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +25,6 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +42,36 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
         this.checkBoxArrayList = new ArrayList<>();
     }
 
+    public static View.OnClickListener signOut(final Context context) {
+        return new View.OnClickListener() {
+            ProgressDialog progress;
+
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(context)
+                        .setMessage("Are you sure you want to log out?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                progress = ProgressDialog.show(context, "Logging you out", "Please Wait...");
+                                ParseUser.logOutInBackground(new LogOutCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        progress.dismiss();
+                                        context.startActivity(new Intent(context, DispatchActivity.class));
+                                    }
+                                });
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
+        };
+    }
 
     @Override
     public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
@@ -186,7 +215,11 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            context.startActivity(new Intent(context, AddCarActivity.class));
+                final MainActivity activity = (MainActivity) context;
+                FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content_frame, new AddCarFragment());
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         };
     }
@@ -206,6 +239,7 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
             }
         };
     }
+
     private View.OnClickListener updatePersonal(final Context context) {
         return new View.OnClickListener() {
             @Override
@@ -217,36 +251,6 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
         };
     }
 
-    public static View.OnClickListener signOut(final Context context) {
-        return new View.OnClickListener() {
-            ProgressDialog progress;
-
-            @Override
-            public void onClick(View view) {
-                new AlertDialog.Builder(context)
-                    .setMessage("Are you sure you want to log out?")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            progress = ProgressDialog.show(context, "Logging you out", "Please Wait...");
-                            ParseUser.logOutInBackground(new LogOutCallback() {
-                                @Override
-                                public void done(ParseException e) {
-                                    progress.dismiss();
-                                    context.startActivity(new Intent(context, DispatchActivity.class));
-                                }
-                            });
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-            }
-        };
-    }
     private View.OnClickListener linkFacebook(final ParseUser user, final Context context) {
         return new View.OnClickListener() {
             Activity activity = (Activity)context;

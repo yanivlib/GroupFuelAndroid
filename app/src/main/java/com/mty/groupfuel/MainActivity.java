@@ -203,7 +203,10 @@ public class MainActivity extends AppCompatActivity
                                 .setMessage("You need at least one car to access this function. Would you want to add one now?")
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        startActivity(new Intent(MainActivity.this, AddCarActivity.class));
+                                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                                        transaction.replace(R.id.content_frame, SettingsFragment.newInstance());
+                                        transaction.addToBackStack(null);
+                                        transaction.commit();
                                     }
                                 })
                                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
