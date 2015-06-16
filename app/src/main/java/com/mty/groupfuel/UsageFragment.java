@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
+import android.widget.ArrayAdapter;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.parse.FunctionCallback;
@@ -21,15 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UsageFragment extends android.support.v4.app.Fragment {
+public class UsageFragment extends android.support.v4.app.ListFragment {
 
-    private final static String STARTING_MILEAGE = "startingMileage";
-    private final static String TOTAL_PRICE = "totalPrice";
-    private final static String TOTAL_AMOUNT = "totalAmount";
-    private final static String NUM_OF_EVENTS = "numOfEvents";
-    private final static String CURRENT_MILEAGE = "currentMileage";
     getCarsListener mCallback;
-    private TableLayout displayTable;
+
     private Context context;
     private Map<String,Map<String, Number>> datamap;
     private List<Car> cars;
@@ -64,47 +59,12 @@ public class UsageFragment extends android.support.v4.app.Fragment {
         return res;
     }
 
-    private static CarUsage getCarView(Context context, String name, String mpg, String mileage, String dpg) {
-        CarUsage usage = new CarUsage(context);
-        usage.setDpg(dpg);
-        usage.setHeader(name);
-        usage.setMileage(mileage);
-        usage.setMpg(mpg);
-        return usage;
-    }
-
-    private static void populateDisplayTable(Context context, Map<String, Map<String, Number>> datamap, List<Car> cars, TableLayout tl) {
-        for (Car car : cars) {
-            Map<String, Number> map = datamap.get(car.getObjectId());
-            String name = car.getDisplayName();
-            Number price = map.get(TOTAL_PRICE);
-            Number amount = map.get(TOTAL_AMOUNT);
-            Number starting = map.get(STARTING_MILEAGE);
-            Number mileage = map.get(CURRENT_MILEAGE);
-
-            int miles = (mileage.intValue() - starting.intValue());
-            int intPrice = price.intValue();
-            if (intPrice == 0) {
-                intPrice++;
-            }
-            int intAmount = amount.intValue();
-            if (intAmount == 0) {
-                intAmount++;
-            }
-            String dpg = String.valueOf(miles / intPrice);
-            String mpg = String.valueOf(miles / intAmount);
-
-            tl.addView(getCarView(context, name, mpg, mileage.toString(), dpg));
-        }
-    }
-
     public void setCars(List<Car> cars) {
-        if (!cars.equals(this.cars)) {
+        if (cars != null && !cars.equals(this.cars)) {
             this.cars = cars;
+            ((UsageAdapter) getListAdapter()).notifyDataSetChanged();
             if (datamap == null) {
                 getUsage(cars);
-            } else {
-                populateDisplayTable(context, datamap, cars, displayTable);
             }
         }
     }
@@ -123,6 +83,7 @@ public class UsageFragment extends android.support.v4.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        cars = new ArrayList<>();
     }
 
     @Override
@@ -134,13 +95,13 @@ public class UsageFragment extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_usage, container, false);
+        View view = super.onCreateView(inflater, container, savedInstanceState);
         context = view.getContext();
-        displayTable = (TableLayout) view.findViewById(R.id.displayTable);
-        if (cars == null) {
-            this.cars = mCallback.getCars();
+        setListAdapter(new UsageAdapter(context, cars));
+        if (cars.isEmpty()) {
+            setCars(mCallback.getCars());
         }
-        if (cars != null) {
+        if (!cars.isEmpty()) {
             getUsage(cars);
         }
         return view;
@@ -158,11 +119,28 @@ public class UsageFragment extends android.support.v4.app.Fragment {
             public void done(Map<String, Map<String, Number>> result, ParseException e) {
                 if (e == null) {
                     datamap = result;
-                    populateDisplayTable(context, result, cars, displayTable);
+                    setCars(cars);
                 } else {
                     System.out.println(e.getMessage());
                 }
             }
         });
+    }
+
+    public class UsageAdapter extends ArrayAdapter<Car> {
+        public UsageAdapter(Context c, List<Car> items) {
+            super(c, 0, items);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            CarUsage carUsage = (CarUsage) convertView;
+            if (null == carUsage) {
+                carUsage = CarUsage.inflate(parent);
+            }
+            Car car = getItem(position);
+            carUsage.setData(car, datamap.get(car.getObjectId()));
+            return carUsage;
+        }
     }
 }
