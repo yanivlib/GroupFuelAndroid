@@ -33,7 +33,6 @@ public class PersonalFragment extends Fragment {
     private EditText editTextBirth;
     private EditText editTextFirst;
     private EditText editTextLast;
-    private EditText editTextCountry;
     private RadioGroup radioGroupGender;
     private Button buttonApply;
 
@@ -41,7 +40,6 @@ public class PersonalFragment extends Fragment {
         editTextBirth = (EditText) view.findViewById(R.id.update_birth);
         editTextFirst = (EditText) view.findViewById(R.id.update_first);
         editTextLast = (EditText) view.findViewById(R.id.update_last);
-        editTextCountry = (EditText) view.findViewById(R.id.update_country);
         radioGroupGender = (RadioGroup) view.findViewById(R.id.update_gender);
         buttonApply = (Button) view.findViewById(R.id.update_button);
     }
@@ -55,9 +53,6 @@ public class PersonalFragment extends Fragment {
         }
         if (user.getLastName() != null) {
             editTextLast.setText(user.getLastName());
-        }
-        if (user.getCountry() != null) {
-            editTextCountry.setText(user.getCountry());
         }
         if (user.getGender()) {
             radioGroupGender.check(R.id.update_male);
@@ -115,7 +110,6 @@ public class PersonalFragment extends Fragment {
             public void onClick(View view) {
                 user.setFirstName(editTextFirst.getText().toString());
                 user.setLastName(editTextLast.getText().toString());
-                user.setCountry(editTextCountry.getText().toString());
                 user.setBirthDate(myCalendar.getTime());
                 if (radioGroupGender.getCheckedRadioButtonId() == R.id.update_male) {
                     user.setGender(true);

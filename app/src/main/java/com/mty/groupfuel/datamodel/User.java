@@ -1,8 +1,6 @@
 package com.mty.groupfuel.datamodel;
 
 import com.parse.ParseClassName;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.Date;
@@ -37,14 +35,6 @@ public class User extends ParseUser {
     public void setAge(Number value) {
         put("Age", value);
     }
-	
-	public String getCountry() {
-		return getString("Country");
-	}
-	
-	public void setCountry(String value) {
-		put("Country", value);
-	}
 	
 	public boolean getGender() {
 		return getBoolean("Gender");
