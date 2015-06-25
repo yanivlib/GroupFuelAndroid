@@ -24,7 +24,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 
-public class PersonalFragment extends Fragment {
+public class PersonalFragment extends Fragment implements View.OnClickListener {
 
     final Calendar myCalendar = Calendar.getInstance();
     final private User user = (User) ParseUser.getCurrentUser();
@@ -95,7 +95,7 @@ public class PersonalFragment extends Fragment {
             }
         });
         getDefaultsFromUser();
-        buttonApply.setOnClickListener(createApplyListener());
+        buttonApply.setOnClickListener(this);
         return view;
     }
 
@@ -104,30 +104,26 @@ public class PersonalFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    public View.OnClickListener createApplyListener() {
-        return  new View.OnClickListener() {
+    @Override
+    public void onClick(View view) {
+        user.setFirstName(editTextFirst.getText().toString());
+        user.setLastName(editTextLast.getText().toString());
+        user.setBirthDate(myCalendar.getTime());
+        if (radioGroupGender.getCheckedRadioButtonId() == R.id.update_male) {
+            user.setGender(true);
+        } else {
+            user.setGender(false);
+        }
+        user.saveInBackground(new SaveCallback() {
             @Override
-            public void onClick(View view) {
-                user.setFirstName(editTextFirst.getText().toString());
-                user.setLastName(editTextLast.getText().toString());
-                user.setBirthDate(myCalendar.getTime());
-                if (radioGroupGender.getCheckedRadioButtonId() == R.id.update_male) {
-                    user.setGender(true);
+            public void done(ParseException e) {
+                if (e == null) {
+                    Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
+                    getActivity().getSupportFragmentManager().popBackStack();
                 } else {
-                    user.setGender(false);
+                    throw new RuntimeException(e.getMessage());
                 }
-                user.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
-                            getActivity().getSupportFragmentManager().popBackStack();
-                        } else {
-                            throw new RuntimeException(e.getMessage());
-                        }
-                    }
-                });
             }
-        };
+        });
     }
 }

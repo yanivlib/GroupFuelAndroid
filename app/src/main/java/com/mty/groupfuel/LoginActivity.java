@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.mty.groupfuel.datamodel.User;
@@ -18,15 +19,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends Activity implements View.OnClickListener {
 
     private ProgressDialog progressDialog;
     private EditText usernameET;
     private EditText passwordET;
+    private Button loginButton;
 
     private void findViewsById() {
         usernameET = (EditText) findViewById(R.id.usernameText);
         passwordET = (EditText) findViewById(R.id.passwordText);
+        loginButton = (Button) findViewById(R.id.login);
     }
 
     @Override
@@ -34,6 +37,8 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         findViewsById();
+
+        loginButton.setOnClickListener(this);
     }
 
     @Override
@@ -58,7 +63,7 @@ public class LoginActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void login (View view) {
+    public void doLogin(View view) {
         progressDialog = ProgressDialog.show(this, getResources().getString(R.string.wait), getResources().getString(R.string.login_progress));
         String username = usernameET.getText().toString().trim();
         String password = passwordET.getText().toString().trim();
@@ -88,5 +93,9 @@ public class LoginActivity extends Activity {
             }
         });
     }
-    
+
+    @Override
+    public void onClick(View v) {
+        doLogin(v);
+    }
 }

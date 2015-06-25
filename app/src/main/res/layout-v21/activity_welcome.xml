@@ -23,7 +23,6 @@
         android:layout_width="247dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:onClick="doLogin"
         android:layout_margin="@dimen/abc_button_inset_horizontal_material"
         android:text="@string/login" />
 
@@ -32,7 +31,6 @@
         android:layout_width="247dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:onClick="doRegister"
         android:layout_margin="@dimen/abc_button_inset_horizontal_material"
         android:text="@string/register" />
 
@@ -41,7 +39,6 @@
         android:layout_width="247dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:onClick="doFacebookLogin"
         android:layout_margin="@dimen/abc_button_inset_horizontal_material"
         android:text="Login with Facebook" />
 </LinearLayout>

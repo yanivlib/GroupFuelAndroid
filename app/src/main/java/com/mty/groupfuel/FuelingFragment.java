@@ -25,7 +25,7 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FuelingFragment extends android.support.v4.app.Fragment {
+public class FuelingFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
     Context context;
     getCarsListener mCallback;
     private List<Car> cars;
@@ -132,7 +132,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
 
         MainActivity.fab.setVisibility(View.INVISIBLE);
 
-        sendButton.setOnClickListener(new SendListener());
+        sendButton.setOnClickListener(this);
         sendButton.setEnabled(false);
         return view;
 
@@ -179,52 +179,50 @@ public class FuelingFragment extends android.support.v4.app.Fragment {
         }
     }
 
-    private class SendListener implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            List<String> error = new ArrayList<>();
-            Number amount = numberFromEditText(amountEditText);
-            Number mileage = numberFromEditText(mileageEditText);
-            Number price = numberFromEditText(priceEditText);
-            User user = (User) ParseUser.getCurrentUser();
-            if (amount == 0) {
-                error.add(getString(R.string.amount_empty));
-            }
-            if (mileage == 0) {
-                error.add(getString(R.string.mileage_empty));
-            }
-            if (price == 0) {
-                error.add(getString(R.string.price_empty));
-            }
-            if (selectedCar.getObjectId().equals(Consts.OBJECTID_NULL)) {
-                error.add("Illegal car");
-            }
-            if (!error.isEmpty()) {
-                MainActivity.createErrorAlert(error, context).show();
-                return;
-            }
-            Fueling fueling = new Fueling();
-            fueling.setAmount(amount);
-            fueling.setMileage(mileage);
-            fueling.setPrice(price);
-            fueling.setUser(user);
-            fueling.setFuelType(selectedCar.getModel().getFuelType());
-            fueling.put("Car", ParseObject.createWithoutData("Car", selectedCar.getObjectId()));
-            fueling.saveEventually(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e != null) {
-                        MainActivity.createErrorAlert(e.getMessage(), context).show();
-                    } else {
-                        Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
-            amountEditText.setText(null);
-            mileageEditText.setText(null);
-            priceEditText.setText(null);
-            locationEditText.setText(null);
-            getActivity().getSupportFragmentManager().popBackStack();
+    @Override
+    public void onClick(View view) {
+        List<String> error = new ArrayList<>();
+        Number amount = numberFromEditText(amountEditText);
+        Number mileage = numberFromEditText(mileageEditText);
+        Number price = numberFromEditText(priceEditText);
+        User user = (User) ParseUser.getCurrentUser();
+        if (amount == 0) {
+            error.add(getString(R.string.amount_empty));
         }
+        if (mileage == 0) {
+            error.add(getString(R.string.mileage_empty));
+        }
+        if (price == 0) {
+            error.add(getString(R.string.price_empty));
+        }
+        if (selectedCar.getObjectId().equals(Consts.OBJECTID_NULL)) {
+            error.add("Illegal car");
+        }
+        if (!error.isEmpty()) {
+            MainActivity.createErrorAlert(error, context).show();
+            return;
+        }
+        Fueling fueling = new Fueling();
+        fueling.setAmount(amount);
+        fueling.setMileage(mileage);
+        fueling.setPrice(price);
+        fueling.setUser(user);
+        fueling.setFuelType(selectedCar.getModel().getFuelType());
+        fueling.put("Car", ParseObject.createWithoutData("Car", selectedCar.getObjectId()));
+        fueling.saveEventually(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    MainActivity.createErrorAlert(e.getMessage(), context).show();
+                } else {
+                    Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        amountEditText.setText(null);
+        mileageEditText.setText(null);
+        priceEditText.setText(null);
+        locationEditText.setText(null);
+        getActivity().getSupportFragmentManager().popBackStack();
     }
 }

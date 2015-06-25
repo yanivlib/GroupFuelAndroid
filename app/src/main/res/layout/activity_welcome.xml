@@ -21,8 +21,7 @@
         android:layout_weight="0.03"
         android:layout_margin="@dimen/abc_button_inset_horizontal_material"
 
-        android:text="@string/login"
-        android:onClick="doLogin" />
+        android:text="@string/login" />
 
     <Button
         android:layout_width="247dp"
@@ -31,9 +30,7 @@
         android:id="@+id/register_button"
         android:layout_gravity="center_horizontal"
         android:layout_margin="@dimen/abc_button_inset_horizontal_material"
-
-        android:layout_weight="0.03"
-        android:onClick="doRegister" />
+        android:layout_weight="0.03" />
 
     <Button
         android:layout_width="247dp"
@@ -42,7 +39,6 @@
         android:layout_margin="@dimen/abc_button_inset_horizontal_material"
 
         android:id="@+id/facebook_login"
-        android:onClick="doFacebookLogin"
         android:layout_gravity="center_horizontal"
         android:layout_weight="0.03"
         />

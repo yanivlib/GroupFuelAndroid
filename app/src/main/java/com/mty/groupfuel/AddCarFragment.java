@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AddCarFragment extends Fragment {
+public class AddCarFragment extends Fragment implements View.OnClickListener{
 
     private Spinner maker;
     private Spinner model;
@@ -132,7 +132,7 @@ public class AddCarFragment extends Fragment {
         attachAdapters();
         disableAll();
         getMakers();
-        button.setOnClickListener(new AddCarListener());
+        button.setOnClickListener(this);
         return view;
     }
 
@@ -395,7 +395,7 @@ public class AddCarFragment extends Fragment {
         }
     }
 
-    private class AddCarListener implements View.OnClickListener {
+    //private class AddCarListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
             List<String> error = new ArrayList<>();
@@ -434,5 +434,5 @@ public class AddCarFragment extends Fragment {
                 }
             });
         }
-    }
+   // }
 }
