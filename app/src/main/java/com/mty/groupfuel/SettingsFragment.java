@@ -1,7 +1,14 @@
 package com.mty.groupfuel;
 
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +31,8 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     Map<String, List<Object>> listDataChild;
     List<Car> cars;
 
+    getCarsListener mCallback;
+
     List<Object> carList;
     List<Object> personalList;
     List<Object> accountList;
@@ -39,12 +48,48 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         // Required empty public constructor
     }
 
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int carAmount = intent.getIntExtra("cars", 0);
+            if (carAmount > 0) {
+                setCars(mCallback.getCars());
+            }
+            Log.d("receiver", "Got message: " + carAmount);
+        }
+    };
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mCallback = (getCarsListener)activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement getCarsListener");
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cars = new ArrayList<>();
+        this.cars = new ArrayList<>();
         prepareListData();
-        setCars(((MainActivity) getActivity()).getCars());
+        setCars(mCallback.getCars());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver,
+                new IntentFilter(Consts.BROADCAST_CARS));
+
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
+        super.onPause();
     }
 
     private void findViewsById(View view) {
@@ -63,13 +108,11 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     }
 
     public void setCars(List<Car> cars) {
-        if (this.cars == null) {
-            this.cars = new ArrayList<>();
+        if (cars == null) {
+            return;
         }
         this.cars.clear();
-        if (cars != null) {
-            this.cars.addAll(cars);
-        }
+        this.cars.addAll(cars);
         updateCarList();
     }
 

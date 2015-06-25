@@ -109,6 +109,8 @@ public class ViewPagerContainerFragment extends Fragment {
             return registeredFragments.get(position);
         }
 
+
+
     }
 
 }

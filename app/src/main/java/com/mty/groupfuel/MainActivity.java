@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -115,12 +117,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void broadcastCarList() {
-        ViewPagerContainerFragment.FragmentPagerAdapter adapter = ViewPagerContainerFragment.adapter;
-        System.out.println("calling broadcastCarList, while cars length is " + this.cars.size());
-        UsageFragment usageFragment = (UsageFragment) adapter.getRegisteredFragment(0);
-        if (usageFragment != null) {
-            usageFragment.setCars(cars);
-        }
+        Log.d("sender", "Broadcasting message: " + cars.toString());
+        Intent intent = new Intent(Consts.BROADCAST_CARS);
+        intent.putExtra("cars", cars.size());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     private void findViewsByid() {

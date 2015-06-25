@@ -1,8 +1,13 @@
 package com.mty.groupfuel;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +34,20 @@ public class UsageFragment extends android.support.v4.app.ListFragment {
     private Map<String,Map<String, Number>> datamap;
     private List<Car> cars;
 
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int carAmount = intent.getIntExtra("cars", 0);
+            if (carAmount > 0) {
+                setCars(mCallback.getCars());
+            }
+            Log.d("receiver", "Got message: " + carAmount);
+        }
+    };
+
     public UsageFragment() {
     }
+
 
     public static UsageFragment newInstance() {
         UsageFragment fragment = new UsageFragment();
@@ -70,6 +87,14 @@ public class UsageFragment extends android.support.v4.app.ListFragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //outState.putParcelableArrayList("cars", cars);
+        super.onSaveInstanceState(outState);
+    }
+
+    // Lifecycle methods
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
@@ -83,13 +108,12 @@ public class UsageFragment extends android.support.v4.app.ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cars = new ArrayList<>();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        //outState.putParcelableArrayList("cars", cars);
-        super.onSaveInstanceState(outState);
+        ArrayList<Car> currentCars = (ArrayList<Car>)mCallback.getCars();
+        if (currentCars != null) {
+            setCars(currentCars);
+        } else {
+            cars = new ArrayList<>();
+        }
     }
 
     @Override
@@ -106,6 +130,26 @@ public class UsageFragment extends android.support.v4.app.ListFragment {
         }
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver,
+                new IntentFilter(Consts.BROADCAST_CARS));
+
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
 
     public void getUsage(final List<Car> cars) {
         if (datamap != null) {
@@ -143,4 +187,5 @@ public class UsageFragment extends android.support.v4.app.ListFragment {
             return carUsage;
         }
     }
+
 }

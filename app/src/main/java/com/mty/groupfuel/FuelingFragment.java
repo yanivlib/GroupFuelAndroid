@@ -58,6 +58,9 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     }
 
     public void setCars(List<Car> cars) {
+        if (cars == null) {
+            return;
+        }
         if (this.cars == null) {
             this.cars = new ArrayList<>();
         }
@@ -79,7 +82,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cars = mCallback.getCars();
+        setCars(mCallback.getCars());
         pleaseSelect = getString(R.string.please_select);
     }
 
@@ -144,7 +147,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         super.onPause();
     }
 
-    public void updateCars(List<Car> cars) {
+    /*public void updateCars(List<Car> cars) {
         List<String> carNames = new ArrayList<>();
         setCars(cars);
         this.cars.clear();
@@ -156,7 +159,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         carSpinnerAdapter.clear();
         carSpinnerAdapter.add(pleaseSelect);
         carSpinnerAdapter.addAll(carNames);
-    }
+    }*/
 
     private class SpinnerSelect implements AdapterView.OnItemSelectedListener {
         SpinnerSelect() {
