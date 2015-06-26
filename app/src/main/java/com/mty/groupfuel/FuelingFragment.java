@@ -61,9 +61,6 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         if (cars == null) {
             return;
         }
-        if (this.cars == null) {
-            this.cars = new ArrayList<>();
-        }
         this.cars.clear();
         this.cars.addAll(cars);
     }
@@ -82,6 +79,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.cars = new ArrayList<>();
         setCars(mCallback.getCars());
         pleaseSelect = getString(R.string.please_select);
     }
