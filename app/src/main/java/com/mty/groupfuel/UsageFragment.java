@@ -7,11 +7,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.parse.FunctionCallback;
@@ -25,8 +29,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 
-public class UsageFragment extends android.support.v4.app.ListFragment {
+public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefreshLayout.OnRefreshListener{
 
     getCarsListener mCallback;
 
@@ -92,6 +97,11 @@ public class UsageFragment extends android.support.v4.app.ListFragment {
         super.onSaveInstanceState(outState);
     }
 
+    public void onRefresh() {
+        Log.d("a", "onRefresh called from SwipeRefreshLayout");
+        getUsage();
+    }
+
     // Lifecycle methods
 
     @Override
@@ -119,8 +129,8 @@ public class UsageFragment extends android.support.v4.app.ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-        context = view.getContext();
+        final View view = super.onCreateView(inflater, container, savedInstanceState);
+        context = container.getContext();
         setListAdapter(new UsageAdapter(context, cars));
         if (cars.isEmpty()) {
             setCars(mCallback.getCars());
@@ -128,6 +138,9 @@ public class UsageFragment extends android.support.v4.app.ListFragment {
         if (!cars.isEmpty()) {
             getUsage(cars);
         }
+
+        setOnRefreshListener(this);
+
         return view;
     }
 
@@ -150,7 +163,9 @@ public class UsageFragment extends android.support.v4.app.ListFragment {
         super.onDestroy();
     }
 
-
+    public void getUsage() {
+        getUsage(this.cars);
+    }
     public void getUsage(final List<Car> cars) {
         if (datamap != null) {
             return;
@@ -164,6 +179,7 @@ public class UsageFragment extends android.support.v4.app.ListFragment {
                 if (e == null) {
                     datamap = result;
                     setCars(cars);
+                    setRefreshing(false);
                 } else {
                     System.out.println(e.getMessage());
                 }

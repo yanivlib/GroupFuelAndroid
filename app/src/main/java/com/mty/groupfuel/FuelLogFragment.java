@@ -3,6 +3,8 @@ package com.mty.groupfuel;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FuelLogFragment extends ListFragment {
+public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRefreshLayout.OnRefreshListener{
+    private static final String LOG_TAG = FuelLogFragment.class.getSimpleName();
+
     private static final String FUELING_LIST = "fueling_list";
     private static List<Fueling> fuelingList;
 
@@ -44,6 +48,7 @@ public class FuelLogFragment extends ListFragment {
         outState.putParcelableArrayList(FUELING_LIST, (ArrayList) fuelingList);
     }
 
+
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
@@ -51,6 +56,28 @@ public class FuelLogFragment extends ListFragment {
             setFuelingList(fuelingList);
         }
     }
+
+    private void getFuelings() {
+        System.out.println("getFuelings");
+        ParseQuery<Fueling> query = Fueling.getQuery();
+        query.whereEqualTo("User", ParseUser.getCurrentUser());
+        query.include("Car");
+        query.findInBackground(new FindCallback<Fueling>() {
+            @Override
+            public void done(List<Fueling> list, ParseException e) {
+                setRefreshing(false);
+                System.out.println("getFuelings done");
+                if (e == null) {
+                    System.out.println("getFueling got result");
+                    setFuelingList(list);
+                } else {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        });
+    }
+
+    // Lifecycle methods
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,28 +97,20 @@ public class FuelLogFragment extends ListFragment {
         if (fuelingList.isEmpty()) {
             getFuelings();
         }
+
+        setOnRefreshListener(this);
         return view;
     }
 
-    private void getFuelings() {
-        System.out.println("got to getFueling");
-        ParseQuery<Fueling> query = Fueling.getQuery();
-        query.whereEqualTo("User", ParseUser.getCurrentUser());
-        query.include("Car");
-        query.findInBackground(new FindCallback<Fueling>() {
-            @Override
-            public void done(List<Fueling> list, ParseException e) {
-                System.out.println("got answer");
-                if (e == null) {
-                    System.out.println("updating getFueling");
-                    setFuelingList(list);
-                } else {
-                    throw new RuntimeException(e.getMessage());
-                }
-            }
-        });
+    // Implemented methods
+
+    @Override
+    public void onRefresh() {
+        System.out.println("FuelLogFragment refreshing...");
+        getFuelings();
     }
 
+    // Subclasses
 
     public class FuelingAdapter extends ArrayAdapter<Fueling> {
         public FuelingAdapter(Context c, List<Fueling> items) {
