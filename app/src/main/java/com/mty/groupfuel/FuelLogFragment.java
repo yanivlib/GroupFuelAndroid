@@ -58,19 +58,19 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
     }
 
     private void getFuelings() {
-        System.out.println("getFuelings");
         ParseQuery<Fueling> query = Fueling.getQuery();
         query.whereEqualTo("User", ParseUser.getCurrentUser());
         query.include("Car");
+        Log.i(LOG_TAG, "querying for Fueling list");
         query.findInBackground(new FindCallback<Fueling>() {
             @Override
             public void done(List<Fueling> list, ParseException e) {
                 setRefreshing(false);
-                System.out.println("getFuelings done");
                 if (e == null) {
-                    System.out.println("getFueling got result");
+                    Log.i(LOG_TAG, "query completed successfully");
                     setFuelingList(list);
                 } else {
+                    Log.e(LOG_TAG, "query failed", e);
                     throw new RuntimeException(e.getMessage());
                 }
             }
@@ -106,8 +106,9 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
 
     @Override
     public void onRefresh() {
-        System.out.println("FuelLogFragment refreshing...");
+        Log.d(LOG_TAG, "start refreshing");
         getFuelings();
+        Log.d(LOG_TAG, "end refreshing");
     }
 
     // Subclasses

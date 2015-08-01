@@ -20,9 +20,11 @@ import android.view.View;
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.User;
 import com.parse.FunctionCallback;
+import com.parse.LocationCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity
     private List<Car> cars;
     private Toolbar toolbar;
     private Fragment mContent;
+    ParseGeoPoint location;
 
     public static AlertDialog.Builder createErrorAlert(String message, String title, Context context) {
         return new AlertDialog.Builder(context)
@@ -236,5 +239,26 @@ public class MainActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         //getSupportFragmentManager().putFragment(outState, CURRENT_FRAGMENT, mContent);
+    }
+
+    public void setLocation(ParseGeoPoint location) {
+        this.location = location;
+    }
+
+    public ParseGeoPoint getLocation() {
+        return location;
+    }
+
+    private void getCurrentLocation() {
+        ParseGeoPoint.getCurrentLocationInBackground(50, new LocationCallback() {
+            @Override
+            public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
+                if (e == null) {
+                    setLocation(parseGeoPoint);
+                } else {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        });
     }
 }

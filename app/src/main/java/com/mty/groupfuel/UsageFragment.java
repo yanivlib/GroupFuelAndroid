@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Timer;
 
 public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefreshLayout.OnRefreshListener{
+    private static final String LOG_TAG = UsageFragment.class.getSimpleName();
 
     getCarsListener mCallback;
 
@@ -96,6 +97,8 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
         //outState.putParcelableArrayList("cars", cars);
         super.onSaveInstanceState(outState);
     }
+
+    // Implemented methods
 
     public void onRefresh() {
         Log.d("a", "onRefresh called from SwipeRefreshLayout");
