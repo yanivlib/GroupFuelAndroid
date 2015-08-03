@@ -12,6 +12,10 @@ public class GasStation extends ParseObject {
 
     }
 
+    public static ParseQuery<GasStation> getQuery() {
+        return ParseQuery.getQuery(GasStation.class);
+    }
+
     public String getAddress() {
         return getString("Address");
 
@@ -47,7 +51,7 @@ public class GasStation extends ParseObject {
         put("StationId", value);
     }
 
-    public static ParseQuery<GasStation> getQuery() {
-        return ParseQuery.getQuery(GasStation.class);
+    public String getDisplayName() {
+        return getStationId().toString() + ": " + getBrand();
     }
 }

@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.Fueling;
+import com.mty.groupfuel.datamodel.GasStation;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +20,7 @@ public class FuelLogItem extends RelativeLayout {
     private TextView date;
     private TextView amount;
     private TextView price;
+    private TextView station;
 
     public FuelLogItem(Context context) {
         this(context, null);
@@ -45,6 +47,7 @@ public class FuelLogItem extends RelativeLayout {
         setDate(fueling.getCreatedAt());
         setAmount(fueling.getAmount().toString());
         setPrice(fueling.getPrice().toString());
+        setStation(fueling.getGasStation());
     }
 
     public void setCarName(String name) {
@@ -71,10 +74,15 @@ public class FuelLogItem extends RelativeLayout {
         this.carName.setText(car.getDisplayName());
     }
 
+    public void setStation(GasStation station) {
+        this.station.setText(station.getDisplayName());
+    }
+
     private void setupChildren() {
         this.carName = (TextView) findViewById(R.id.usage_log_car);
         this.date = (TextView) findViewById(R.id.usage_log_date);
         this.amount = (TextView) findViewById(R.id.usage_log_amount);
         this.price = (TextView) findViewById(R.id.usage_log_price);
+        this.station = (TextView) findViewById(R.id.usage_log_station);
     }
 }

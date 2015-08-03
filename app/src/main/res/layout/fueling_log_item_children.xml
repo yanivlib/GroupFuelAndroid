@@ -94,4 +94,16 @@
         android:layout_toRightOf="@+id/usage_log_amount_tile"
         android:paddingLeft="10dp"
         android:text="New Text" />
+
+    <TextView
+        android:id="@+id/usage_log_station"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/usage_log_price"
+        android:layout_toEndOf="@+id/usage_log_amount_tile"
+        android:layout_toRightOf="@+id/usage_log_amount_tile"
+        android:paddingLeft="10dp"
+        android:text="New Text" />
 </merge>
