@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Criteria;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.User;
@@ -28,6 +30,7 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,7 +44,7 @@ public class MainActivity extends AppCompatActivity
     private List<Car> cars;
     private Toolbar toolbar;
     private Fragment mContent;
-    ParseGeoPoint location;
+    private ParseGeoPoint location;
 
     public static AlertDialog.Builder createErrorAlert(String message, String title, Context context) {
         return new AlertDialog.Builder(context)
@@ -82,6 +85,7 @@ public class MainActivity extends AppCompatActivity
         }
         return result;
     }
+
 
     private static void logOut(final Context context) {
         new AlertDialog.Builder(context)
@@ -126,6 +130,11 @@ public class MainActivity extends AppCompatActivity
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
+    @Override
+    public List<String> getCities() {
+        return new ArrayList<>(Arrays.asList("הרצליה", "טבריה", "באר שבע"));
+    }
+
     private void findViewsByid() {
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -161,8 +170,8 @@ public class MainActivity extends AppCompatActivity
                 transaction.commit();
             }
         });
-
         getOwnedCars();
+        getCurrentLocation();
         user = ParseUser.getCurrentUser();
         if (savedInstanceState != null) {
             mContent = getSupportFragmentManager().getFragment(
@@ -241,22 +250,30 @@ public class MainActivity extends AppCompatActivity
         //getSupportFragmentManager().putFragment(outState, CURRENT_FRAGMENT, mContent);
     }
 
-    public void setLocation(ParseGeoPoint location) {
-        this.location = location;
-    }
-
     public ParseGeoPoint getLocation() {
         return location;
     }
 
+    public void setLocation(ParseGeoPoint location) {
+        this.location = location;
+    }
+
     private void getCurrentLocation() {
-        ParseGeoPoint.getCurrentLocationInBackground(50, new LocationCallback() {
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_LOW);
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(false);
+        criteria.setCostAllowed(true);
+        criteria.setPowerRequirement(Criteria.POWER_LOW);
+        ParseGeoPoint.getCurrentLocationInBackground(20000, criteria, new LocationCallback() {
             @Override
             public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
                 if (e == null) {
+                    Toast.makeText(MainActivity.this, "Location Found!", Toast.LENGTH_LONG).show();
                     setLocation(parseGeoPoint);
                 } else {
-                    throw new RuntimeException(e.getMessage());
+                    Toast.makeText(MainActivity.this, "Location Not Found!", Toast.LENGTH_LONG).show();
+                    //throw new RuntimeException(e.getMessage());
                 }
             }
         });

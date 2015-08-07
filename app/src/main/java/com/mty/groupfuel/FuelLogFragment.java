@@ -1,8 +1,12 @@
 package com.mty.groupfuel;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,11 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.Fueling;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +29,19 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
 
     private static final String FUELING_LIST = "fueling_list";
     private static List<Fueling> fuelingList;
+    getCarsListener mCallback;
+    private List<Car> cars;
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int carAmount = intent.getIntExtra("cars", 0);
+            if (carAmount > 0) {
+                setCars(mCallback.getCars());
+                getFuelings();
+            }
+            Log.d(LOG_TAG, "Got message: " + carAmount);
+        }
+    };
 
     public FuelLogFragment() {
         // Required empty public constructor
@@ -35,6 +52,10 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setCars(List<Car> cars) {
+        this.cars = cars;
     }
 
     public void setFuelingList(List<Fueling> fuelingList) {
@@ -59,7 +80,8 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
 
     private void getFuelings() {
         ParseQuery<Fueling> query = Fueling.getQuery();
-        query.whereEqualTo("User", ParseUser.getCurrentUser());
+        //query.whereEqualTo("User", ParseUser.getCurrentUser());
+        query.whereContainedIn("Car", UsageFragment.getPointers(cars));
         query.include("Car");
         Log.i(LOG_TAG, "querying for Fueling list");
         query.findInBackground(new FindCallback<Fueling>() {
@@ -80,9 +102,22 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
     // Lifecycle methods
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mCallback = (getCarsListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement getCarsListener");
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fuelingList = new ArrayList<>();
+        cars = new ArrayList<>();
+        setCars(mCallback.getCars());
     }
 
     @Override
@@ -94,13 +129,28 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
             ArrayList<Fueling> fuelingList = savedInstanceState.getParcelableArrayList(FUELING_LIST);
             setFuelingList(fuelingList);
         }
-        if (fuelingList.isEmpty()) {
-            getFuelings();
-        }
+        //if (fuelingList.isEmpty()) {
+        //    getFuelings();
+        // }
 
         setOnRefreshListener(this);
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver,
+                new IntentFilter(Consts.BROADCAST_CARS));
+
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
+        super.onPause();
+    }
+
 
     // Implemented methods
 

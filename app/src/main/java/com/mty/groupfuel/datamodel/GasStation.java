@@ -51,7 +51,11 @@ public class GasStation extends ParseObject {
         put("StationId", value);
     }
 
+    public String getName() {
+        return getString("Name");
+    }
+
     public String getDisplayName() {
-        return getStationId().toString() + ": " + getBrand();
+        return getName() + " : " + getBrand();
     }
 }

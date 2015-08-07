@@ -7,15 +7,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.parse.FunctionCallback;
@@ -29,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
 
 public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefreshLayout.OnRefreshListener{
     private static final String LOG_TAG = UsageFragment.class.getSimpleName();
@@ -47,7 +43,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
             if (carAmount > 0) {
                 setCars(mCallback.getCars());
             }
-            Log.d("receiver", "Got message: " + carAmount);
+            Log.d(LOG_TAG, "Got message: " + carAmount);
         }
     };
 

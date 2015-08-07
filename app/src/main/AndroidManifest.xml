@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mty.groupfuel" >
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <application
         android:name=".Application"
         android:allowBackup="true"
@@ -47,19 +45,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mty.groupfuel.WelcomeActivity" />
         </activity>
-        <activity
-            android:name=".PersonalActivity"
-            android:label="@string/title_activity_personal" >
-        </activity>
-		<activity
-            android:name=".AddCarActivity"
-            android:label="@string/title_activity_add_car" >
-        </activity>
         <activity android:name="com.facebook.FacebookActivity"
             android:configChanges=
                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
     </application>

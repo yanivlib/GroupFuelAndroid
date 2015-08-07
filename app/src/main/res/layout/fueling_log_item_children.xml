@@ -50,6 +50,17 @@
         android:text="Price" />
 
     <TextView
+        android:id="@+id/usage_log_station_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/usage_log_amount_tile"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/usage_log_amount_tile"
+        android:layout_below="@+id/usage_log_price_title"
+        android:text="Station" />
+
+    <TextView
         android:id="@+id/usage_log_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -19,12 +19,14 @@ import android.widget.Toast;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.parse.LogOutCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -231,7 +233,10 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
                 for (CheckBox checkBox : checkBoxArrayList) {
                     if (checkBox.isChecked()) {
                         Car car = (Car)checkBox.getTag();
-                        car.deleteEventually();
+                        //car.deleteEventually();
+                        Map<String, String> params = new HashMap();
+                        params.put("carNumber", car.getCarNumber());
+                        ParseCloud.callFunctionInBackground("removeCar", params);
                         listDataChild.get(context.getString(R.string.manage_cars)).remove(car);
                     }
                 }
