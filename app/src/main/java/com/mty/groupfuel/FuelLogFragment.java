@@ -34,7 +34,7 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            int carAmount = intent.getIntExtra("cars", 0);
+            int carAmount = intent.getIntExtra(Consts.BROADCAST_CARS, 0);
             if (carAmount > 0) {
                 setCars(mCallback.getCars());
                 getFuelings();

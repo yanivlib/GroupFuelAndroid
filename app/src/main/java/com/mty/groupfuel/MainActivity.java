@@ -19,13 +19,16 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.mty.groupfuel.datamodel.Car;
+import com.mty.groupfuel.datamodel.GasStation;
 import com.mty.groupfuel.datamodel.User;
+import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.LocationCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity
     static private ParseUser user;
     private static ProgressDialog progress;
     private List<Car> cars;
+    private List<GasStation> stations;
     private Toolbar toolbar;
     private Fragment mContent;
     private ParseGeoPoint location;
@@ -123,18 +127,31 @@ public class MainActivity extends AppCompatActivity
         this.cars = cars;
     }
 
-    public void broadcastCarList() {
-        Log.d(LOG_TAG, "Broadcasting message: " + cars.toString());
-        Intent intent = new Intent(Consts.BROADCAST_CARS);
-        intent.putExtra("cars", cars.size());
+    public List<GasStation> getStations() {
+        return stations;
+    }
+
+    public void setStations(List<GasStation> stations) {
+        this.stations = stations;
+    }
+
+    public void broadcast(int message, String action) {
+        Log.d(LOG_TAG, "Broadcasting message: " + action + " " + message);
+        Intent intent = new Intent(action);
+        intent.putExtra(action, message);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-    public void broadcastLocation(boolean b) {
-        Log.d(LOG_TAG, "Broadcasting message: " + (location != null));
-        Intent intent = new Intent(Consts.BROADCAST_LOCATION);
-        intent.putExtra("location", b);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    public void broadcastCarList() {
+        broadcast(cars.size(), Consts.BROADCAST_CARS);
+    }
+
+    public void broadcastLocation() {
+        broadcast(location != null ? 1 : 0, Consts.BROADCAST_LOCATION);
+    }
+
+    public void broadcastStations() {
+        broadcast(stations.size(), Consts.BROADCAST_STATIONS);
     }
 
     @Override
@@ -289,11 +306,29 @@ public class MainActivity extends AppCompatActivity
             public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
                 if (e == null) {
                     setLocation(parseGeoPoint);
-                    broadcastLocation(true);
+                    broadcastLocation();
                 } else {
-                    broadcastLocation(false);
+                    broadcastLocation();
                 }
             }
         });
     }
+
+    void getStationsByLocation(final ParseGeoPoint point) {
+        ParseQuery<GasStation> query = GasStation.getQuery();
+        query.whereNear("Location", point);
+        query.findInBackground(new FindCallback<GasStation>() {
+            @Override
+            public void done(List<GasStation> list, ParseException e) {
+                if (e == null) {
+                    //setStationsNearby(list);
+                    setStations(list);
+                    broadcastStations();
+                } else {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        });
+    }
+
 }

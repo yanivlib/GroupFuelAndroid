@@ -73,13 +73,13 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
                 case Consts.BROADCAST_CARS:
-                    int carAmount = intent.getIntExtra("cars", 0);
+                    int carAmount = intent.getIntExtra(Consts.BROADCAST_CARS, 0);
                     if (carAmount > 0) {
                         setCars(mCallback.getCars());
                     }
                     break;
                 case Consts.BROADCAST_LOCATION:
-                    if (intent.getBooleanExtra("location", false)) {
+                    if (intent.getBooleanExtra(Consts.BROADCAST_LOCATION, false)) {
                         setLocation(mCallback.getLocation());
                     }
             }

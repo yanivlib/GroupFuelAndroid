@@ -49,10 +49,8 @@ public class ViewPagerContainerFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_view_pager_container, container, false);
         getViewsById(root);
-
-        final int tabCount = 2;
-        String[] tabTitles = new String[]{ getString(R.string.usage_title), "Fuel Log"};
-        adapter = new FragmentPagerAdapter(getChildFragmentManager(), tabCount, tabTitles);
+        String[] tabTitles = new String[]{getString(R.string.usage_title), "Fuel Log", "Navigate"};
+        adapter = new FragmentPagerAdapter(getChildFragmentManager(), tabTitles.length, tabTitles);
 
         pager.setAdapter(adapter);
 
@@ -92,8 +90,10 @@ public class ViewPagerContainerFragment extends Fragment {
                     return UsageFragment.newInstance();
                 case 1:
                     return FuelLogFragment.newInstance();
+                case 2:
+                    return NavigationFragment.newInstance();
                 default:
-                    return MainFragment.newInstance(position + 1);
+                    return null;
             }
         }
 
