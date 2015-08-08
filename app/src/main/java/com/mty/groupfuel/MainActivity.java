@@ -160,6 +160,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -185,6 +187,12 @@ public class MainActivity extends AppCompatActivity
         //    mContent = getSupportFragmentManager().getFragment(savedInstanceState, CURRENT_FRAGMENT);
         //    System.out.println("recoverd, found fragment to be" + mContent.getClass().getSimpleName());
         //}
+    }
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        Log.d(LOG_TAG, "resuming fragments...");
+        // YOUR STUFF IS HERE
     }
 
     @Override
