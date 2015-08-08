@@ -2,8 +2,13 @@ package com.mty.groupfuel;
 
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,8 +43,8 @@ import java.util.List;
 import java.util.Map;
 
 public class FuelingFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
+    private final static String LOG_TAG = FuelingFragment.class.getSimpleName();
     Context context;
-
     // Interfaces
     getCarsListener mCallback;
 
@@ -63,6 +68,25 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     private ParseGeoPoint location;
     //private Car selectedCar;
 
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            System.out.println("Got location!");
+            switch (intent.getAction()) {
+                case Consts.BROADCAST_CARS:
+                    int carAmount = intent.getIntExtra("cars", 0);
+                    if (carAmount > 0) {
+                        setCars(mCallback.getCars());
+                    }
+                    break;
+                case Consts.BROADCAST_LOCATION:
+                    if (intent.getBooleanExtra("location", false)) {
+                        setLocation(mCallback.getLocation());
+                    }
+            }
+            Log.d(LOG_TAG, "Got message: " + intent.toString());
+        }
+    };
 
     //Contructors
     public FuelingFragment() {
@@ -105,6 +129,14 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         }
         this.cars.clear();
         this.cars.addAll(cars);
+    }
+
+    public void setLocation(ParseGeoPoint location) {
+        this.location = location;
+        if (location != null) {
+            RadioButton button = (RadioButton) radioGroup.getChildAt(0);
+            button.setEnabled(true);
+        }
     }
 
     private void setStationsInSpinner(List<GasStation> list) {
@@ -165,7 +197,18 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     @Override
     public void onPause() {
         MainActivity.fab.setVisibility(View.VISIBLE);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
         super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Consts.BROADCAST_CARS);
+        filter.addAction(Consts.BROADCAST_LOCATION);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, filter);
+
     }
 
     private void findViewsById(View view) {

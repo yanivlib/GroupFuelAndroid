@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -83,7 +84,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
             this.cars = cars;
             ((UsageAdapter) getListAdapter()).notifyDataSetChanged();
             if (datamap == null) {
-                getUsage(cars);
+                getUsage(cars, this);
             }
         }
     }
@@ -99,6 +100,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
     public void onRefresh() {
         Log.d("a", "onRefresh called from SwipeRefreshLayout");
         getUsage();
+        //getView().invalidate();
     }
 
     // Lifecycle methods
@@ -135,9 +137,8 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
             setCars(mCallback.getCars());
         }
         if (!cars.isEmpty()) {
-            getUsage(cars);
+            getUsage();
         }
-
         setOnRefreshListener(this);
 
         return view;
@@ -163,9 +164,10 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
     }
 
     public void getUsage() {
-        getUsage(this.cars);
+        getUsage(this.cars, this);
     }
-    public void getUsage(final List<Car> cars) {
+
+    public void getUsage(final List<Car> cars, final Fragment fragment) {
         if (datamap != null) {
             return;
         }
@@ -179,6 +181,11 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                     datamap = result;
                     setCars(cars);
                     setRefreshing(false);
+                    //notifyDataSetChanged();
+                    //getListView().deferNotifyDataSetChanged();
+                    //FragmentTransaction tr = getChildFragmentManager().beginTransaction();
+                    //tr.replace(R.id.viewpager, fragment);
+                    //tr.commit();
                 } else {
                     System.out.println(e.getMessage());
                 }

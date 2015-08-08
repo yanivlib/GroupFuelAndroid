@@ -17,7 +17,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.User;
@@ -38,6 +37,7 @@ public class MainActivity extends AppCompatActivity
         implements getCarsListener {
 
     private static final String CURRENT_FRAGMENT = "current_fragment";
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
     static FloatingActionButton fab;
     static private ParseUser user;
     private static ProgressDialog progress;
@@ -124,9 +124,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void broadcastCarList() {
-        Log.d("sender", "Broadcasting message: " + cars.toString());
+        Log.d(LOG_TAG, "Broadcasting message: " + cars.toString());
         Intent intent = new Intent(Consts.BROADCAST_CARS);
         intent.putExtra("cars", cars.size());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    public void broadcastLocation(boolean b) {
+        Log.d(LOG_TAG, "Broadcasting message: " + (location != null));
+        Intent intent = new Intent(Consts.BROADCAST_LOCATION);
+        intent.putExtra("location", b);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
@@ -144,10 +151,11 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        ViewPagerContainerFragment viewPagerContainerFragment = (ViewPagerContainerFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
-        if (viewPagerContainerFragment == null) {
-            viewPagerContainerFragment = new ViewPagerContainerFragment();
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, viewPagerContainerFragment).commit();
+        Fragment f = getSupportFragmentManager().findFragmentById(R.id.content_frame);
+        //ViewPagerContainerFragment viewPagerContainerFragment = (ViewPagerContainerFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
+        if (f == null) {
+            ViewPagerContainerFragment viewPagerContainerFragment = new ViewPagerContainerFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, viewPagerContainerFragment, viewPagerContainerFragment.getClass().getSimpleName()).commit();
             getSupportFragmentManager().executePendingTransactions();
         }
     }
@@ -164,7 +172,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content_frame, FuelingFragment.newInstance());
+                transaction.replace(R.id.content_frame, FuelingFragment.newInstance(), FuelingFragment.class.getSimpleName());
                 transaction.addToBackStack(null);
 
                 transaction.commit();
@@ -173,10 +181,10 @@ public class MainActivity extends AppCompatActivity
         getOwnedCars();
         getCurrentLocation();
         user = ParseUser.getCurrentUser();
-        if (savedInstanceState != null) {
-            mContent = getSupportFragmentManager().getFragment(
-                    savedInstanceState, CURRENT_FRAGMENT);
-        }
+        //if (savedInstanceState != null) {
+        //    mContent = getSupportFragmentManager().getFragment(savedInstanceState, CURRENT_FRAGMENT);
+        //    System.out.println("recoverd, found fragment to be" + mContent.getClass().getSimpleName());
+        //}
     }
 
     @Override
@@ -192,7 +200,7 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.action_settings:
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content_frame, SettingsFragment.newInstance());
+                transaction.replace(R.id.content_frame, SettingsFragment.newInstance(), SettingsFragment.class.getSimpleName());
                 transaction.addToBackStack(null);
                 transaction.commit();
                 return true;
@@ -216,7 +224,7 @@ public class MainActivity extends AppCompatActivity
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                                        transaction.replace(R.id.content_frame, SettingsFragment.newInstance());
+                                        transaction.replace(R.id.content_frame, SettingsFragment.newInstance(), SettingsFragment.class.getSimpleName());
                                         transaction.addToBackStack(null);
                                         transaction.commit();
                                     }
@@ -247,7 +255,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //getSupportFragmentManager().putFragment(outState, CURRENT_FRAGMENT, mContent);
+        //    mContent = getSupportFragmentManager().findFragmentByTag(ViewPagerContainerFragment.class.getSimpleName());
+        //    System.out.println("Going out, found fragment to be" + mContent.getClass().getSimpleName());
+        //    getSupportFragmentManager().putFragment(outState, CURRENT_FRAGMENT, mContent);
+
     }
 
     public ParseGeoPoint getLocation() {
@@ -269,11 +280,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
                 if (e == null) {
-                    Toast.makeText(MainActivity.this, "Location Found!", Toast.LENGTH_LONG).show();
                     setLocation(parseGeoPoint);
+                    broadcastLocation(true);
                 } else {
-                    Toast.makeText(MainActivity.this, "Location Not Found!", Toast.LENGTH_LONG).show();
-                    //throw new RuntimeException(e.getMessage());
+                    broadcastLocation(false);
                 }
             }
         });

@@ -79,6 +79,9 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
     }
 
     private void getFuelings() {
+        if (cars == null) {
+            setCars(mCallback.getCars());
+        }
         ParseQuery<Fueling> query = Fueling.getQuery();
         //query.whereEqualTo("User", ParseUser.getCurrentUser());
         query.whereContainedIn("Car", UsageFragment.getPointers(cars));
