@@ -13,4 +13,6 @@ public interface getCarsListener {
     List<String> getCities();
 
     ParseGeoPoint getLocation();
+
+    void getOwnedCars();
 }

@@ -42,6 +42,10 @@ public class CarUsage extends RelativeLayout {
         return carUsage;
     }
 
+    public String getHeader() {
+        return header.getText().toString();
+    }
+
     public void setHeader(String name) {
         this.header.setText(name);
     }

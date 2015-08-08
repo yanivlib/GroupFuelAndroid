@@ -71,7 +71,6 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            System.out.println("Got location!");
             switch (intent.getAction()) {
                 case Consts.BROADCAST_CARS:
                     int carAmount = intent.getIntExtra("cars", 0);
@@ -304,7 +303,10 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         Number price = numberFromEditText(priceEditText);
         User user = (User) ParseUser.getCurrentUser();
         Car car = (Car) carSpinner.getSelectedItem();
-        GasStation station = (GasStation) stationsSpinner.getSelectedItem();
+        GasStation station = null;
+        if (stationsSpinner.getSelectedItemPosition() > 0) {
+            station = (GasStation) stationsSpinner.getSelectedItem();
+        }
         if (amount == 0) {
             error.add(getString(R.string.amount_empty));
         }

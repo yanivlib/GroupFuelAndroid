@@ -3,17 +3,22 @@ package com.mty.groupfuel;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.parse.FunctionCallback;
@@ -36,6 +41,8 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
     private Context context;
     private Map<String,Map<String, Number>> datamap;
     private List<Car> cars;
+
+    private Button button;
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -84,7 +91,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
             this.cars = cars;
             ((UsageAdapter) getListAdapter()).notifyDataSetChanged();
             if (datamap == null) {
-                getUsage(cars, this);
+                getUsage(cars);
             }
         }
     }
@@ -98,9 +105,9 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
     // Implemented methods
 
     public void onRefresh() {
-        Log.d("a", "onRefresh called from SwipeRefreshLayout");
+        Log.d(LOG_TAG, "onRefresh called from SwipeRefreshLayout");
         getUsage();
-        //getView().invalidate();
+        setRefreshing(false);
     }
 
     // Lifecycle methods
@@ -130,7 +137,8 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View view = super.onCreateView(inflater, container, savedInstanceState);
+        super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_usage, container, false);
         context = container.getContext();
         setListAdapter(new UsageAdapter(context, cars));
         if (cars.isEmpty()) {
@@ -141,6 +149,17 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
         }
         setOnRefreshListener(this);
 
+        button = (Button) view.findViewById(R.id.footer);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content_frame, new AddCarFragment(), AddCarFragment.class.getSimpleName());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
+
         return view;
     }
 
@@ -149,7 +168,30 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
         super.onResume();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver,
                 new IntentFilter(Consts.BROADCAST_CARS));
-
+        final ListView lv = getListView();
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int pos, long id) {
+                new AlertDialog.Builder(context)
+                        .setTitle("Delete car")
+                        .setMessage("Are you sure you want to delete this car?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Car car = (Car) lv.getItemAtPosition(pos);
+                                Map<String, String> params = new HashMap<>();
+                                params.put("carNumber", car.getCarNumber());
+                                ParseCloud.callFunctionInBackground("removeCar", params);
+                                mCallback.getOwnedCars();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .show();
+                return true;
+            }
+        });
     }
 
     @Override
@@ -164,13 +206,14 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
     }
 
     public void getUsage() {
-        getUsage(this.cars, this);
+        getUsage(this.cars);
     }
 
-    public void getUsage(final List<Car> cars, final Fragment fragment) {
+    public void getUsage(final List<Car> cars) {
         if (datamap != null) {
             return;
         }
+        final UsageFragment fragment = this;
         List<JSONObject> carPointers = new ArrayList<>(getPointers(cars));
         final Map<String, List<JSONObject>> params = new HashMap<>();
         params.put("cars", carPointers);
@@ -181,11 +224,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                     datamap = result;
                     setCars(cars);
                     setRefreshing(false);
-                    //notifyDataSetChanged();
-                    //getListView().deferNotifyDataSetChanged();
-                    //FragmentTransaction tr = getChildFragmentManager().beginTransaction();
-                    //tr.replace(R.id.viewpager, fragment);
-                    //tr.commit();
+                    getActivity().getSupportFragmentManager().beginTransaction().detach(fragment).attach(fragment).commit();
                 } else {
                     System.out.println(e.getMessage());
                 }

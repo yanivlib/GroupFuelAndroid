@@ -1,5 +1,6 @@
 package com.mty.groupfuel;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -34,6 +35,7 @@ import java.util.Map;
 
 public class AddCarFragment extends Fragment implements View.OnClickListener{
 
+    getCarsListener mCallback;
     private Spinner maker;
     private Spinner model;
     private Spinner engine;
@@ -120,6 +122,17 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
 
     public void setModelList(List<CarModel> modelList) {
         this.modelList = modelList;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mCallback = (getCarsListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement getCarsListener");
+        }
     }
 
     @Nullable
@@ -354,6 +367,47 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
                 getCurrentYear(), getCurrentGear(), getCurrentFuel(), modelList);
     }
 
+    //private class AddCarListener implements View.OnClickListener {
+    @Override
+    public void onClick(View v) {
+        List<String> error = new ArrayList<>();
+        CarModel model = getModel();
+        String number = getCarNumber();
+        User user = (User) ParseUser.getCurrentUser();
+        if (model.getObjectId().equals(Consts.OBJECTID_NULL)) {
+            error.add("Invalid car model");
+        }
+        if (number.length() != 7) {
+            error.add("Car number must be exactly 7 digits long");
+        }
+        if (user == null) {
+            error.add("You must be logged in to add a new car");
+        }
+        if (error.size() > 0) {
+            MainActivity.createErrorAlert(error, context).show();
+            return;
+        }
+        Car car = new Car();
+        car.setModel(model);
+        car.setOwner(user);
+        car.setCarNumber(number);
+        car.setMileage(0);
+
+        car.saveEventually(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    disableAll();
+                    Toast.makeText(context, "New car successfully added!", Toast.LENGTH_LONG).show();
+                    mCallback.getOwnedCars();
+                    getActivity().getSupportFragmentManager().popBackStack();
+                } else {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        });
+    }
+
     private enum SpinnerType {
         maker, model, engine, year, gear, fuel;
 
@@ -394,45 +448,5 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
             }
         }
     }
-
-    //private class AddCarListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            List<String> error = new ArrayList<>();
-            CarModel model = getModel();
-            String number = getCarNumber();
-            User user = (User) ParseUser.getCurrentUser();
-            if (model.getObjectId().equals(Consts.OBJECTID_NULL)) {
-                error.add("Invalid car model");
-            }
-            if (number.length() != 7) {
-                error.add("Car number must be exactly 7 digits long");
-            }
-            if (user == null) {
-                error.add("You must be logged in to add a new car");
-            }
-            if (error.size() > 0) {
-                MainActivity.createErrorAlert(error, context).show();
-                return;
-            }
-            Car car = new Car();
-            car.setModel(model);
-            car.setOwner(user);
-            car.setCarNumber(number);
-            car.setMileage(0);
-
-            car.saveEventually(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        disableAll();
-                        Toast.makeText(context, "New car successfully added!", Toast.LENGTH_LONG).show();
-                        getActivity().getSupportFragmentManager().popBackStack();
-                    } else {
-                        throw new RuntimeException(e.getMessage());
-                    }
-                }
-            });
-        }
    // }
 }

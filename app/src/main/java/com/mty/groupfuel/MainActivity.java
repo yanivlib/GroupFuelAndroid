@@ -212,10 +212,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void getOwnedCars() {
-        ParseCloud.callFunctionInBackground("getOwnedCars", new HashMap<String, Object>(), new FunctionCallback<ArrayList>() {
+    public void getOwnedCars() {
+        ParseCloud.callFunctionInBackground("getOwnedCars", new HashMap<String, Object>(), new FunctionCallback<ArrayList<Car>>() {
             @Override
-            public void done(ArrayList result, ParseException e) {
+            public void done(ArrayList<Car> result, ParseException e) {
                 if (e == null) {
                     if (result.size() == 0) {
                         new AlertDialog.Builder(MainActivity.this)

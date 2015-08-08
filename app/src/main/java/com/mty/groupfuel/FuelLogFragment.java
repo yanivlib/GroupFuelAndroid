@@ -82,6 +82,7 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
         if (cars == null) {
             setCars(mCallback.getCars());
         }
+        final FuelLogFragment fragment = this;
         ParseQuery<Fueling> query = Fueling.getQuery();
         //query.whereEqualTo("User", ParseUser.getCurrentUser());
         query.whereContainedIn("Car", UsageFragment.getPointers(cars));
@@ -94,6 +95,7 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
                 if (e == null) {
                     Log.i(LOG_TAG, "query completed successfully");
                     setFuelingList(list);
+                    getActivity().getSupportFragmentManager().beginTransaction().detach(fragment).attach(fragment).commit();
                 } else {
                     Log.e(LOG_TAG, "query failed", e);
                     throw new RuntimeException(e.getMessage());
