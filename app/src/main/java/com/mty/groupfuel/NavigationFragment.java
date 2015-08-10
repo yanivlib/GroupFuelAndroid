@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import com.mty.groupfuel.datamodel.GasStation;
 import com.parse.ParseGeoPoint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,7 +27,7 @@ public class NavigationFragment extends ListFragment {
     private static final String LOG_TAG = NavigationFragment.class.getSimpleName();
     getCarsListener mCallback;
     private List<GasStation> stations;
-    private ParseGeoPoint location;
+    private ParseGeoPoint location = new ParseGeoPoint();
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -58,12 +59,23 @@ public class NavigationFragment extends ListFragment {
         return fragment;
     }
 
+    private void updateView() {
+        getActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
+    }
+
     public void setLocation(ParseGeoPoint location) {
         this.location = location;
     }
 
     public void setStations(List<GasStation> stations) {
+        Log.d(LOG_TAG, "setting stations, there are " + (stations == null ? -1 : stations.size()));
         this.stations = stations;
+        try {
+            ((StationAdapter) getListAdapter()).notifyDataSetChanged();
+        } catch (NullPointerException npe) {
+            Log.d(LOG_TAG, "recovered from NPE when trying to get the list adapter");
+        }
+        //updateView();
     }
 
     @Override
@@ -80,6 +92,13 @@ public class NavigationFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        stations = new ArrayList<>();
+        ArrayList<GasStation> currentStations = (ArrayList<GasStation>) mCallback.getStations();
+        if (currentStations != null) {
+            setStations(currentStations);
+        } else {
+            setStations(new ArrayList<GasStation>());
+        }
     }
 
     @Override
@@ -87,7 +106,15 @@ public class NavigationFragment extends ListFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_navigation, container, false);
+
         setListAdapter(new StationAdapter(container.getContext(), stations));
+
+        if (stations.isEmpty()) {
+            setStations(mCallback.getStations());
+        }
+        if (location == null) {
+            setLocation(mCallback.getLocation());
+        }
 
         return view;
     }
@@ -115,14 +142,15 @@ public class NavigationFragment extends ListFragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            //CarUsage carUsage = (CarUsage) convertView;
-            //if (null == carUsage) {
-            //    carUsage = CarUsage.inflate(parent);
-            //}
-            //Car car = getItem(position);
-            //carUsage.setData(car, datamap.get(car.getObjectId()));
-            //return carUsage;
-            return super.getView(position, convertView, parent);
+            Log.d(LOG_TAG, "generating view for position " + position);
+            GasStationItem gasStationItem = (GasStationItem) convertView;
+            if (null == gasStationItem) {
+                gasStationItem = GasStationItem.inflate(parent);
+            }
+            //GasStation gasStation = getItem(position);
+            gasStationItem.setData(getItem(position), location);
+            return gasStationItem;
+            //return super.getView(position, convertView, parent);
         }
     }
 

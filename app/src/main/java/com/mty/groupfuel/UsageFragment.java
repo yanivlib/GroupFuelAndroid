@@ -209,6 +209,10 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
         getUsage(this.cars);
     }
 
+    private void updateView() {
+        getActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
+    }
+
     public void getUsage(final List<Car> cars) {
         if (datamap != null) {
             return;
@@ -224,7 +228,8 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                     datamap = result;
                     setCars(cars);
                     setRefreshing(false);
-                    getActivity().getSupportFragmentManager().beginTransaction().detach(fragment).attach(fragment).commit();
+                    //getActivity().getSupportFragmentManager().beginTransaction().detach(fragment).attach(fragment).commit();
+                    updateView();
                 } else {
                     System.out.println(e.getMessage());
                 }

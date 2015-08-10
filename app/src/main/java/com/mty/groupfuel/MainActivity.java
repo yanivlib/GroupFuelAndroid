@@ -301,12 +301,13 @@ public class MainActivity extends AppCompatActivity
         criteria.setBearingRequired(false);
         criteria.setCostAllowed(true);
         criteria.setPowerRequirement(Criteria.POWER_LOW);
-        ParseGeoPoint.getCurrentLocationInBackground(20000, criteria, new LocationCallback() {
+        ParseGeoPoint.getCurrentLocationInBackground(55000, criteria, new LocationCallback() {
             @Override
             public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
                 if (e == null) {
                     setLocation(parseGeoPoint);
                     broadcastLocation();
+                    getStationsByLocation(parseGeoPoint);
                 } else {
                     broadcastLocation();
                 }

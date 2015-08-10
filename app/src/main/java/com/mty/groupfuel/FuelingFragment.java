@@ -79,7 +79,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
                     }
                     break;
                 case Consts.BROADCAST_LOCATION:
-                    if (intent.getBooleanExtra(Consts.BROADCAST_LOCATION, false)) {
+                    if (intent.getIntExtra(Consts.BROADCAST_LOCATION, 0) != 0) {
                         setLocation(mCallback.getLocation());
                     }
             }
