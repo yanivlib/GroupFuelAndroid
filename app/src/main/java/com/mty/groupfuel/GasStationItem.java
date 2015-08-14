@@ -12,11 +12,7 @@ import com.parse.ParseGeoPoint;
 
 public class GasStationItem extends RelativeLayout {
 
-    private final static double defaultLat = 35.0;
-    private final static double defaultLon = 45.0;
-
     private GasStation gasStation;
-    private ParseGeoPoint location = new ParseGeoPoint();
 
     private TextView title;
     private TextView distance;
@@ -42,9 +38,9 @@ public class GasStationItem extends RelativeLayout {
         return gasStationItem;
     }
 
-    public ParseGeoPoint getLocation() {
-        return location;
-    }
+    //public ParseGeoPoint getLocation() {
+    //    return location;
+    //}
 
     void setupChildren() {
         this.title = (TextView) findViewById(R.id.title);
@@ -54,16 +50,25 @@ public class GasStationItem extends RelativeLayout {
 
     public void setData(GasStation gasStation, ParseGeoPoint currentLocation) {
         this.gasStation = gasStation;
-        this.location = gasStation.getLocation();
+        ParseGeoPoint gasStationLocation = gasStation.getLocation();
         this.title.setText(gasStation.getDisplayName());
 
         this.price.setText("2.5 nis");
 
-        if (currentLocation == null || location == null) {
+        if (currentLocation == null || gasStationLocation == null) {
             this.distance.setText("a lot");
         } else {
-            double distance = location.distanceInKilometersTo(currentLocation);
-            this.distance.setText(String.valueOf(distance) + " km");
+            //System.out.println("current location: " + currentLocation);
+            //System.out.println("gas station location: " + location);
+            double distance = gasStationLocation.distanceInKilometersTo(currentLocation);
+            //System.out.println("distance between them: " + distance);
+            String distnaceString;
+            if (distance < 1) {
+                distnaceString = "Less then 1";
+            } else {
+                distnaceString = String.valueOf(distance).substring(0, 4);
+            }
+            this.distance.setText(distnaceString + " km");
         }
     }
 }

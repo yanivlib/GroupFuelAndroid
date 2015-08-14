@@ -11,7 +11,7 @@ import com.mty.groupfuel.datamodel.Car;
 
 import java.util.Map;
 
-public class CarUsage extends RelativeLayout {
+public class CarItem extends RelativeLayout {
     private final static String STARTING_MILEAGE = "startingMileage";
     private final static String TOTAL_PRICE = "totalPrice";
     private final static String TOTAL_AMOUNT = "totalAmount";
@@ -22,24 +22,24 @@ public class CarUsage extends RelativeLayout {
     private TextView mpg;
     private TextView dpg;
 
-    public CarUsage(Context context) {
+    public CarItem(Context context) {
         this(context, null);
     }
 
-    public CarUsage(Context context, AttributeSet attrs) {
+    public CarItem(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CarUsage(Context context, AttributeSet attrs, int defStyle) {
+    public CarItem(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         LayoutInflater.from(context).inflate(R.layout.usage_car_item_children, this, true);
         setupChildren();
     }
 
-    public static CarUsage inflate(ViewGroup parent) {
-        CarUsage carUsage = (CarUsage) LayoutInflater.from(parent.getContext())
+    public static CarItem inflate(ViewGroup parent) {
+        CarItem carItem = (CarItem) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.usage_car_item, parent, false);
-        return carUsage;
+        return carItem;
     }
 
     public String getHeader() {

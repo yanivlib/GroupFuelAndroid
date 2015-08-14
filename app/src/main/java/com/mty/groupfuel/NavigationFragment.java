@@ -120,6 +120,7 @@ public class NavigationFragment extends ListFragment {
         } else {
             setStations(new ArrayList<GasStation>());
         }
+
     }
 
     @Override
@@ -133,9 +134,7 @@ public class NavigationFragment extends ListFragment {
         if (stations.isEmpty()) {
             setStations(mCallback.getStations());
         }
-        if (location == null) {
-            setLocation(mCallback.getLocation());
-        }
+        setLocation(mCallback.getLocation());
 
         return view;
     }
@@ -159,7 +158,7 @@ public class NavigationFragment extends ListFragment {
                 final Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
                 new AlertDialog.Builder(getActivity())
                         .setTitle("Navigate to destination")
-                        .setMessage("Are you sure you want to leave " + getString(R.string.app_name) + " and navigate to destination?")
+                        .setMessage("Are you sure you want to navigate to " + station.getDisplayName() + "?")
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 startActivity(intent);
@@ -170,7 +169,7 @@ public class NavigationFragment extends ListFragment {
                                 // do nothing
                             }
                         })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setIcon(android.R.drawable.ic_dialog_map)
                         .show();
             }
         });
@@ -197,6 +196,12 @@ public class NavigationFragment extends ListFragment {
             }
             gasStationItem.setData(getItem(position), location);
             return gasStationItem;
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+            updateView();
         }
     }
 

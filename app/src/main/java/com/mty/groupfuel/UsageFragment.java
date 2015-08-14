@@ -244,13 +244,13 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            CarUsage carUsage = (CarUsage) convertView;
-            if (null == carUsage) {
-                carUsage = CarUsage.inflate(parent);
+            CarItem carItem = (CarItem) convertView;
+            if (null == carItem) {
+                carItem = CarItem.inflate(parent);
             }
             Car car = getItem(position);
-            carUsage.setData(car, datamap.get(car.getObjectId()));
-            return carUsage;
+            carItem.setData(car, datamap.get(car.getObjectId()));
+            return carItem;
         }
     }
 
