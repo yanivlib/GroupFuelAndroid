@@ -15,8 +15,8 @@ public class GasStationItem extends RelativeLayout {
     private final static double defaultLat = 35.0;
     private final static double defaultLon = 45.0;
 
-    GasStation gasStation;
-    ParseGeoPoint location = new ParseGeoPoint();
+    private GasStation gasStation;
+    private ParseGeoPoint location = new ParseGeoPoint();
 
     private TextView title;
     private TextView distance;
@@ -42,29 +42,28 @@ public class GasStationItem extends RelativeLayout {
         return gasStationItem;
     }
 
+    public ParseGeoPoint getLocation() {
+        return location;
+    }
+
     void setupChildren() {
         this.title = (TextView) findViewById(R.id.title);
         this.distance = (TextView) findViewById(R.id.distance);
         this.price = (TextView) findViewById(R.id.price);
     }
 
-    public void setData(GasStation gasStation, ParseGeoPoint location) {
+    public void setData(GasStation gasStation, ParseGeoPoint currentLocation) {
         this.gasStation = gasStation;
-        if (location != null) {
-            this.location.setLatitude(location.getLatitude());
-            this.location.setLongitude(location.getLongitude());
-        } else {
-            this.location.setLatitude(defaultLat);
-            this.location.setLongitude(defaultLon);
-        }
+        this.location = gasStation.getLocation();
         this.title.setText(gasStation.getDisplayName());
 
         this.price.setText("2.5 nis");
 
-        if (location == null || gasStation.getLocation() == null) {
+        if (currentLocation == null || location == null) {
             this.distance.setText("a lot");
         } else {
-            this.distance.setText(String.valueOf(this.location.distanceInKilometersTo(location)));
+            double distance = location.distanceInKilometersTo(currentLocation);
+            this.distance.setText(String.valueOf(distance) + " km");
         }
     }
 }

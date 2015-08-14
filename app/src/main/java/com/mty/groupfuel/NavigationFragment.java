@@ -2,10 +2,13 @@ package com.mty.groupfuel;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -13,12 +16,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.mty.groupfuel.datamodel.GasStation;
 import com.parse.ParseGeoPoint;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -28,6 +33,7 @@ public class NavigationFragment extends ListFragment {
     getCarsListener mCallback;
     private List<GasStation> stations;
     private ParseGeoPoint location = new ParseGeoPoint();
+
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -60,7 +66,12 @@ public class NavigationFragment extends ListFragment {
     }
 
     private void updateView() {
-        getActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
+        getActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .detach(this)
+                .attach(this)
+                .commit();
     }
 
     public void setLocation(ParseGeoPoint location) {
@@ -68,6 +79,16 @@ public class NavigationFragment extends ListFragment {
     }
 
     public void setStations(List<GasStation> stations) {
+        if (stations == null) {
+            return;
+        }
+        Iterator<GasStation> it = stations.iterator();
+        while (it.hasNext()) {
+            GasStation station = it.next();
+            if (station.getLocation() == null) {
+                stations.remove(station);
+            }
+        }
         Log.d(LOG_TAG, "setting stations, there are " + (stations == null ? -1 : stations.size()));
         this.stations = stations;
         try {
@@ -126,6 +147,33 @@ public class NavigationFragment extends ListFragment {
         filter.addAction(Consts.BROADCAST_LOCATION);
         filter.addAction(Consts.BROADCAST_STATIONS);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, filter);
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //GasStation station = (GasStation)parent.getItemAtPosition(position);
+                GasStation station = (GasStation) getListView().getItemAtPosition(position);
+                //GasStationItem item = (GasStationItem) v;
+                ParseGeoPoint location = station.getLocation();
+                final String uri = String.format("geo:%f,%f", location.getLatitude(),
+                        location.getLongitude());
+                final Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Navigate to destination")
+                        .setMessage("Are you sure you want to leave " + getString(R.string.app_name) + " and navigate to destination?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivity(intent);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
+        });
     }
 
     @Override
@@ -142,15 +190,13 @@ public class NavigationFragment extends ListFragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Log.d(LOG_TAG, "generating view for position " + position);
+            //Log.d(LOG_TAG, "generating view for position " + position);
             GasStationItem gasStationItem = (GasStationItem) convertView;
             if (null == gasStationItem) {
                 gasStationItem = GasStationItem.inflate(parent);
             }
-            //GasStation gasStation = getItem(position);
             gasStationItem.setData(getItem(position), location);
             return gasStationItem;
-            //return super.getView(position, convertView, parent);
         }
     }
 
