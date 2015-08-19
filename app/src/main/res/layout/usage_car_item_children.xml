@@ -99,4 +99,34 @@
         android:text="New Text"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
+    <TextView
+        android:id="@+id/usage_owner_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/usage_dpg_title"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/usage_dpg_title"
+        android:layout_below="@+id/usage_dpg_title"
+        android:paddingBottom="3dp"
+        android:paddingTop="3dp"
+        android:text="Owner"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+    <TextView
+        android:id="@+id/usage_owner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/usage_owner_text"
+        android:layout_alignLeft="@+id/usage_dpg"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignStart="@+id/usage_dpg"
+        android:layout_below="@+id/usage_dpg"
+        android:paddingBottom="3dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="3dp"
+        android:text="New Text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
 </merge>

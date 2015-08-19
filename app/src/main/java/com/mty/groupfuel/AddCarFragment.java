@@ -399,7 +399,7 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
                 if (e == null) {
                     disableAll();
                     Toast.makeText(context, "New car successfully added!", Toast.LENGTH_LONG).show();
-                    mCallback.getOwnedCars();
+                    mCallback.syncOwnedCars();
                     getActivity().getSupportFragmentManager().popBackStack();
                 } else {
                     throw new RuntimeException(e.getMessage());

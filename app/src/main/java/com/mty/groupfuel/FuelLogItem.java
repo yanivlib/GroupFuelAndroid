@@ -10,7 +10,9 @@ import android.widget.TextView;
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.Fueling;
 import com.mty.groupfuel.datamodel.GasStation;
+import com.mty.groupfuel.datamodel.User;
 import com.parse.ParseException;
+import com.parse.ParseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,6 +24,7 @@ public class FuelLogItem extends RelativeLayout {
     private TextView amount;
     private TextView price;
     private TextView station;
+    private TextView driver;
 
     public FuelLogItem(Context context) {
         this(context, null);
@@ -48,6 +51,7 @@ public class FuelLogItem extends RelativeLayout {
         setDate(fueling.getCreatedAt());
         setAmount(fueling.getAmount().toString());
         setPrice(fueling.getPrice().toString());
+        setDriver(fueling.getUser());
         GasStation gasStation = fueling.getGasStation();
         if (gasStation != null) {
             try {
@@ -59,6 +63,16 @@ public class FuelLogItem extends RelativeLayout {
         }
         if (gasStation != null) {
             setStation(fueling.getGasStation());
+        } else {
+            setStation("Not provided");
+        }
+    }
+
+    public void setDriver(User driver) {
+        if (driver.equals(ParseUser.getCurrentUser())) {
+            this.driver.setText(R.string.me);
+        } else {
+            this.driver.setText(driver.getDisplayName());
         }
     }
 
@@ -90,11 +104,17 @@ public class FuelLogItem extends RelativeLayout {
         this.station.setText(station.getDisplayName());
     }
 
+    public void setStation(String station) {
+        this.station.setText(station);
+    }
+
+
     private void setupChildren() {
         this.carName = (TextView) findViewById(R.id.usage_log_car);
         this.date = (TextView) findViewById(R.id.usage_log_date);
         this.amount = (TextView) findViewById(R.id.usage_log_amount);
         this.price = (TextView) findViewById(R.id.usage_log_price);
         this.station = (TextView) findViewById(R.id.usage_log_station);
+        this.driver = (TextView) findViewById(R.id.usage_driver);
     }
 }

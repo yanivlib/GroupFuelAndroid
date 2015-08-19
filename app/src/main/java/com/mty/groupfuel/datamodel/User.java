@@ -52,4 +52,8 @@ public class User extends ParseUser {
 		put("BirthDate", value);
 	}
 
+    public String getDisplayName() {
+        return getFirstName() + " " + getLastName();
+    }
+
 }

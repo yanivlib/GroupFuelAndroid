@@ -30,7 +30,7 @@
         android:text="@string/birth_date" />
 
     <EditText
-        android:id="@+id/update_birth"
+        android:id="@+id/birth"
         style="@android:style/Widget.DeviceDefault.Light.Spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,20 +50,20 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/update_birth"
-        android:layout_toLeftOf="@+id/update_birth"
-        android:layout_toStartOf="@+id/update_birth"
+        android:layout_below="@+id/birth"
+        android:layout_toLeftOf="@+id/birth"
+        android:layout_toStartOf="@+id/birth"
         android:text="@string/first_name" />
 
     <EditText
-        android:id="@+id/update_first"
+        android:id="@+id/first_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/update_birth"
+        android:layout_alignLeft="@+id/birth"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignStart="@+id/update_birth"
-        android:layout_below="@+id/update_birth"
+        android:layout_alignStart="@+id/birth"
+        android:layout_below="@+id/birth"
         android:paddingLeft="5dp"
         android:paddingTop="2dp" />
 
@@ -73,20 +73,20 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/update_first"
-        android:layout_toLeftOf="@+id/update_last"
-        android:layout_toStartOf="@+id/update_last"
+        android:layout_below="@+id/first_name"
+        android:layout_toLeftOf="@+id/last_name"
+        android:layout_toStartOf="@+id/last_name"
         android:text="@string/last_name" />
 
     <EditText
-        android:id="@+id/update_last"
+        android:id="@+id/last_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/update_first"
-        android:layout_alignLeft="@+id/update_first"
-        android:layout_alignRight="@+id/update_first"
-        android:layout_alignStart="@+id/update_first"
-        android:layout_below="@+id/update_first"
+        android:layout_alignEnd="@+id/first_name"
+        android:layout_alignLeft="@+id/first_name"
+        android:layout_alignRight="@+id/first_name"
+        android:layout_alignStart="@+id/first_name"
+        android:layout_below="@+id/first_name"
         android:paddingLeft="5dp"
         android:paddingTop="2dp" />
 
@@ -96,31 +96,31 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/update_last"
-        android:layout_toLeftOf="@+id/update_gender"
-        android:layout_toStartOf="@+id/update_gender"
+        android:layout_below="@+id/last_name"
+        android:layout_toLeftOf="@+id/gender"
+        android:layout_toStartOf="@+id/gender"
         android:text="@string/gender" />
 
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/update_gender"
+        android:id="@+id/gender"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/update_last"
-        android:layout_alignLeft="@+id/update_last"
-        android:layout_alignRight="@+id/update_last"
-        android:layout_alignStart="@+id/update_last"
+        android:layout_alignEnd="@+id/last_name"
+        android:layout_alignLeft="@+id/last_name"
+        android:layout_alignRight="@+id/last_name"
+        android:layout_alignStart="@+id/last_name"
         android:layout_alignTop="@+id/textView7"
         android:orientation="horizontal"
         android:paddingLeft="5dp"
         android:paddingTop="2dp">
         <RadioButton
-            android:id="@+id/update_male"
+            android:id="@+id/male"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="false"
             android:text="@string/male" />
         <RadioButton
-            android:id="@+id/update_female"
+            android:id="@+id/female"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="false"
@@ -128,7 +128,7 @@
     </RadioGroup>
 
     <Button
-        android:id="@+id/update_button"
+        android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

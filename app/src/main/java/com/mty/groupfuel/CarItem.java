@@ -8,6 +8,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mty.groupfuel.datamodel.Car;
+import com.parse.ParseUser;
 
 import java.util.Map;
 
@@ -21,6 +22,7 @@ public class CarItem extends RelativeLayout {
     private TextView mileage;
     private TextView mpg;
     private TextView dpg;
+    private TextView owner;
 
     public CarItem(Context context) {
         this(context, null);
@@ -67,6 +69,7 @@ public class CarItem extends RelativeLayout {
         this.mileage = (TextView)findViewById(R.id.usage_mileage);
         this.mpg = (TextView)findViewById(R.id.usage_mpg);
         this.dpg = (TextView)findViewById(R.id.usage_dpg);
+        this.owner = (TextView) findViewById(R.id.usage_owner);
     }
 
     public void setData(Car car, Map<String, Number> map) {
@@ -87,6 +90,11 @@ public class CarItem extends RelativeLayout {
         String dpg = String.valueOf(miles / intPrice);
         String mpg = String.valueOf(miles / intAmount);
 
+        if (car.getOwner().equals(ParseUser.getCurrentUser())) {
+            owner.setText(R.string.me);
+        } else {
+            owner.setText(car.getOwner().getDisplayName());
+        }
         setHeader(car.getDisplayName());
         setMileage(mileage.toString());
         setDpg(dpg);

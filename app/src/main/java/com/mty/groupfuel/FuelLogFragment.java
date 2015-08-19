@@ -36,7 +36,7 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
         public void onReceive(Context context, Intent intent) {
             int carAmount = intent.getIntExtra(Consts.BROADCAST_CARS, 0);
             if (carAmount > 0) {
-                setCars(mCallback.getCars());
+                setCars(mCallback.getOwnedCars());
                 getFuelings();
             }
             Log.d(LOG_TAG, "Got message: " + carAmount);
@@ -80,7 +80,10 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
 
     private void getFuelings() {
         if (cars == null) {
-            setCars(mCallback.getCars());
+            setCars(mCallback.getOwnedCars());
+        }
+        if (cars == null) {
+            return;
         }
         final FuelLogFragment fragment = this;
         ParseQuery<Fueling> query = Fueling.getQuery();
@@ -122,7 +125,7 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
         super.onCreate(savedInstanceState);
         fuelingList = new ArrayList<>();
         cars = new ArrayList<>();
-        setCars(mCallback.getCars());
+        setCars(mCallback.getOwnedCars());
     }
 
     @Override

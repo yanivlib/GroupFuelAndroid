@@ -58,6 +58,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     private Spinner citySpinner;
     private Spinner stationsSpinner;
     private RadioGroup radioGroup;
+    private TextView cityText;
 
     // Fields
     private Map<String, List<GasStation>> cityToStation;
@@ -188,6 +189,8 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
             button.setEnabled(false);
         }
         citySpinner.setEnabled(false);
+        citySpinner.setVisibility(View.INVISIBLE);
+        cityText.setVisibility(View.INVISIBLE);
         sendButton.setOnClickListener(this);
         sendButton.setEnabled(false);
         return view;
@@ -219,6 +222,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         stationsSpinner = (Spinner) view.findViewById(R.id.fueling_stations);
         sendButton = (Button)view.findViewById(R.id.fueling_send);
         radioGroup = (RadioGroup) view.findViewById(R.id.fueling_rg);
+        cityText = (TextView) view.findViewById(R.id.city_text);
     }
 
     private void attachAdapter(View view, Object[] array, Spinner spinner, AdapterView.OnItemSelectedListener onItemSelectedListener) {
@@ -401,8 +405,12 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
                 case R.id.radio_location:
                     setStationsInSpinner(stationsNearby);
                     citySpinner.setEnabled(false);
+                    citySpinner.setVisibility(View.INVISIBLE);
+                    cityText.setVisibility(View.INVISIBLE);
                     break;
                 case R.id.radio_city:
+                    citySpinner.setVisibility(View.VISIBLE);
+                    cityText.setVisibility(View.VISIBLE);
                     citySpinner.setEnabled(true);
                     break;
             }

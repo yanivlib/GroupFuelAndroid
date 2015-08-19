@@ -36,6 +36,20 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     List<Object> carList;
     List<Object> personalList;
     List<Object> accountList;
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int carAmount = intent.getIntExtra("cars", 0);
+            if (carAmount > 0) {
+                setCars(mCallback.getOwnedCars());
+            }
+            Log.d("receiver", "Got message: " + carAmount);
+        }
+    };
+
+    public SettingsFragment() {
+        // Required empty public constructor
+    }
 
     public static SettingsFragment newInstance() {
         SettingsFragment fragment = new SettingsFragment();
@@ -43,21 +57,6 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
-    public SettingsFragment() {
-        // Required empty public constructor
-    }
-
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int carAmount = intent.getIntExtra("cars", 0);
-            if (carAmount > 0) {
-                setCars(mCallback.getCars());
-            }
-            Log.d("receiver", "Got message: " + carAmount);
-        }
-    };
 
     @Override
     public void onAttach(Activity activity) {
@@ -75,7 +74,7 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
         super.onCreate(savedInstanceState);
         this.cars = new ArrayList<>();
         prepareListData();
-        setCars(mCallback.getCars());
+        setCars(mCallback.getOwnedCars());
     }
 
     @Override

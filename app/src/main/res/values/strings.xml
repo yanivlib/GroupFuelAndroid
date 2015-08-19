@@ -69,7 +69,7 @@
     <string name="num_of_events">num Of Events</string>
     <string name="current_mileage">Current Mileage</string>
     <string name="total_amount">Total Amount</string>
-    <string name="no_cars">No cars found</string>
+    <string name="no_cars">No ownedCars found</string>
     <string name="add_car_q">You need at least one car to access this function. Would you want to add one now?</string>
-
+    <string name="me"><b><i>Me</i></b></string>
 </resources>

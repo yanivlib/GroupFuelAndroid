@@ -44,7 +44,9 @@ public class MainActivity extends AppCompatActivity
     static FloatingActionButton fab;
     static private ParseUser user;
     private static ProgressDialog progress;
-    private List<Car> cars;
+    private List<Car> ownedCars;
+    private List<Car> driverCars;
+
     private List<GasStation> stations;
     private Toolbar toolbar;
     private Fragment mContent;
@@ -90,7 +92,6 @@ public class MainActivity extends AppCompatActivity
         return result;
     }
 
-
     private static void logOut(final Context context) {
         new AlertDialog.Builder(context)
                 .setMessage("Are you sure you want to log out?")
@@ -120,11 +121,24 @@ public class MainActivity extends AppCompatActivity
     }
 
     public List<Car> getCars() {
-        return this.cars;
+        ArrayList<Car> cars = new ArrayList<>();
+        if (getOwnedCars() != null) {
+            cars.addAll(getOwnedCars());
+            Log.d(LOG_TAG, "owned cars : " + getOwnedCars().size());
+        }
+        if (getDriverCars() != null) {
+            cars.addAll(getDriverCars());
+            Log.d(LOG_TAG, "driver cars : " + getDriverCars().size());
+        }
+        return (cars.isEmpty() ? null : cars);
     }
 
-    public void setCars(List<Car> cars) {
-        this.cars = cars;
+    public List<Car> getOwnedCars() {
+        return this.ownedCars;
+    }
+
+    public void setOwnedCars(List<Car> ownedCars) {
+        this.ownedCars = ownedCars;
     }
 
     public List<GasStation> getStations() {
@@ -135,6 +149,14 @@ public class MainActivity extends AppCompatActivity
         this.stations = stations;
     }
 
+    public List<Car> getDriverCars() {
+        return driverCars;
+    }
+
+    public void setDriverCars(List<Car> driverCars) {
+        this.driverCars = driverCars;
+    }
+
     public void broadcast(int message, String action) {
         Log.d(LOG_TAG, "Broadcasting message: " + action + " " + message);
         Intent intent = new Intent(action);
@@ -143,7 +165,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void broadcastCarList() {
-        broadcast(cars.size(), Consts.BROADCAST_CARS);
+        int size = (ownedCars != null ? ownedCars.size() : 0) + (driverCars != null ? driverCars.size() : 0);
+        broadcast(size, Consts.BROADCAST_CARS);
     }
 
     public void broadcastLocation() {
@@ -197,13 +220,10 @@ public class MainActivity extends AppCompatActivity
                 transaction.commit();
             }
         });
-        getOwnedCars();
-        getCurrentLocation();
+        syncOwnedCars();
+        syncDrivedCars();
+        syncCurrentLocation();
         user = ParseUser.getCurrentUser();
-        //if (savedInstanceState != null) {
-        //    mContent = getSupportFragmentManager().getFragment(savedInstanceState, CURRENT_FRAGMENT);
-        //    System.out.println("recoverd, found fragment to be" + mContent.getClass().getSimpleName());
-        //}
     }
     @Override
     protected void onResumeFragments() {
@@ -237,14 +257,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void getOwnedCars() {
+    public void syncOwnedCars() {
         ParseCloud.callFunctionInBackground("getOwnedCars", new HashMap<String, Object>(), new FunctionCallback<ArrayList<Car>>() {
             @Override
             public void done(ArrayList<Car> result, ParseException e) {
                 if (e == null) {
                     if (result.size() == 0) {
                         new AlertDialog.Builder(MainActivity.this)
-                                .setTitle("No cars found")
+                                .setTitle("No ownedCars found")
                                 .setMessage("You need at least one car to access this function. Would you want to add one now?")
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
@@ -262,7 +282,18 @@ public class MainActivity extends AppCompatActivity
                                 .setIcon(android.R.drawable.ic_dialog_alert)
                                 .show();
                     }
-                    setCars(result);
+                    final HashMap<String, String> params = new HashMap<>();
+                    for (final Car car : result) {
+                        params.put("carNumber", car.getCarNumber());
+                        ParseCloud.callFunctionInBackground("getCarDrivers", params, new FunctionCallback<ArrayList<User>>() {
+                            @Override
+                            public void done(ArrayList<User> result, ParseException e) {
+                                car.setDrivers(result);
+                            }
+                        });
+                        params.clear();
+                    }
+                    setOwnedCars(result);
                     broadcastCarList();
                 } else {
                     switch (e.getCode()) {
@@ -272,6 +303,22 @@ public class MainActivity extends AppCompatActivity
                         default:
                             throw new RuntimeException(e.getMessage());
                     }
+                }
+            }
+        });
+    }
+
+    public void syncDrivedCars() {
+        ParseCloud.callFunctionInBackground("getDrivingCars", new HashMap<String, Object>(), new FunctionCallback<ArrayList<Car>>() {
+            @Override
+            public void done(ArrayList<Car> cars, ParseException e) {
+                Log.d(LOG_TAG, "fetching drived cars...");
+                if (e == null) {
+                    setDriverCars(cars);
+                    broadcastCarList();
+                    Log.d(LOG_TAG, "found drived cars : " + cars.size());
+                } else {
+                    throw new RuntimeException(e.getMessage());
                 }
             }
         });
@@ -294,7 +341,7 @@ public class MainActivity extends AppCompatActivity
         this.location = location;
     }
 
-    private void getCurrentLocation() {
+    private void syncCurrentLocation() {
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_LOW);
         criteria.setAltitudeRequired(false);
@@ -307,7 +354,7 @@ public class MainActivity extends AppCompatActivity
                 if (e == null) {
                     setLocation(parseGeoPoint);
                     broadcastLocation();
-                    getStationsByLocation(parseGeoPoint);
+                    syncStationsByLocation(parseGeoPoint);
                 } else {
                     broadcastLocation();
                 }
@@ -315,7 +362,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    void getStationsByLocation(final ParseGeoPoint point) {
+    void syncStationsByLocation(final ParseGeoPoint point) {
         ParseQuery<GasStation> query = GasStation.getQuery();
         query.whereNear("Location", point);
         query.findInBackground(new FindCallback<GasStation>() {
