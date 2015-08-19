@@ -237,79 +237,76 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
     }
 
     private class CarListener implements AdapterView.OnItemLongClickListener {
-        public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int pos, long id) {
-
+        public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int pos, long id) {
             final Car car = (Car) getListView().getItemAtPosition(pos);
+            final boolean owner = car.getOwner().equals(ParseUser.getCurrentUser());
             CharSequence options[];
-            if (car.getOwner().equals(ParseUser.getCurrentUser())) { // My car
+            if (owner) {
                 options = new CharSequence[]{"Add driver", "Remove driver", "Remove car"};
-            } else { // Not my car
-                options = new CharSequence[]{"Add driver", "Remove driver", "Remove from my cars"};
+            } else {
+                options = new CharSequence[]{"Remove from my cars"};
             }
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Choose an action");
-            builder.setItems(options, new DialogInterface.OnClickListener() {
+            AlertDialog.Builder parentBuilder = new AlertDialog.Builder(context);
+            parentBuilder.setItems(options, new DialogInterface.OnClickListener() {
                 private static final String EMAIL = "email";
                 private static final String NUMBER = "carNumber";
+                private final Map<String, Object> params = new HashMap<>();
+                private final AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    final Map<String, String> params = new HashMap<>();
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    params.put(NUMBER, car.getCarNumber());
-                    switch (which) {
-                        case 0:
-                            dialog.dismiss();
-                            final EditText input = new EditText(context);
-                            input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                            builder.setTitle("Please enter email:")
-                                    .setView(input)
-                                    .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            params.put(EMAIL, input.getText().toString());
-                                            ParseCloud.callFunctionInBackground("addDriver", params, new FunctionCallback<Object>() {
-                                                @Override
-                                                public void done(Object o, ParseException e) {
-                                                    mCallback.syncOwnedCars();
-                                                    Toast.makeText(context, "Driver added", Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
+                private void removeDriver() {
+                    final ArrayList<User> drivers = car.getDrivers();
+                    ArrayList<String> names = new ArrayList<>(drivers.size());
+                    for (User driver : drivers) {
+                        names.add(driver.getDisplayName());
+                    }
+                    builder.setTitle("Please select driver");
+                    builder.setItems(names.toArray(new String[names.size()]), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            params.put(EMAIL, drivers.get(which).getEmail());
+                            ParseCloud.callFunctionInBackground("removeDriver", params, new FunctionCallback<Object>() {
+                                @Override
+                                public void done(Object o, ParseException e) {
+                                    mCallback.syncOwnedCars();
+                                    Toast.makeText(context, "Driver removed", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    });
+                }
 
-                                        }
-                                    })
-                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.cancel();
-                                        }
-                                    })
-                                    .show();
-                            break;
-                        case 1:
-                            dialog.dismiss();
-                            final ArrayList<User> drivers = car.getDrivers();
-                            ArrayList<String> names = new ArrayList<>(drivers.size());
-                            for (User driver : drivers) {
-                                names.add(driver.getDisplayName());
-                            }
-                            builder.setTitle("Please select driver")
-                                    .setItems(names.toArray(new String[names.size()]), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            params.put(EMAIL, drivers.get(which).getEmail());
-                                            ParseCloud.callFunctionInBackground("removeDriver", params, new FunctionCallback<Object>() {
-                                                @Override
-                                                public void done(Object o, ParseException e) {
-                                                    mCallback.syncOwnedCars();
-                                                    Toast.makeText(context, "Driver removed", Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                        }
-                                    })
-                                    .show();
-                            break;
-                        case 2:
+                private void addDriver() {
+                    final EditText input = new EditText(context);
+                    input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                    builder.setTitle("Please enter email:");
+                    builder.setView(input);
+                    builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            params.put(EMAIL, input.getText().toString());
+                            ParseCloud.callFunctionInBackground("addDriver", params, new FunctionCallback<Object>() {
+                                @Override
+                                public void done(Object o, ParseException e) {
+                                    mCallback.syncOwnedCars();
+                                    Toast.makeText(context, "Driver added", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+                    });
+                    builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                }
+
+                private void removeCar() {
+                    builder.setMessage("Are you sure you want to remove this car?");
+                    builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
                             ParseCloud.callFunctionInBackground("removeCar", params, new FunctionCallback<Object>() {
                                 @Override
                                 public void done(Object o, ParseException e) {
@@ -317,11 +314,47 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                                     Toast.makeText(context, "Car removed", Toast.LENGTH_SHORT).show();
                                 }
                             });
+                        }
+                    });
+                    builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                }
+
+                private void onClickOwner(int which) {
+                    switch (which) {
+                        case 0:
+                            addDriver();
+                            break;
+                        case 1:
+                            removeDriver();
+                            break;
+                        case 2:
+                            removeCar();
                             break;
                     }
                 }
+
+                private void onClickDriver() {
+                    removeCar();
+                }
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    params.put(NUMBER, car.getCarNumber());
+                    dialog.dismiss();
+                    if (owner) {
+                        onClickOwner(which);
+                    } else {
+                        onClickDriver();
+                    }
+                    builder.show();
+                }
             });
-            builder.show();
+            parentBuilder.show();
             return true;
         }
     }
