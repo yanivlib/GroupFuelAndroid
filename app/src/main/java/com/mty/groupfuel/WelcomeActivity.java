@@ -3,26 +3,35 @@ package com.mty.groupfuel;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.os.Bundle;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 
-public class WelcomeActivity extends Activity {
+public class WelcomeActivity extends Activity implements View.OnClickListener {
 
     private ProgressDialog progressDialog;
+    private Button loginButton;
+    private Button registerButton;
+    private Button facebookButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+
+        loginButton = (Button)findViewById(R.id.login_button);
+        registerButton = (Button)findViewById(R.id.register_button);
+        facebookButton = (Button)findViewById(R.id.facebook_login);
+
+        loginButton.setOnClickListener(this);
+        registerButton.setOnClickListener(this);
+        facebookButton.setOnClickListener(this);
     }
 
     public void doLogin (View view) {
@@ -51,7 +60,7 @@ public class WelcomeActivity extends Activity {
                     return;
                 } else if (user.isNew()) {
                     // User signed up and logged in through Facebook
-                    Intent intent = new Intent(WelcomeActivity.this, PersonalActivity.class);
+                    Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
                     intent.putExtra(Consts.PARENT_ACTIVITY_NAME, RegisterActivity.class.getName());
                     startActivity(intent);
                 } else {
@@ -62,5 +71,17 @@ public class WelcomeActivity extends Activity {
         });
     }
 
-
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.login_button:
+                doLogin(v);
+                break;
+            case R.id.register_button:
+                doRegister(v);
+                break;
+            case R.id.facebook_login:
+                doFacebookLogin(v);
+        }
+    }
 }

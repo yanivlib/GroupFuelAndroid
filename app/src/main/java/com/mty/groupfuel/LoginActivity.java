@@ -1,14 +1,13 @@
 package com.mty.groupfuel;
 
-import android.app.AlertDialog;
+import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.mty.groupfuel.datamodel.User;
@@ -16,21 +15,21 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
-import android.content.Intent;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class LoginActivity extends ActionBarActivity {
+public class LoginActivity extends Activity implements View.OnClickListener {
 
     private ProgressDialog progressDialog;
     private EditText usernameET;
     private EditText passwordET;
+    private Button loginButton;
 
     private void findViewsById() {
         usernameET = (EditText) findViewById(R.id.usernameText);
         passwordET = (EditText) findViewById(R.id.passwordText);
+        loginButton = (Button) findViewById(R.id.login);
     }
 
     @Override
@@ -38,6 +37,8 @@ public class LoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         findViewsById();
+
+        loginButton.setOnClickListener(this);
     }
 
     @Override
@@ -62,7 +63,7 @@ public class LoginActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void login (View view) {
+    public void doLogin(View view) {
         progressDialog = ProgressDialog.show(this, getResources().getString(R.string.wait), getResources().getString(R.string.login_progress));
         String username = usernameET.getText().toString().trim();
         String password = passwordET.getText().toString().trim();
@@ -92,5 +93,9 @@ public class LoginActivity extends ActionBarActivity {
             }
         });
     }
-    
+
+    @Override
+    public void onClick(View v) {
+        doLogin(v);
+    }
 }

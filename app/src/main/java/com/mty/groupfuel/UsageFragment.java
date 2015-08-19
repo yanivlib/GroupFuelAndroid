@@ -1,22 +1,32 @@
 package com.mty.groupfuel;
 
-import android.app.AlertDialog;
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.mty.groupfuel.datamodel.Car;
-import com.mty.groupfuel.datamodel.Fueling;
-import com.parse.FindCallback;
+import com.mty.groupfuel.datamodel.User;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONException;
@@ -27,24 +37,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UsageFragment extends android.support.v4.app.Fragment {
+public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefreshLayout.OnRefreshListener{
+    private static final String LOG_TAG = UsageFragment.class.getSimpleName();
 
-    private final static String STARTING_MILEAGE = "startingMileage";
-    private final static String TOTAL_PRICE = "totalPrice";
-    private final static String TOTAL_AMOUNT = "totalAmount";
-    private final static String NUM_OF_EVENTS = "numOfEvents";
-    private final static String CURRENT_MILEAGE = "currentMileage";
+    getCarsListener mCallback;
 
-    private TableLayout displayTable;
-    private TableLayout logTable;
     private Context context;
-
     private Map<String,Map<String, Number>> datamap;
     private List<Car> cars;
 
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int carAmount = intent.getIntExtra(Consts.BROADCAST_CARS, 0);
+            if (carAmount > 0) {
+                setCars(mCallback.getCars());
+            }
+            Log.d(LOG_TAG, "Got message: " + carAmount);
+        }
+    };
+
     public UsageFragment() {
-        // Required empty public constructor
     }
+
 
     public static UsageFragment newInstance() {
         UsageFragment fragment = new UsageFragment();
@@ -73,88 +88,115 @@ public class UsageFragment extends android.support.v4.app.Fragment {
         return res;
     }
 
-    private static List<Fueling> mergeFuelings(List<Car> cars) {
-        List<Fueling> fuelings = new ArrayList<>();
-        for (Car car : cars) {
-            //fuelings.addAll(car.getFuelingEvents());
-        }
-        return fuelings;
-    }
-
-    private static CarUsage getCarView(Context context, String name, String mpg, String mileage, String dpg) {
-        CarUsage usage = new CarUsage(context);
-        usage.setDpg(dpg);
-        usage.setHeader(name);
-        usage.setMileage(mileage);
-        usage.setMpg(mpg);
-        return usage;
-    }
-
-    private static void populateDisplayTable(Context context, Map<String, Map<String, Number>> datamap, List<Car> cars, TableLayout tl) {
-        for (Car car : cars) {
-            Map<String, Number> map = datamap.get(car.getObjectId());
-            String name = car.getDisplayName();
-            Number price = map.get(TOTAL_PRICE);
-            Number amount = map.get(TOTAL_AMOUNT);
-            Number starting = map.get(STARTING_MILEAGE);
-            Number mileage = map.get(CURRENT_MILEAGE);
-
-            int miles = (mileage.intValue() - starting.intValue());
-            String dpg = String.valueOf(miles / price.intValue());
-            String mpg = String.valueOf(miles / amount.intValue());
-
-            tl.addView(getCarView(context, name, mpg, mileage.toString(), dpg));
-        }
-    }
-
-    public void updateCars(List<Car> cars) {
-        if (!cars.equals(this.cars)) {
+    public void setCars(List<Car> cars) {
+        if (cars != null && !cars.equals(this.cars)) {
             this.cars = cars;
-            getUsage(cars);
-            //populateLogTable(context, mergeFuelings(cars), logTable);
+            ((UsageAdapter) getListAdapter()).notifyDataSetChanged();
+            if (datamap == null) {
+                getUsage(cars);
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //outState.putParcelableArrayList("cars", cars);
+        super.onSaveInstanceState(outState);
+    }
+
+    // Implemented methods
+
+    public void onRefresh() {
+        Log.d(LOG_TAG, "onRefresh called from SwipeRefreshLayout");
+        getUsage();
+        setRefreshing(false);
+    }
+
+    // Lifecycle methods
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mCallback = (getCarsListener)activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement getCarsListener");
         }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.cars = new ArrayList<>();
+        ArrayList<Car> currentCars = (ArrayList<Car>)mCallback.getCars();
+        if (currentCars != null) {
+            setCars(currentCars);
+        } else {
+            cars = new ArrayList<>();
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_usage, container, false);
-        context = view.getContext();
-        displayTable = (TableLayout) view.findViewById(R.id.displayTable);
-        logTable = (TableLayout) view.findViewById(R.id.logTable);
-        getFuelings(context);
+        context = container.getContext();
+        setListAdapter(new UsageAdapter(context, cars));
+        if (cars.isEmpty()) {
+            setCars(mCallback.getCars());
+        }
+        if (!cars.isEmpty()) {
+            getUsage();
+        }
+        setOnRefreshListener(this);
+
+        Button button = (Button) view.findViewById(R.id.footer);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content_frame, new AddCarFragment(), AddCarFragment.class.getSimpleName());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
 
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver,
+                new IntentFilter(Consts.BROADCAST_CARS));
+        getListView().setOnItemLongClickListener(new CarListener());
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    public void getUsage() {
+        getUsage(this.cars);
+    }
+
+    private void updateView() {
+        getActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
+    }
+
     public void getUsage(final List<Car> cars) {
-        if ((this.datamap != null) && (this.datamap.size() == cars.size() + 1)) {
+        if (datamap != null) {
             return;
         }
-        if (cars.size() == 0) {
-            new AlertDialog.Builder(context)
-                    .setTitle(context.getString(R.string.no_cars))
-                    .setMessage(context.getString(R.string.add_car_q))
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            startActivity(new Intent(context, AddCarActivity.class));
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        }
+        final UsageFragment fragment = this;
         List<JSONObject> carPointers = new ArrayList<>(getPointers(cars));
         final Map<String, List<JSONObject>> params = new HashMap<>();
         params.put("cars", carPointers);
@@ -163,7 +205,9 @@ public class UsageFragment extends android.support.v4.app.Fragment {
             public void done(Map<String, Map<String, Number>> result, ParseException e) {
                 if (e == null) {
                     datamap = result;
-                    populateDisplayTable(context, result, cars, displayTable);
+                    setCars(cars);
+                    setRefreshing(false);
+                    updateView();
                 } else {
                     System.out.println(e.getMessage());
                 }
@@ -171,29 +215,164 @@ public class UsageFragment extends android.support.v4.app.Fragment {
         });
     }
 
-    private void populateLogTable(Context context, List<Fueling> list, TableLayout tl) {
-        if (tl == null) {
-            tl = this.logTable;
+    public class UsageAdapter extends ArrayAdapter<Car> {
+        public UsageAdapter(Context c, List<Car> items) {
+            super(c, 0, items);
         }
-        for (Fueling fueling : list) {
-            tl.addView(new FuelingUsage(context, fueling));
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            CarItem carItem = (CarItem) convertView;
+            if (null == carItem) {
+                carItem = CarItem.inflate(parent);
+            }
+            Car car = getItem(position);
+            if (datamap.get(car.getObjectId()) != null) {
+                carItem.setData(car, datamap.get(car.getObjectId()));
+            } else {
+                Log.d(LOG_TAG, "skipping car" + car.getDisplayName());
+            }
+            return carItem;
         }
     }
 
-    private void getFuelings(final Context context) {
-        ParseQuery<Fueling> query = Fueling.getQuery();
-        query.whereEqualTo("User", ParseUser.getCurrentUser());
-        query.include("Car");
-        query.findInBackground(new FindCallback<Fueling>() {
-            @Override
-            public void done(List<Fueling> list, ParseException e) {
-                if (e == null) {
-                    populateLogTable(context, list, null);
-                } else {
-                    throw new RuntimeException(e.getMessage());
-                }
+    private class CarListener implements AdapterView.OnItemLongClickListener {
+        public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int pos, long id) {
+            final Car car = (Car) getListView().getItemAtPosition(pos);
+            final boolean owner = car.getOwner().equals(ParseUser.getCurrentUser());
+            CharSequence options[];
+            if (owner) {
+                options = new CharSequence[]{"Add driver", "Remove driver", "Remove car"};
+            } else {
+                options = new CharSequence[]{"Remove from my cars"};
             }
-        });
+            AlertDialog.Builder parentBuilder = new AlertDialog.Builder(context);
+            parentBuilder.setItems(options, new DialogInterface.OnClickListener() {
+                private static final String EMAIL = "email";
+                private static final String NUMBER = "carNumber";
+                private final Map<String, Object> params = new HashMap<>();
+                private final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                private void removeDriver() {
+                    final ArrayList<User> drivers = car.getDrivers();
+                    if (drivers.isEmpty()) {
+                        builder.setMessage("There are no drivers to remove");
+                        return;
+                    }
+                    ArrayList<String> names = new ArrayList<>(drivers.size());
+                    for (User driver : drivers) {
+                        names.add(driver.getDisplayName());
+                    }
+                    builder.setTitle("Please select driver");
+                    builder.setItems(names.toArray(new String[names.size()]), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            params.put(EMAIL, drivers.get(which).getEmail());
+                            ParseCloud.callFunctionInBackground("removeDriver", params, new FunctionCallback<Object>() {
+                                @Override
+                                public void done(Object o, ParseException e) {
+                                    if (e == null) {
+                                        mCallback.syncOwnedCars();
+                                        Toast.makeText(context, "Driver removed", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        MainActivity.createErrorAlert(e.getMessage(), context).show();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+
+                private void addDriver() {
+                    final EditText input = new EditText(context);
+                    input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                    builder.setTitle("Please enter email:");
+                    builder.setView(input);
+                    builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            params.put(EMAIL, input.getText().toString());
+                            ParseCloud.callFunctionInBackground("addDriver", params, new FunctionCallback<Object>() {
+                                @Override
+                                public void done(Object o, ParseException e) {
+                                    if (e == null) {
+                                        mCallback.syncOwnedCars();
+                                        Toast.makeText(context, "Driver added", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        MainActivity.createErrorAlert(e.getMessage(), context).show();
+                                    }
+                                }
+                            });
+
+                        }
+                    });
+                    builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                }
+
+                private void removeCar() {
+                    builder.setMessage("Are you sure you want to remove this car?");
+                    builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ParseCloud.callFunctionInBackground("removeCar", params, new FunctionCallback<Object>() {
+                                @Override
+                                public void done(Object o, ParseException e) {
+                                    if (e == null) {
+                                        mCallback.syncOwnedCars();
+                                        Toast.makeText(context, "Car removed", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        MainActivity.createErrorAlert(e.getMessage(), context).show();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                }
+
+                private void onClickOwner(int which) {
+                    switch (which) {
+                        case 0:
+                            addDriver();
+                            break;
+                        case 1:
+                            removeDriver();
+                            break;
+                        case 2:
+                            removeCar();
+                            break;
+                    }
+                }
+
+                private void onClickDriver() {
+                    removeCar();
+                }
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    params.put(NUMBER, car.getCarNumber());
+                    dialog.dismiss();
+                    if (owner) {
+                        onClickOwner(which);
+                    } else {
+                        onClickDriver();
+                    }
+                    builder.show();
+                }
+            });
+            parentBuilder.show();
+            return true;
+        }
     }
 
 }

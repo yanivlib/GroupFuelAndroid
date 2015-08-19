@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="Please enter fueling details"
+        android:text="@string/fueling_top_text"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Spinner
@@ -65,27 +65,96 @@
         android:hint="Amount (liters)"
         android:inputType="number" />
 
-    <EditText
-        android:id="@+id/fueling_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/fueling_amount"
-        android:ems="10"
-        android:hint="Location"
-        android:inputType="textPostalAddress" />
-
     <Button
         android:id="@+id/fueling_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fueling_location"
+        android:layout_below="@+id/fueling_stations"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="44dp"
         android:nestedScrollingEnabled="false"
         android:text="Send" />
+
+    <RadioGroup
+        android:id="@+id/fueling_rg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/fueling_amount"
+        android:layout_alignRight="@+id/fueling_amount"
+        android:layout_below="@+id/fueling_amount"
+        android:layout_toEndOf="@+id/textView8"
+        android:layout_toRightOf="@+id/textView8"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <RadioButton
+            android:id="@+id/radio_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="By Location" />
+
+        <RadioButton
+            android:id="@+id/radio_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.10"
+            android:checked="false"
+            android:text="By City" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/city_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/textView8"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/textView8"
+        android:layout_alignTop="@+id/fueling_city"
+        android:layout_toLeftOf="@+id/fueling_city"
+        android:layout_toStartOf="@+id/fueling_city"
+        android:text="Choose City" />
+
+    <Spinner
+        android:id="@+id/fueling_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/fueling_rg"
+        android:layout_toEndOf="@+id/textView10"
+        android:layout_toRightOf="@+id/textView10"
+        android:spinnerMode="dropdown" />
+
+    <Spinner
+        android:id="@+id/fueling_stations"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/fueling_city"
+        android:layout_toEndOf="@+id/textView10"
+        android:layout_toRightOf="@+id/textView10"
+        android:spinnerMode="dropdown" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/textView10"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/textView10"
+        android:layout_below="@+id/fueling_amount"
+        android:text="Filter Gas Stations:" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/fueling_city"
+        android:text="Choose Gas Station:" />
 
 </RelativeLayout>

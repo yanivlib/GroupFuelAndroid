@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:paddingBottom="5dp"
+    android:paddingLeft="3dp"
+    android:paddingTop="5dp">
+
+    <TextView
+        android:id="@+id/usage_log_date_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/usage_log_car_title"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/usage_log_car_title"
+        android:text="Date"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+    <TextView
+        android:id="@+id/usage_log_car_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/usage_log_amount_tile"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/usage_log_amount_tile"
+        android:layout_below="@+id/usage_log_date_title"
+        android:text="Car" />
+
+    <TextView
+        android:id="@+id/usage_log_amount_tile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/usage_log_car_title"
+        android:text="Amount" />
+
+    <TextView
+        android:id="@+id/usage_log_price_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/usage_log_amount_tile"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/usage_log_amount_tile"
+        android:layout_below="@+id/usage_log_amount_tile"
+        android:text="Price" />
+
+    <TextView
+        android:id="@+id/usage_log_station_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/usage_log_amount_tile"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/usage_log_amount_tile"
+        android:layout_below="@+id/usage_log_price_title"
+        android:text="Station" />
+
+    <TextView
+        android:id="@+id/usage_log_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/usage_log_date_title"
+        android:paddingLeft="10dp"
+        android:text="New Text"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+    <TextView
+        android:id="@+id/usage_log_car"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/usage_log_amount_tile"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/usage_log_date_title"
+        android:paddingLeft="10dp"
+        android:text="New Text" />
+
+    <TextView
+        android:id="@+id/usage_log_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/usage_log_price_title"
+        android:layout_alignEnd="@+id/usage_log_car"
+        android:layout_alignRight="@+id/usage_log_car"
+        android:layout_toRightOf="@+id/usage_log_car_title"
+        android:paddingLeft="10dp"
+        android:text="New Text" />
+
+    <TextView
+        android:id="@+id/usage_log_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/usage_log_amount"
+        android:layout_toEndOf="@+id/usage_log_amount_tile"
+        android:layout_toRightOf="@+id/usage_log_amount_tile"
+        android:paddingLeft="10dp"
+        android:text="New Text" />
+
+    <TextView
+        android:id="@+id/usage_log_station"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/usage_log_price"
+        android:layout_toEndOf="@+id/usage_log_amount_tile"
+        android:layout_toRightOf="@+id/usage_log_amount_tile"
+        android:paddingLeft="10dp"
+        android:text="New Text" />
+
+    <TextView
+        android:id="@+id/usage_driver_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/usage_log_station_title"
+        android:layout_toLeftOf="@+id/usage_log_station"
+        android:layout_toStartOf="@+id/usage_log_station"
+        android:text="Driver" />
+
+    <TextView
+        android:id="@+id/usage_driver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/usage_log_station"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignStart="@+id/usage_log_station"
+        android:layout_alignTop="@+id/usage_driver_title"
+        android:paddingLeft="10dp"
+        android:text="New Text" />
+</merge>

@@ -17,4 +17,7 @@ public class Consts {
     public final static String PACKAGE_NAME = "com.mty.groupfuel";
     public final static String BUTTON_FACEBOOK = "button_facebook";
     public final static String OBJECTID_NULL = "objectid_null";
+    public final static String BROADCAST_CARS = "broadcast_cars";
+    public final static String BROADCAST_LOCATION = "broadcast_location";
+    public final static String BROADCAST_STATIONS = "broadcast_station";
 }
