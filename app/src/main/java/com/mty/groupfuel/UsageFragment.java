@@ -255,6 +255,10 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
 
                 private void removeDriver() {
                     final ArrayList<User> drivers = car.getDrivers();
+                    if (drivers.isEmpty()) {
+                        builder.setMessage("There are no drivers to remove");
+                        return;
+                    }
                     ArrayList<String> names = new ArrayList<>(drivers.size());
                     for (User driver : drivers) {
                         names.add(driver.getDisplayName());
@@ -267,8 +271,12 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                             ParseCloud.callFunctionInBackground("removeDriver", params, new FunctionCallback<Object>() {
                                 @Override
                                 public void done(Object o, ParseException e) {
-                                    mCallback.syncOwnedCars();
-                                    Toast.makeText(context, "Driver removed", Toast.LENGTH_SHORT).show();
+                                    if (e == null) {
+                                        mCallback.syncOwnedCars();
+                                        Toast.makeText(context, "Driver removed", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        MainActivity.createErrorAlert(e.getMessage(), context).show();
+                                    }
                                 }
                             });
                         }
@@ -287,8 +295,12 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                             ParseCloud.callFunctionInBackground("addDriver", params, new FunctionCallback<Object>() {
                                 @Override
                                 public void done(Object o, ParseException e) {
-                                    mCallback.syncOwnedCars();
-                                    Toast.makeText(context, "Driver added", Toast.LENGTH_SHORT).show();
+                                    if (e == null) {
+                                        mCallback.syncOwnedCars();
+                                        Toast.makeText(context, "Driver added", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        MainActivity.createErrorAlert(e.getMessage(), context).show();
+                                    }
                                 }
                             });
 
@@ -310,8 +322,12 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                             ParseCloud.callFunctionInBackground("removeCar", params, new FunctionCallback<Object>() {
                                 @Override
                                 public void done(Object o, ParseException e) {
-                                    mCallback.syncOwnedCars();
-                                    Toast.makeText(context, "Car removed", Toast.LENGTH_SHORT).show();
+                                    if (e == null) {
+                                        mCallback.syncOwnedCars();
+                                        Toast.makeText(context, "Car removed", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        MainActivity.createErrorAlert(e.getMessage(), context).show();
+                                    }
                                 }
                             });
                         }

@@ -30,6 +30,11 @@ public class Car extends ParseObject {
     }
 
     public void setDrivers(ArrayList<User> drivers) {
+        for (User driver : drivers) {
+            if (getOwner().getEmail().equals(driver.getEmail()) || getOwner().getObjectId().equals(driver.getObjectId())) {
+                drivers.remove(driver);
+            }
+        }
         this.drivers = drivers;
     }
 

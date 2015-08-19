@@ -63,6 +63,11 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
         ((FuelingAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
+    private void updateView() {
+        getActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
+
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -98,7 +103,7 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
                 if (e == null) {
                     Log.i(LOG_TAG, "query completed successfully");
                     setFuelingList(list);
-                    getActivity().getSupportFragmentManager().beginTransaction().detach(fragment).attach(fragment).commit();
+                    updateView();
                 } else {
                     Log.e(LOG_TAG, "query failed", e);
                     throw new RuntimeException(e.getMessage());
@@ -137,9 +142,6 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
             ArrayList<Fueling> fuelingList = savedInstanceState.getParcelableArrayList(FUELING_LIST);
             setFuelingList(fuelingList);
         }
-        //if (fuelingList.isEmpty()) {
-        //    getFuelings();
-        // }
 
         setOnRefreshListener(this);
         return view;
