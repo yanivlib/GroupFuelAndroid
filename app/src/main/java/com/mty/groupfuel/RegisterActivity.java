@@ -14,17 +14,17 @@ import com.parse.SignUpCallback;
 
 public class RegisterActivity extends Activity implements View.OnClickListener {
 
-    private EditText usernameET;
-    private EditText passwordET;
-    private EditText passwordAgainET;
-    private Button registerButton;
+    private EditText username;
+    private EditText password;
+    private EditText passwordAgain;
+    private Button button;
     private ProgressDialog progressDialog;
 
     private void findViewsById() {
-        usernameET = (EditText) findViewById(R.id.usernameText);
-        passwordET = (EditText) findViewById(R.id.passwordText);
-        passwordAgainET = (EditText) findViewById(R.id.passwordTextAgain);
-        registerButton = (Button) findViewById(R.id.register);
+        username = (EditText) findViewById(R.id.usernameText);
+        password = (EditText) findViewById(R.id.passwordText);
+        passwordAgain = (EditText) findViewById(R.id.passwordTextAgain);
+        button = (Button) findViewById(R.id.register);
     }
 
     @Override
@@ -33,14 +33,14 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_register);
         findViewsById();
 
-        registerButton.setOnClickListener(this);
+        button.setOnClickListener(this);
     }
 
     public void doRegister(View view) {
         String error = "";
-        String username = usernameET.getText().toString().trim();
-        String password = passwordET.getText().toString().trim();
-        String passwordAgain = passwordAgainET.getText().toString().trim();
+        String username = this.username.getText().toString().trim();
+        String password = this.password.getText().toString().trim();
+        String passwordAgain = this.passwordAgain.getText().toString().trim();
 
         if (username.isEmpty()) {
             error += getString(R.string.username_empty);

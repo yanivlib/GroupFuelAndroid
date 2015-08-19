@@ -1,6 +1,7 @@
 package com.mty.groupfuel;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,7 @@ import java.util.Locale;
 
 public class PersonalFragment extends Fragment implements View.OnClickListener {
 
+    private static ProgressDialog progressDialog;
     final private Calendar myCalendar = Calendar.getInstance();
     final private User user = (User) ParseUser.getCurrentUser();
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Consts.DATE_FORMAT, Locale.US);
@@ -111,9 +113,11 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
         } else {
             user.setGender(false);
         }
+        progressDialog = ProgressDialog.show(getActivity(), getResources().getString(R.string.wait), getResources().getString(R.string.personal_progress));
         user.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                progressDialog.dismiss();
                 if (e == null) {
                     //Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
                     getActivity().getSupportFragmentManager().popBackStack();

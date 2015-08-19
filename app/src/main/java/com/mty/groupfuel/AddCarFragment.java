@@ -1,6 +1,7 @@
 package com.mty.groupfuel;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -35,6 +36,7 @@ import java.util.Map;
 
 public class AddCarFragment extends Fragment implements View.OnClickListener{
 
+    private static ProgressDialog progressDialog;
     getCarsListener mCallback;
     private Spinner maker;
     private Spinner model;
@@ -226,29 +228,20 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
     }
 
     private void getMakers() {
-        ParseCloud.callFunctionInBackground(
-                Consts.GET_CAR_MAKES, new HashMap<String, Object>(),
+        ParseCloud.callFunctionInBackground(Consts.GET_CAR_MAKES, new HashMap<String, Object>(),
                 new FunctionCallback<ArrayList<Object>>() {
                     @Override
                     public void done(ArrayList<Object> result, ParseException e) {
-                        System.out.println("getmakers print");
                         if (e == null) {
                             updateSpinnerList(maker, result);
                         } else {
-                            switch (e.getCode()) {
-                                case 141:
-                                    System.out.println(e.getMessage());
-                                    break;
-                                default:
-                                    throw new RuntimeException(e.getMessage());
-                            }
+                            MainActivity.createErrorAlert(e, context).show();
                         }
                     }
                 });
     }
 
     private void getModels(final String make) {
-        System.out.println("getModels started");
         if (makerModels.containsKey(make) && makerModelNames.containsKey(make)) {
             setModelList(makerModels.get(make));
             updateSpinnerList(model, makerModelNames.get(make));
@@ -258,9 +251,9 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
         final Map<String, Object> params = new HashMap<>();
         params.put(Consts.PARAMS_MAKE, make);
         System.out.println("getModels calls cloud function");
-        ParseCloud.callFunctionInBackground(Consts.GET_CAR_MODELS, params, new FunctionCallback<HashMap>() {
+        ParseCloud.callFunctionInBackground(Consts.GET_CAR_MODELS, params, new FunctionCallback<HashMap<String, ArrayList>>() {
             @Override
-            public void done(HashMap result, ParseException e) {
+            public void done(HashMap<String, ArrayList> result, ParseException e) {
                 System.out.println("getModels returned from cloud function");
                 if (e == null) {
                     System.out.println(result.toString());
@@ -275,13 +268,7 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
                         makerModelNames.put(make, distinctModels);
                     }
                 } else {
-                    switch (e.getCode()) {
-                        case 141:
-                            System.out.println(e.getMessage());
-                            break;
-                        default:
-                            throw new RuntimeException(e.getMessage());
-                    }
+                    MainActivity.createErrorAlert(e, context).show();
                 }
             }
         });
@@ -392,10 +379,11 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
         car.setOwner(user);
         car.setCarNumber(number);
         car.setMileage(0);
-
+        progressDialog = ProgressDialog.show(getActivity(), getResources().getString(R.string.wait), getResources().getString(R.string.addcar_progress));
         car.saveEventually(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                progressDialog.dismiss();
                 if (e == null) {
                     disableAll();
                     Toast.makeText(context, "New car successfully added!", Toast.LENGTH_LONG).show();
@@ -448,5 +436,4 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
             }
         }
     }
-   // }
 }

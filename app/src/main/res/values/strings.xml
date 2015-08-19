@@ -18,7 +18,10 @@
     <string name="signup_error_title">Sign Up Operation Failed</string>
     <string name="wait">Please Wait</string>
     <string name="login_progress">Logging you in&#8230;</string>
-    <string name="signup_progress">Logging you in&#8230;</string>
+    <string name="signup_progress">Registering you&#8230;</string>
+    <string name="fueling_progress">Updating fueling&#8230;</string>
+    <string name="personal_progress">Updating personal data&#8230;</string>
+    <string name="addcar_progress">Adding car&#8230;</string>
     <string name="ok">OK</string>
     <string name="username_empty">"Username is empty"</string>
     <string name="password_empty">"Password is empty"</string>

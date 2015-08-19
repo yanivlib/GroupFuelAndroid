@@ -2,6 +2,7 @@ package com.mty.groupfuel;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -44,10 +45,10 @@ import java.util.Map;
 
 public class FuelingFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
     private final static String LOG_TAG = FuelingFragment.class.getSimpleName();
+    private static ProgressDialog progressDialog;
     Context context;
     // Interfaces
     getCarsListener mCallback;
-
     // Views
     private EditText mileageEditText;
     private EditText priceEditText;
@@ -59,7 +60,6 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     private Spinner stationsSpinner;
     private RadioGroup radioGroup;
     private TextView cityText;
-
     // Fields
     private Map<String, List<GasStation>> cityToStation;
     private List<Car> cars;
@@ -67,8 +67,6 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     private List<GasStation> stationsNearby;
     private List<GasStation> stationsInCity;
     private ParseGeoPoint location;
-    //private Car selectedCar;
-
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -335,11 +333,13 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         fueling.setFuelType(car.getModel().getFuelType());
         fueling.setGasStation(station);
         fueling.put("Car", ParseObject.createWithoutData("Car", car.getObjectId()));
+        progressDialog = ProgressDialog.show(context, getResources().getString(R.string.wait), getResources().getString(R.string.fueling_progress));
         fueling.saveEventually(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                progressDialog.dismiss();
                 if (e != null) {
-                    MainActivity.createErrorAlert(e.getMessage(), context).show();
+                    MainActivity.createErrorAlert(e, context).show();
                 } else {
                     Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
                 }

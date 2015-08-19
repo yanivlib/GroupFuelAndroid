@@ -83,6 +83,11 @@ public class MainActivity extends AppCompatActivity
                 .setIcon(android.R.drawable.ic_dialog_alert);
     }
 
+    public static AlertDialog.Builder createErrorAlert(Throwable throwable, Context context) {
+        Log.e(context.getClass().getSimpleName(), throwable.getMessage(), throwable);
+        return createErrorAlert(throwable.getMessage(), context);
+    }
+
     private static String catString(List<String> list) {
         String result = "";
         for (String string : list) {
@@ -210,6 +215,17 @@ public class MainActivity extends AppCompatActivity
 
         setSupportActionBar(toolbar);
 
+        try {
+            if (getIntent().getStringExtra(Consts.PARENT_ACTIVITY_NAME).equals(RegisterActivity.class.getName())) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content_frame, new PersonalFragment(), PersonalFragment.class.getSimpleName());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        } catch (NullPointerException e) {
+            Log.d(LOG_TAG, "no extra in intent", e);
+        }
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -262,26 +278,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void done(ArrayList<Car> result, ParseException e) {
                 if (e == null) {
-                    if (result.size() == 0) {
-                        new AlertDialog.Builder(MainActivity.this)
-                                .setTitle("No ownedCars found")
-                                .setMessage("You need at least one car to access this function. Would you want to add one now?")
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                                        transaction.replace(R.id.content_frame, SettingsFragment.newInstance(), SettingsFragment.class.getSimpleName());
-                                        transaction.addToBackStack(null);
-                                        transaction.commit();
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // do nothing
-                                    }
-                                })
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
-                    }
                     final HashMap<String, String> params = new HashMap<>();
                     for (final Car car : result) {
                         params.put("carNumber", car.getCarNumber());
@@ -296,13 +292,7 @@ public class MainActivity extends AppCompatActivity
                     setOwnedCars(result);
                     broadcastCarList();
                 } else {
-                    switch (e.getCode()) {
-                        case 141:
-                            System.out.println(e.getMessage());
-                            break;
-                        default:
-                            throw new RuntimeException(e.getMessage());
-                    }
+                    createErrorAlert(e, MainActivity.this).show();
                 }
             }
         });
@@ -318,7 +308,7 @@ public class MainActivity extends AppCompatActivity
                     broadcastCarList();
                     Log.d(LOG_TAG, "found drived cars : " + cars.size());
                 } else {
-                    throw new RuntimeException(e.getMessage());
+                    createErrorAlert(e, MainActivity.this).show();
                 }
             }
         });
