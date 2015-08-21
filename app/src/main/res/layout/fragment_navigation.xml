@@ -5,7 +5,7 @@
     tools:context="com.mty.groupfuel.NavigationFragment">
 
     <TextView
-        android:id="@+id/textView11"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -20,5 +20,5 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView11" />
+        android:layout_below="@+id/title" />
 </RelativeLayout>

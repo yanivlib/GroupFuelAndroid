@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity
     private static ProgressDialog progress;
     private List<Car> ownedCars;
     private List<Car> driverCars;
+    private List<String> cities;
 
     private List<GasStation> stations;
     private Toolbar toolbar;
@@ -142,6 +143,10 @@ public class MainActivity extends AppCompatActivity
         return new ArrayList<>(Arrays.asList("הרצליה", "טבריה", "באר שבע"));
     }
 
+    public void setCities(List<String> cities) {
+        this.cities = cities;
+    }
+
     private void findViewsByid() {
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -200,7 +205,6 @@ public class MainActivity extends AppCompatActivity
     protected void onResumeFragments() {
         super.onResumeFragments();
         Log.d(LOG_TAG, "resuming fragments...");
-        // YOUR STUFF IS HERE
     }
 
     @Override
@@ -293,7 +297,7 @@ public class MainActivity extends AppCompatActivity
         criteria.setBearingRequired(false);
         criteria.setCostAllowed(true);
         criteria.setPowerRequirement(Criteria.POWER_LOW);
-        ParseGeoPoint.getCurrentLocationInBackground(55000, criteria, new LocationCallback() {
+        ParseGeoPoint.getCurrentLocationInBackground(50000, criteria, new LocationCallback() {
             @Override
             public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
                 if (e == null) {
@@ -301,6 +305,7 @@ public class MainActivity extends AppCompatActivity
                     broadcastLocation();
                     syncStationsByLocation(parseGeoPoint);
                 } else {
+                    syncCurrentLocation();
                     broadcastLocation();
                 }
             }

@@ -358,21 +358,25 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         button.setEnabled(false);
-        List<String> error = new ArrayList<>();
+        StringBuilder error = new StringBuilder();
         CarModel model = getModel();
         String number = getCarNumber();
         User user = (User) ParseUser.getCurrentUser();
         if (model.getObjectId().equals(Consts.OBJECTID_NULL)) {
-            error.add("Invalid car model");
+            error.append("Invalid car model");
+            error.append('\n');
         }
         if (number.length() != 7) {
-            error.add("Car number must be exactly 7 digits long");
+            error.append("Car number must be exactly 7 digits long");
+            error.append('\n');
         }
         if (user == null) {
-            error.add("You must be logged in to add a new car");
+            error.append("You must be logged in to add a new car");
+            error.append('\n');
         }
-        if (error.size() > 0) {
-            Alerter.createErrorAlert(error, context).show();
+        if (error.length() > 0) {
+            Alerter.createErrorAlert(error.toString(), context).show();
+            button.setEnabled(true);
             return;
         }
         Car car = new Car();
@@ -391,7 +395,7 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
                     mCallback.syncOwnedCars();
                     getActivity().getSupportFragmentManager().popBackStack();
                 } else {
-                    throw new RuntimeException(e.getMessage());
+                    Alerter.createErrorAlert(e, context).show();
                 }
             }
         });

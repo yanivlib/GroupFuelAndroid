@@ -41,26 +41,31 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
 
     public void doRegister(View view) {
         button.setEnabled(false);
-        String error = "";
+        StringBuilder error = new StringBuilder();
         String username = this.username.getText().toString().trim();
         String email = this.email.getText().toString().trim();
         String password = this.password.getText().toString().trim();
         String passwordAgain = this.passwordAgain.getText().toString().trim();
 
         if (username.isEmpty()) {
-            error += getString(R.string.username_empty);
+            error.append(getString(R.string.username_empty));
+            error.append('\n');
         }
         if (password.isEmpty()) {
-            error += getString(R.string.password_empty);
+            error.append(getString(R.string.password_empty));
+            error.append('\n');
         }
         if (!password.equals(passwordAgain)) {
-            error += getString(R.string.passwords_diff);
+            error.append(getString(R.string.passwords_diff));
+            error.append('\n');
         }
         if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            error += "Please provide legal email";
+            error.append("Please provide legal email");
+            error.append('\n');
         }
         if (error.length() > 0) {
-            Alerter.createErrorAlert(error, getString(R.string.signup_error_title), this).show();
+            Alerter.createErrorAlert(error.toString(), getString(R.string.signup_error_title), this).show();
+            button.setEnabled(true);
             return;
         }
         User user = new User();
@@ -77,6 +82,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
                     startActivity(intent);
                 } else {
                     Alerter.createErrorAlert(e.getMessage(), getString(R.string.signup_error_title), RegisterActivity.this).show();
+                    button.setEnabled(true);
                 }
             }
         });

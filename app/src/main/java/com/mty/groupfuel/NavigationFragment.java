@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import com.mty.groupfuel.datamodel.GasStation;
 import com.parse.ParseGeoPoint;
@@ -33,6 +34,7 @@ public class NavigationFragment extends ListFragment {
     getCarsListener mCallback;
     private List<GasStation> stations;
     private ParseGeoPoint location = new ParseGeoPoint();
+    private TextView title;
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -126,8 +128,9 @@ public class NavigationFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_navigation, container, false);
+        title = (TextView) view.findViewById(R.id.title);
 
         setListAdapter(new StationAdapter(container.getContext(), stations));
 
@@ -135,6 +138,14 @@ public class NavigationFragment extends ListFragment {
             setStations(mCallback.getStations());
         }
         setLocation(mCallback.getLocation());
+        if (stations.isEmpty()) {
+            title.setVisibility(View.INVISIBLE);
+            ViewGroup viewGroup = (ViewGroup) view.findViewById(android.R.id.list).getParent();
+            NoCarsView noCarsView = new NoCarsView(getActivity());
+            noCarsView.setText("Location services unavailable. Please try again later");
+            noCarsView.setButtonVisibility(View.INVISIBLE);
+            viewGroup.addView(noCarsView);
+        }
 
         return view;
     }

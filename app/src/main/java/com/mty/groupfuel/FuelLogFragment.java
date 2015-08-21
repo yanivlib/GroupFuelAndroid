@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.mty.groupfuel.datamodel.Car;
 import com.mty.groupfuel.datamodel.Fueling;
@@ -26,10 +28,10 @@ import java.util.List;
 
 public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRefreshLayout.OnRefreshListener{
     private static final String LOG_TAG = FuelLogFragment.class.getSimpleName();
-
     private static final String FUELING_LIST = "fueling_list";
     private static List<Fueling> fuelingList;
     getCarsListener mCallback;
+    private ListView listView;
     private List<Car> cars;
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -142,8 +144,32 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
             ArrayList<Fueling> fuelingList = savedInstanceState.getParcelableArrayList(FUELING_LIST);
             setFuelingList(fuelingList);
         }
+        listView = (ListView) view.findViewById(android.R.id.list);
 
         setOnRefreshListener(this);
+        ViewGroup viewGroup = (ViewGroup) listView.getParent();
+
+        if (cars == null || cars.isEmpty()) {
+            listView.setVisibility(View.INVISIBLE);
+            NoCarsView noCarsView = new NoCarsView(getActivity());
+            viewGroup.addView(noCarsView);
+        } else if (fuelingList.isEmpty()) {
+            NoCarsView noCarsView = new NoCarsView(getActivity());
+            noCarsView.setButtonText("Add fueling");
+            noCarsView.setButtonListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content_frame, FuelingFragment.newInstance(), FuelingFragment.class.getSimpleName());
+                    transaction.addToBackStack(null);
+
+                    transaction.commit();
+                }
+            });
+            //noCarsView.setVisibility(View.INVISIBLE);
+            noCarsView.setText("No fuelings available. Add one now!");
+            viewGroup.addView(noCarsView);
+        }
         return view;
     }
 

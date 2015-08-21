@@ -15,9 +15,6 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class LoginActivity extends Activity implements View.OnClickListener {
 
@@ -68,19 +65,21 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         progressDialog = ProgressDialog.show(this, getResources().getString(R.string.wait), getResources().getString(R.string.login_progress));
         String username = this.username.getText().toString().trim();
         String password = this.password.getText().toString().trim();
-        this.username.setText("");
         this.password.setText("");
-        List<String> error = new ArrayList<>();
+        final StringBuilder error = new StringBuilder();
         if (username.isEmpty()) {
-            error.add(getResources().getString(R.string.username_empty));
+            error.append(getResources().getString(R.string.username_empty));
+            error.append('\n');
         }
         if (password.isEmpty()) {
-            error.add(getResources().getString(R.string.password_empty));
+            error.append(getResources().getString(R.string.password_empty));
+            error.append('\n');
         }
         //TODO add more checks.
-        if (!error.isEmpty()) {
+        if (error.length() > 0) {
             progressDialog.dismiss();
-            Alerter.createErrorAlert(error, getString(R.string.login_error_title), this).show();
+            Alerter.createErrorAlert(error.toString(), getString(R.string.login_error_title), this).show();
+            loginButton.setEnabled(true);
             return;
         }
         User.logInInBackground(username, password, new LogInCallback() {
@@ -90,6 +89,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
                     Alerter.createErrorAlert(e.getMessage(), getString(R.string.login_error_title), LoginActivity.this).show();
+                    loginButton.setEnabled(true);
                 }
             }
         });

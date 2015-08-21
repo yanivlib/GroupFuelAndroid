@@ -1,6 +1,7 @@
 package com.mty.groupfuel;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.mty.groupfuel.datamodel.Car;
@@ -41,6 +43,9 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
     private static final String LOG_TAG = UsageFragment.class.getSimpleName();
 
     getCarsListener mCallback;
+
+    private Button button;
+    private ListView listView;
 
     private Context context;
     private Map<String,Map<String, Number>> datamap;
@@ -141,6 +146,11 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_usage, container, false);
+
+        button = (Button) view.findViewById(R.id.footer);
+        listView = (ListView) view.findViewById(android.R.id.list);
+        //listView = getListView();
+
         context = container.getContext();
         setListAdapter(new UsageAdapter(context, cars));
         if (cars.isEmpty()) {
@@ -151,16 +161,16 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
         }
         setOnRefreshListener(this);
 
-        Button button = (Button) view.findViewById(R.id.footer);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content_frame, new AddCarFragment(), AddCarFragment.class.getSimpleName());
-                transaction.addToBackStack(null);
-                transaction.commit();
-            }
-        });
+        button.setOnClickListener(new AddCarListener(context));
+
+        if (cars.isEmpty()) {
+            ViewGroup viewGroup = (ViewGroup) button.getParent();
+            listView.setVisibility(View.INVISIBLE);
+            button.setVisibility(View.INVISIBLE);
+            NoCarsView noCarsView = new NoCarsView(context);
+            viewGroup.addView(noCarsView);
+        }
+
 
         return view;
     }
@@ -215,6 +225,24 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
         });
     }
 
+    public static class AddCarListener implements View.OnClickListener {
+        private Context context;
+
+        AddCarListener(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        public void onClick(View v) {
+            final MainActivity activity = (MainActivity) context;
+
+            FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content_frame, new AddCarFragment(), AddCarFragment.class.getSimpleName());
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
+    }
+
     public class UsageAdapter extends ArrayAdapter<Car> {
         public UsageAdapter(Context c, List<Car> items) {
             super(c, 0, items);
@@ -228,7 +256,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
             }
             Car car = getItem(position);
             if (datamap.get(car.getObjectId()) != null) {
-                carItem.setData(car, datamap.get(car.getObjectId()));
+                carItem.setData(car, datamap.get(car.getObjectId()), car.getOwner().equals(ParseUser.getCurrentUser()));
             } else {
                 Log.d(LOG_TAG, "skipping car" + car.getDisplayName());
             }
@@ -252,6 +280,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                 private static final String NUMBER = "carNumber";
                 private final Map<String, Object> params = new HashMap<>();
                 private final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                private ProgressDialog progressDialog = new ProgressDialog(context);
 
                 private void removeDriver() {
                     final ArrayList<User> drivers = car.getDrivers();
@@ -267,12 +296,17 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                     builder.setItems(names.toArray(new String[names.size()]), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            params.put(EMAIL, drivers.get(which).getEmail());
+                            progressDialog = ProgressDialog.show(context, getResources().getString(R.string.wait), "Removing driver");
+                            final User driver = drivers.get(which);
+                            params.put(EMAIL, driver.getEmail());
                             ParseCloud.callFunctionInBackground("removeDriver", params, new FunctionCallback<Object>() {
                                 @Override
                                 public void done(Object o, ParseException e) {
+                                    progressDialog.dismiss();
                                     if (e == null) {
+                                        car.removeDriver(driver);
                                         mCallback.syncOwnedCars();
+                                        updateView();
                                         Toast.makeText(context, "Driver removed", Toast.LENGTH_SHORT).show();
                                     } else {
                                         Alerter.createErrorAlert(e, context).show();
@@ -291,12 +325,15 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                     builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            progressDialog = ProgressDialog.show(context, getResources().getString(R.string.wait), "Adding driver");
                             params.put(EMAIL, input.getText().toString());
                             ParseCloud.callFunctionInBackground("addDriver", params, new FunctionCallback<Object>() {
                                 @Override
                                 public void done(Object o, ParseException e) {
+                                    progressDialog.dismiss();
                                     if (e == null) {
                                         mCallback.syncOwnedCars();
+                                        updateView();
                                         Toast.makeText(context, "Driver added", Toast.LENGTH_SHORT).show();
                                     } else {
                                         Alerter.createErrorAlert(e, context).show();
@@ -319,11 +356,14 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                     builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            progressDialog = ProgressDialog.show(context, getResources().getString(R.string.wait), "Adding driver");
                             ParseCloud.callFunctionInBackground("removeCar", params, new FunctionCallback<Object>() {
                                 @Override
                                 public void done(Object o, ParseException e) {
+                                    progressDialog.dismiss();
                                     if (e == null) {
                                         mCallback.syncOwnedCars();
+                                        updateView();
                                         Toast.makeText(context, "Car removed", Toast.LENGTH_SHORT).show();
                                     } else {
                                         Alerter.createErrorAlert(e, context).show();
@@ -355,7 +395,22 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                 }
 
                 private void onClickDriver() {
-                    removeCar();
+                    progressDialog = ProgressDialog.show(context, getResources().getString(R.string.wait), "Removing car");
+                    params.put(EMAIL, ParseUser.getCurrentUser().getEmail());
+                    ParseCloud.callFunctionInBackground("removeDriver", params, new FunctionCallback<Object>() {
+                        @Override
+                        public void done(Object o, ParseException e) {
+                            progressDialog.dismiss();
+                            if (e == null) {
+                                car.removeDriver((User) ParseUser.getCurrentUser());
+                                mCallback.syncOwnedCars();
+                                updateView();
+                                Toast.makeText(context, "Driver removed", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Alerter.createErrorAlert(e, context).show();
+                            }
+                        }
+                    });
                 }
 
                 @Override
