@@ -22,13 +22,13 @@ import java.util.List;
 public class LoginActivity extends Activity implements View.OnClickListener {
 
     private ProgressDialog progressDialog;
-    private EditText usernameET;
-    private EditText passwordET;
+    private EditText username;
+    private EditText password;
     private Button loginButton;
 
     private void findViewsById() {
-        usernameET = (EditText) findViewById(R.id.usernameText);
-        passwordET = (EditText) findViewById(R.id.passwordText);
+        username = (EditText) findViewById(R.id.username);
+        password = (EditText) findViewById(R.id.password);
         loginButton = (Button) findViewById(R.id.login);
     }
 
@@ -64,11 +64,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
     public void doLogin(View view) {
+        loginButton.setEnabled(false);
         progressDialog = ProgressDialog.show(this, getResources().getString(R.string.wait), getResources().getString(R.string.login_progress));
-        String username = usernameET.getText().toString().trim();
-        String password = passwordET.getText().toString().trim();
-        usernameET.setText("");
-        passwordET.setText("");
+        String username = this.username.getText().toString().trim();
+        String password = this.password.getText().toString().trim();
+        this.username.setText("");
+        this.password.setText("");
         List<String> error = new ArrayList<>();
         if (username.isEmpty()) {
             error.add(getResources().getString(R.string.username_empty));
@@ -79,7 +80,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         //TODO add more checks.
         if (!error.isEmpty()) {
             progressDialog.dismiss();
-            MainActivity.createErrorAlert(error, getString(R.string.login_error_title),this).show();
+            Alerter.createErrorAlert(error, getString(R.string.login_error_title), this).show();
             return;
         }
         User.logInInBackground(username, password, new LogInCallback() {
@@ -88,7 +89,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 if (user != null) {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
-                    MainActivity.createErrorAlert(e.getMessage(), getString(R.string.login_error_title), LoginActivity.this).show();
+                    Alerter.createErrorAlert(e.getMessage(), getString(R.string.login_error_title), LoginActivity.this).show();
                 }
             }
         });

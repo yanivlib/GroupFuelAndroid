@@ -105,6 +105,7 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        applyButton.setEnabled(false);
         user.setFirstName(firstName.getText().toString());
         user.setLastName(lastName.getText().toString());
         user.setBirthDate(myCalendar.getTime());

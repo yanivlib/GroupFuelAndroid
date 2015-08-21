@@ -322,7 +322,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
             error.add("Illegal car");
         }
         if (!error.isEmpty()) {
-            MainActivity.createErrorAlert(error, context).show();
+            Alerter.createErrorAlert(error, context).show();
             return;
         }
         Fueling fueling = new Fueling();
@@ -339,7 +339,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
             public void done(ParseException e) {
                 progressDialog.dismiss();
                 if (e != null) {
-                    MainActivity.createErrorAlert(e, context).show();
+                    Alerter.createErrorAlert(e, context).show();
                 } else {
                     Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
                 }

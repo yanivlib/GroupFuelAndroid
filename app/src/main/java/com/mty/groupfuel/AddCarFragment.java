@@ -235,7 +235,7 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
                         if (e == null) {
                             updateSpinnerList(maker, result);
                         } else {
-                            MainActivity.createErrorAlert(e, context).show();
+                            Alerter.createErrorAlert(e, context).show();
                         }
                     }
                 });
@@ -268,7 +268,7 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
                         makerModelNames.put(make, distinctModels);
                     }
                 } else {
-                    MainActivity.createErrorAlert(e, context).show();
+                    Alerter.createErrorAlert(e, context).show();
                 }
             }
         });
@@ -357,6 +357,7 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
     //private class AddCarListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
+        button.setEnabled(false);
         List<String> error = new ArrayList<>();
         CarModel model = getModel();
         String number = getCarNumber();
@@ -371,7 +372,7 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
             error.add("You must be logged in to add a new car");
         }
         if (error.size() > 0) {
-            MainActivity.createErrorAlert(error, context).show();
+            Alerter.createErrorAlert(error, context).show();
             return;
         }
         Car car = new Car();

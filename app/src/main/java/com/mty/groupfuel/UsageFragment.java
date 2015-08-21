@@ -275,7 +275,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                                         mCallback.syncOwnedCars();
                                         Toast.makeText(context, "Driver removed", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        MainActivity.createErrorAlert(e, context).show();
+                                        Alerter.createErrorAlert(e, context).show();
                                     }
                                 }
                             });
@@ -299,7 +299,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                                         mCallback.syncOwnedCars();
                                         Toast.makeText(context, "Driver added", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        MainActivity.createErrorAlert(e, context).show();
+                                        Alerter.createErrorAlert(e, context).show();
                                     }
                                 }
                             });
@@ -326,7 +326,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                                         mCallback.syncOwnedCars();
                                         Toast.makeText(context, "Car removed", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        MainActivity.createErrorAlert(e, context).show();
+                                        Alerter.createErrorAlert(e, context).show();
                                     }
                                 }
                             });

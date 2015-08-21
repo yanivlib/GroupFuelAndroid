@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,13 +18,15 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
     private EditText username;
     private EditText password;
     private EditText passwordAgain;
+    private EditText email;
     private Button button;
     private ProgressDialog progressDialog;
 
     private void findViewsById() {
-        username = (EditText) findViewById(R.id.usernameText);
-        password = (EditText) findViewById(R.id.passwordText);
-        passwordAgain = (EditText) findViewById(R.id.passwordTextAgain);
+        username = (EditText) findViewById(R.id.username);
+        password = (EditText) findViewById(R.id.password);
+        passwordAgain = (EditText) findViewById(R.id.password_again);
+        email = (EditText) findViewById(R.id.email);
         button = (Button) findViewById(R.id.register);
     }
 
@@ -37,8 +40,10 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
     }
 
     public void doRegister(View view) {
+        button.setEnabled(false);
         String error = "";
         String username = this.username.getText().toString().trim();
+        String email = this.email.getText().toString().trim();
         String password = this.password.getText().toString().trim();
         String passwordAgain = this.passwordAgain.getText().toString().trim();
 
@@ -51,14 +56,17 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
         if (!password.equals(passwordAgain)) {
             error += getString(R.string.passwords_diff);
         }
+        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            error += "Please provide legal email";
+        }
         if (error.length() > 0) {
-            MainActivity.createErrorAlert(error, getString(R.string.signup_error_title), this).show();
+            Alerter.createErrorAlert(error, getString(R.string.signup_error_title), this).show();
             return;
         }
-        //ParseUser user = new ParseUser();
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
+        user.setEmail(email);
         progressDialog = ProgressDialog.show(this, getResources().getString(R.string.wait), getResources().getString(R.string.signup_progress));
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
@@ -68,7 +76,7 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
                     intent.putExtra(Consts.PARENT_ACTIVITY_NAME, RegisterActivity.class.getName());
                     startActivity(intent);
                 } else {
-                    MainActivity.createErrorAlert(e.getMessage(), getString(R.string.signup_error_title), RegisterActivity.this).show();
+                    Alerter.createErrorAlert(e.getMessage(), getString(R.string.signup_error_title), RegisterActivity.this).show();
                 }
             }
         });

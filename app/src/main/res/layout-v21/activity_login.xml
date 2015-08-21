@@ -17,21 +17,21 @@
         android:textAppearance="@android:style/TextAppearance.Material.Headline" />
 
     <EditText
-        android:id="@+id/usernameText"
+        android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/passwordText"
-        android:layout_alignLeft="@+id/passwordText"
-        android:layout_alignRight="@+id/passwordText"
-        android:layout_alignStart="@+id/passwordText"
+        android:layout_alignEnd="@+id/password"
+        android:layout_alignLeft="@+id/password"
+        android:layout_alignRight="@+id/password"
+        android:layout_alignStart="@+id/password"
         android:layout_below="@+id/textView2"
         android:hint="@string/username" />
 
     <EditText
-        android:id="@+id/passwordText"
+        android:id="@+id/password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/usernameText"
+        android:layout_below="@+id/username"
         android:layout_centerHorizontal="true"
         android:ems="10"
         android:hint="@string/password"
@@ -42,7 +42,7 @@
         android:id="@+id/login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/passwordText"
+        android:layout_below="@+id/password"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="45dp"
         android:text="@string/login" />
