@@ -39,7 +39,7 @@
         android:layout_toStartOf="@+id/mileage"
         android:paddingBottom="3dp"
         android:paddingTop="3dp"
-        android:text="Mile per Gallon"
+        android:text="Kilometer per Liter"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
     <TextView
@@ -53,7 +53,7 @@
         android:layout_toStartOf="@+id/mpg"
         android:paddingBottom="3dp"
         android:paddingTop="3dp"
-        android:text="$ per Gallon"
+        android:text="$ per Liter"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
     <TextView

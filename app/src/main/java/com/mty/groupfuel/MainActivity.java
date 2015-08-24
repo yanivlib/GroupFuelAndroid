@@ -9,6 +9,7 @@ import android.location.Criteria;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -34,7 +35,10 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity
         implements getCarsListener {
@@ -91,6 +95,10 @@ public class MainActivity extends AppCompatActivity
             cars.addAll(getDriverCars());
             Log.d(LOG_TAG, "driver cars : " + getDriverCars().size());
         }
+        Set<Car> set = new HashSet<>();
+        set.addAll(cars);
+        cars.clear();
+        cars.addAll(set);
         return (cars.isEmpty() ? null : cars);
     }
 
@@ -138,10 +146,10 @@ public class MainActivity extends AppCompatActivity
         broadcast(stations.size(), Consts.BROADCAST_STATIONS);
     }
 
-    @Override
-    public List<String> getCities() {
-        return new ArrayList<>(Arrays.asList("הרצליה", "טבריה", "באר שבע"));
-    }
+    //@Override
+    //public List<String> getCities() {
+    //    return new ArrayList<>(Arrays.asList("הרצליה", "טבריה", "באר שבע"));
+    //}
 
     public void setCities(List<String> cities) {
         this.cities = cities;
@@ -178,6 +186,7 @@ public class MainActivity extends AppCompatActivity
         try {
             if (getIntent().getStringExtra(Consts.PARENT_ACTIVITY_NAME).equals(RegisterActivity.class.getName())) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.add(R.id.content_frame, new ViewPagerContainerFragment(), ViewPagerContainerFragment.class.getSimpleName());
                 transaction.replace(R.id.content_frame, new PersonalFragment(), PersonalFragment.class.getSimpleName());
                 transaction.addToBackStack(null);
                 transaction.commit();
@@ -199,6 +208,7 @@ public class MainActivity extends AppCompatActivity
         syncOwnedCars();
         syncDrivedCars();
         syncCurrentLocation();
+        //syncMakers();
         user = ParseUser.getCurrentUser();
     }
     @Override
@@ -230,6 +240,15 @@ public class MainActivity extends AppCompatActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm = getSupportFragmentManager();
+        for(int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
+            Log.i(LOG_TAG, "Found fragment: " + fm.getBackStackEntryAt(entry).getId());
+        }
+        super.onBackPressed();
     }
 
     public void syncOwnedCars() {
@@ -324,6 +343,24 @@ public class MainActivity extends AppCompatActivity
                     broadcastStations();
                 } else {
                     throw new RuntimeException(e.getMessage());
+                }
+            }
+        });
+    }
+
+    void syncMakers() {
+        final Map<String, String> params = new HashMap<>();
+        params.put("table", "CarModel");
+        params.put("equalTos", "Make");
+        ParseCloud.callFunctionInBackground("getDistinctFieldFromDB", params, new FunctionCallback<ArrayList<Object>>() {
+            @Override
+            public void done(ArrayList<Object> result, ParseException e) {
+                if (e == null) {
+                    for (Object object : result) {
+                        Log.i(LOG_TAG, object.toString());
+                    }
+                } else {
+                    Alerter.createErrorAlert(e, MainActivity.this).show();
                 }
             }
         });

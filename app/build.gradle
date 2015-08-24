@@ -1,9 +1,20 @@
 apply plugin: 'com.android.application'
 
+//if(project.hasProperty("MyProject.signing")
+//        && new File(project.property("GroupFuel.signing") + ".gradle").exists()) {
+//    apply from: project.property("GroupFuel.signing") + ".gradle";
+//}
 android {
+    signingConfigs {
+        config {
+            keyAlias 'yanivlib'
+            keyPassword '7wh4MI$#Z36N'
+            storeFile file('C:/Users/ylibal/.signing/groupfuel.keystore')
+            storePassword '3iygfP!Kbi%J'
+        }
+    }
     compileSdkVersion 22
     buildToolsVersion "21.1.2"
-
     defaultConfig {
         applicationId "com.mty.groupfuel"
         minSdkVersion 15
@@ -15,6 +26,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
         debug {
             debuggable true

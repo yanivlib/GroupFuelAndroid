@@ -377,7 +377,6 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
                 if (e == null) {
                     setCities(cities);
                     setCitiesInSpinner(cities);
-
                     Log.d(LOG_TAG, "got " + cities.size() + " cities");
                 } else {
                     Alerter.createErrorAlert(e, context);

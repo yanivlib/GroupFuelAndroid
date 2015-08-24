@@ -87,11 +87,11 @@ public class Car extends ParseObject {
     }
 
     public Number getInitialMileage() {
-        return getNumber("initialMileage");
+        return getNumber("InitialMileage");
     }
 
     public void setInitialMileage(Number initialMileage) {
-        put("initialMileage", initialMileage);
+        put("InitialMileage", initialMileage);
     }
 
     public String getDisplayName() {

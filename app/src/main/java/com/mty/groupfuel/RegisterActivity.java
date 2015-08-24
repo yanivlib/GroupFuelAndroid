@@ -77,9 +77,8 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
             public void done(ParseException e) {
                 progressDialog.dismiss();
                 if (e == null) {
-                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                    intent.putExtra(Consts.PARENT_ACTIVITY_NAME, RegisterActivity.class.getName());
-                    startActivity(intent);
+                    startActivity(new Intent(RegisterActivity.this, MainActivity.class)
+                            .putExtra(Consts.PARENT_ACTIVITY_NAME, RegisterActivity.class.getName()));
                 } else {
                     Alerter.createErrorAlert(e.getMessage(), getString(R.string.signup_error_title), RegisterActivity.this).show();
                     button.setEnabled(true);

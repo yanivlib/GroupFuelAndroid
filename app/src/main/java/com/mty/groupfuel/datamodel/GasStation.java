@@ -8,6 +8,8 @@ import com.parse.ParseQuery;
 @ParseClassName("GasStation")
 public class GasStation extends ParseObject {
 
+    Number price;
+
     public GasStation() {
 
     }
@@ -57,5 +59,13 @@ public class GasStation extends ParseObject {
 
     public String getDisplayName() {
         return getName() + " : " + getBrand();
+    }
+
+    public Number getPrice() {
+        return getNumber("Price");
+    }
+
+    public void setPrice(Number price) {
+        put("Price", price);
     }
 }

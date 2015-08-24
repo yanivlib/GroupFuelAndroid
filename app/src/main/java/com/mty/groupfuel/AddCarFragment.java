@@ -45,6 +45,7 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
     private Spinner gear;
     private Spinner fuel;
     private EditText number;
+    private EditText mileage;
     private Button button;
     private CheckBox hybrid;
     private Spinner spinners[];
@@ -169,6 +170,7 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
         hybrid = (CheckBox) view.findViewById(R.id.add_car_hybrid);
         gear = (Spinner) view.findViewById(R.id.add_car_gear);
         fuel = (Spinner) view.findViewById(R.id.add_car_fuel);
+        mileage = (EditText)view.findViewById(R.id.mileage);
     }
 
     private void disableFollowing(Spinner spinner) {
@@ -362,6 +364,7 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
         CarModel model = getModel();
         String number = getCarNumber();
         User user = (User) ParseUser.getCurrentUser();
+        Number mileage = Integer.parseInt(this.mileage.getText().toString());
         if (model.getObjectId().equals(Consts.OBJECTID_NULL)) {
             error.append("Invalid car model");
             error.append('\n');
@@ -383,7 +386,8 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
         car.setModel(model);
         car.setOwner(user);
         car.setCarNumber(number);
-        car.setMileage(0);
+        car.setMileage(mileage);
+        car.setInitialMileage(mileage);
         progressDialog = ProgressDialog.show(getActivity(), getResources().getString(R.string.wait), getResources().getString(R.string.addcar_progress));
         car.saveEventually(new SaveCallback() {
             @Override

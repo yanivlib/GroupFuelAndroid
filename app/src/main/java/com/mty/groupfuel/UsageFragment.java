@@ -325,8 +325,13 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                     builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            String email = input.getText().toString().trim();
+                            if (email.equals(ParseUser.getCurrentUser().getEmail())) {
+                                Alerter.createErrorAlert("There is no need to add yourself as a driver", context).show();
+                                return;
+                            }
                             progressDialog = ProgressDialog.show(context, getResources().getString(R.string.wait), "Adding driver");
-                            params.put(EMAIL, input.getText().toString());
+                            params.put(EMAIL, email);
                             ParseCloud.callFunctionInBackground("addDriver", params, new FunctionCallback<Object>() {
                                 @Override
                                 public void done(Object o, ParseException e) {
