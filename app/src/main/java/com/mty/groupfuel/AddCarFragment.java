@@ -364,7 +364,6 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
         CarModel model = getModel();
         String number = getCarNumber();
         User user = (User) ParseUser.getCurrentUser();
-        Number mileage = Integer.parseInt(this.mileage.getText().toString());
         if (model.getObjectId().equals(Consts.OBJECTID_NULL)) {
             error.append("Invalid car model");
             error.append('\n');
@@ -377,11 +376,16 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
             error.append("You must be logged in to add a new car");
             error.append('\n');
         }
+        if (mileage.getText().toString().equals("")) {
+            error.append("Mileage cannot be empty");
+            error.append('\n');
+        }
         if (error.length() > 0) {
             Alerter.createErrorAlert(error.toString(), context).show();
             button.setEnabled(true);
             return;
         }
+        Number mileage = Integer.parseInt(this.mileage.getText().toString());
         Car car = new Car();
         car.setModel(model);
         car.setOwner(user);

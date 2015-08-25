@@ -313,7 +313,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         sendButton.setEnabled(false);
         StringBuilder error = new StringBuilder();
         Number amount = numberFromEditText(amountEditText);
-        Number mileage = numberFromEditText(mileageEditText);
+        final Number mileage = numberFromEditText(mileageEditText);
         Number price = numberFromEditText(priceEditText);
         User user = (User) ParseUser.getCurrentUser();
         if (carSpinner.getSelectedItemPosition() == 0) {
@@ -321,7 +321,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
             sendButton.setEnabled(true);
             return;
         }
-        Car car = (Car) carSpinner.getSelectedItem();
+        final Car car = (Car) carSpinner.getSelectedItem();
         GasStation station = null;
         if (stationsSpinner.getSelectedItemPosition() > 0) {
             station = (GasStation) stationsSpinner.getSelectedItem();
@@ -359,6 +359,8 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
                 if (e != null) {
                     Alerter.createErrorAlert(e, context).show();
                 } else {
+                    car.setMileage(mileage);
+                    car.saveEventually();
                     Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
                 }
             }

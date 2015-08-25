@@ -23,10 +23,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/fueling_top"
+        android:layout_toEndOf="@+id/textView9"
+        android:layout_toRightOf="@+id/textView9"
+        android:gravity="center_vertical"
         android:spinnerMode="dropdown" />
 
     <EditText
@@ -156,5 +157,19 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/fueling_city"
         android:text="Choose Gas Station:" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fueling_mileage"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/fueling_car"
+        android:layout_toLeftOf="@+id/fueling_top"
+        android:layout_toStartOf="@+id/fueling_top"
+        android:gravity="center_vertical"
+        android:text="Car"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

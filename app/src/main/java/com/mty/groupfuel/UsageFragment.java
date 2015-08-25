@@ -256,6 +256,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
             }
             Car car = getItem(position);
             if (datamap.get(car.getObjectId()) != null) {
+                Log.d(LOG_TAG, "getting infoe of car " + car.getDisplayName());
                 carItem.setData(car, datamap.get(car.getObjectId()), car.getOwner().equals(ParseUser.getCurrentUser()));
             } else {
                 Log.d(LOG_TAG, "skipping car" + car.getDisplayName());
@@ -367,6 +368,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                                 public void done(Object o, ParseException e) {
                                     progressDialog.dismiss();
                                     if (e == null) {
+                                        mCallback.removeCar(car);
                                         mCallback.syncOwnedCars();
                                         updateView();
                                         Toast.makeText(context, "Car removed", Toast.LENGTH_SHORT).show();

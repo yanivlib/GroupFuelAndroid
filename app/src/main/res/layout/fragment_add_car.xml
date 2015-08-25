@@ -19,6 +19,8 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:paddingBottom="10dp"
+            android:paddingTop="5dp"
             android:text="@string/please_enter"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -26,151 +28,210 @@
             android:id="@+id/add_car_number_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/car_number"
-            android:layout_above="@+id/add_car_maker_text"
+            android:layout_above="@+id/mileage_text"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/mileage_text"
-            android:layout_alignEnd="@+id/mileage_text" />
+            android:layout_below="@+id/add_car_title"
+            android:layout_toLeftOf="@+id/add_car_number"
+            android:layout_toStartOf="@+id/add_car_number"
+            android:gravity="center_vertical"
+            android:text="@string/car_number" />
 
         <EditText
             android:id="@+id/add_car_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/car_number_example"
-            android:inputType="number"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_below="@+id/add_car_title"
-            android:layout_toRightOf="@+id/add_car_number_text"
-            android:layout_toEndOf="@+id/add_car_number_text" />
+            android:layout_toEndOf="@+id/mileage_text"
+            android:layout_toRightOf="@+id/mileage_text"
+            android:hint="@string/car_number_example"
+            android:inputType="number" />
+
+        <TextView
+            android:id="@+id/mileage_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/mileage"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/add_car_number"
+            android:gravity="center_vertical"
+            android:text="@string/current_mileage" />
+
+        <EditText
+            android:id="@+id/mileage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/add_car_maker"
+            android:layout_alignRight="@+id/add_car_maker"
+            android:layout_below="@+id/add_car_number"
+            android:layout_toRightOf="@+id/mileage_text"
+            android:hint="40,000 km"
+            android:inputType="number"
+            android:paddingLeft="5dp" />
 
         <TextView
             android:id="@+id/add_car_maker_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/maker"
-            android:layout_below="@+id/add_car_number"
+            android:layout_alignBottom="@+id/add_car_maker"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="45dp" />
+            android:layout_alignTop="@+id/add_car_maker"
+            android:layout_toLeftOf="@+id/add_car_maker"
+            android:layout_toStartOf="@+id/add_car_maker"
+            android:gravity="center_vertical"
+            android:text="@string/maker" />
 
         <Spinner
             android:id="@+id/add_car_maker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:spinnerMode="dropdown"
-            android:layout_below="@+id/add_car_maker_text"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/mileage_text"
+            android:layout_toRightOf="@+id/mileage_text"
+            android:spinnerMode="dropdown" />
 
         <TextView
             android:id="@+id/add_car_model_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/add_car_model"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:text="@string/model"
-            android:layout_below="@+id/add_car_model"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignTop="@+id/add_car_model"
+            android:layout_toLeftOf="@+id/add_car_model"
+            android:layout_toStartOf="@+id/add_car_model"
+            android:gravity="center_vertical"
+            android:text="@string/model" />
 
         <Spinner
             android:id="@+id/add_car_model"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:spinnerMode="dropdown"
+            android:layout_alignLeft="@+id/add_car_maker"
+            android:layout_alignStart="@+id/add_car_maker"
             android:layout_below="@+id/add_car_maker"
-            android:layout_alignParentLeft="true" />
+            android:spinnerMode="dropdown" />
 
         <TextView
             android:id="@+id/add_car_year_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/add_car_year"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:text="@string/year"
-            android:layout_below="@+id/add_car_engine"
-            android:layout_alignParentLeft="true" />
+            android:layout_below="@+id/add_car_engine_text"
+            android:layout_toLeftOf="@+id/add_car_engine"
+            android:layout_toStartOf="@+id/add_car_engine"
+            android:gravity="center_vertical"
+            android:text="@string/year" />
 
         <Spinner
             android:id="@+id/add_car_engine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:spinnerMode="dropdown"
-            android:layout_below="@+id/add_car_engine_text"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignLeft="@+id/add_car_model"
+            android:layout_alignStart="@+id/add_car_model"
+            android:layout_below="@+id/add_car_model"
+            android:spinnerMode="dropdown" />
 
         <TextView
             android:id="@+id/add_car_engine_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/add_car_year"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:text="@string/engine"
-            android:layout_below="@+id/add_car_model_text"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignTop="@+id/add_car_engine"
+            android:layout_toLeftOf="@+id/add_car_engine"
+            android:layout_toStartOf="@+id/add_car_engine"
+            android:gravity="center_vertical"
+            android:text="@string/engine" />
 
         <Spinner
             android:id="@+id/add_car_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:spinnerMode="dropdown"
-            android:layout_below="@+id/add_car_year_text"
-            android:layout_alignParentLeft="true" />
+            android:layout_below="@+id/add_car_engine"
+            android:layout_toEndOf="@+id/add_car_engine_text"
+            android:layout_toRightOf="@+id/add_car_engine_text"
+            android:spinnerMode="dropdown" />
 
         <TextView
             android:id="@+id/add_car_gear_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/add_car_gear"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:text="@string/gear"
-            android:layout_below="@+id/add_car_gear"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignTop="@+id/add_car_gear"
+            android:layout_toLeftOf="@+id/add_car_gear"
+            android:layout_toStartOf="@+id/add_car_gear"
+            android:gravity="center_vertical"
+            android:text="@string/gear" />
 
         <Spinner
             android:id="@+id/add_car_gear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:spinnerMode="dropdown"
+            android:layout_alignLeft="@+id/add_car_year"
+            android:layout_alignStart="@+id/add_car_year"
             android:layout_below="@+id/add_car_year"
-            android:layout_alignParentLeft="true" />
+            android:spinnerMode="dropdown" />
 
         <TextView
             android:id="@+id/add_car_fuel_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/add_car_hybrid_text"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:text="@string/fuel"
-            android:layout_below="@+id/add_car_gear_text"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignTop="@+id/add_car_fuel"
+            android:layout_toLeftOf="@+id/add_car_gear"
+            android:layout_toStartOf="@+id/add_car_gear"
+            android:gravity="center_vertical"
+            android:text="@string/fuel" />
 
         <Spinner
             android:id="@+id/add_car_fuel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:spinnerMode="dropdown"
-            android:layout_below="@+id/add_car_fuel_text"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignLeft="@+id/add_car_gear"
+            android:layout_alignStart="@+id/add_car_gear"
+            android:layout_below="@+id/add_car_gear"
+            android:layout_toEndOf="@+id/add_car_fuel_text"
+            android:layout_toRightOf="@+id/add_car_fuel_text"
+            android:spinnerMode="dropdown" />
 
 
         <TextView
             android:id="@+id/add_car_hybrid_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/add_car_hybrid"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:text="@string/hybrid"
             android:layout_below="@+id/add_car_fuel"
-            android:layout_alignParentLeft="true" />
+            android:layout_toLeftOf="@+id/add_car_fuel"
+            android:layout_toStartOf="@+id/add_car_fuel"
+            android:gravity="center_vertical"
+            android:text="@string/hybrid" />
 
         <CheckBox
             android:id="@+id/add_car_hybrid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:layout_alignLeft="@+id/add_car_fuel"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignStart="@+id/add_car_fuel"
+            android:layout_below="@+id/add_car_fuel"
             android:checked="false"
-            android:text="@string/hybrid"
-            android:layout_below="@+id/add_car_hybrid_text"
-            android:layout_alignParentLeft="true" />
+            android:text="@string/hybrid" />
 
         <Button
             android:id="@+id/add_car_button"
@@ -180,29 +241,6 @@
             android:layout_below="@+id/add_car_hybrid"
             android:layout_centerHorizontal="true"
             android:text="@string/add_new" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Current Mileage"
-            android:id="@+id/mileage_text"
-            android:layout_below="@+id/add_car_number_text"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="13dp" />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
-            android:id="@+id/mileage"
-            android:hint="example: 40,000"
-            android:layout_alignBaseline="@+id/mileage_text"
-            android:layout_alignBottom="@+id/mileage_text"
-            android:layout_toRightOf="@+id/add_car_number_text"
-            android:layout_toEndOf="@+id/add_car_number_text"
-            android:paddingLeft="5dp" />
 
     </RelativeLayout>
 </ScrollView>

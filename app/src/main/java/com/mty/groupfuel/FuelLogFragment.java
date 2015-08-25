@@ -30,6 +30,7 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
     private static final String LOG_TAG = FuelLogFragment.class.getSimpleName();
     private static final String FUELING_LIST = "fueling_list";
     private static List<Fueling> fuelingList;
+
     getCarsListener mCallback;
     private ListView listView;
     private List<Car> cars;
@@ -145,16 +146,23 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
             setFuelingList(fuelingList);
         }
         listView = (ListView) view.findViewById(android.R.id.list);
-
+        for (int i = 0; i < container.getChildCount(); i++) {
+            View v = container.getChildAt(i);
+            if (v.getTag() != null && v.getTag().equals("NO_CARS")) {
+                container.removeViewAt(i);
+            }
+        }
         setOnRefreshListener(this);
         ViewGroup viewGroup = (ViewGroup) listView.getParent();
 
         if (cars == null || cars.isEmpty()) {
             listView.setVisibility(View.INVISIBLE);
             NoCarsView noCarsView = new NoCarsView(getActivity());
+            noCarsView.setTag("NO_CARS");
             viewGroup.addView(noCarsView);
         } else if (fuelingList.isEmpty()) {
             NoCarsView noCarsView = new NoCarsView(getActivity());
+            noCarsView.setTag("NO_CARS");
             noCarsView.setButtonText("Add fueling");
             noCarsView.setButtonListener(new View.OnClickListener() {
                 @Override
@@ -162,7 +170,6 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
                     FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                     transaction.replace(R.id.content_frame, FuelingFragment.newInstance(), FuelingFragment.class.getSimpleName());
                     transaction.addToBackStack(null);
-
                     transaction.commit();
                 }
             });
@@ -193,7 +200,7 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
     @Override
     public void onRefresh() {
         Log.d(LOG_TAG, "start refreshing");
-        getFuelings();
+        //getFuelings();
         Log.d(LOG_TAG, "end refreshing");
     }
 

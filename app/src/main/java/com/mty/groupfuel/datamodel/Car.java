@@ -14,6 +14,7 @@ public class Car extends ParseObject {
     private final static String MODEL = "Model";
     private final static String NUMBER = "CarNumber";
     private final static String MILEAGE = "Mileage";
+    private final static String INITIAL_MILEAGE = "InitialMileage";
 
     private ArrayList<User> drivers = new ArrayList<>();
 
@@ -87,11 +88,11 @@ public class Car extends ParseObject {
     }
 
     public Number getInitialMileage() {
-        return getNumber("InitialMileage");
+        return getNumber(INITIAL_MILEAGE);
     }
 
     public void setInitialMileage(Number initialMileage) {
-        put("InitialMileage", initialMileage);
+        put(INITIAL_MILEAGE, initialMileage);
     }
 
     public String getDisplayName() {

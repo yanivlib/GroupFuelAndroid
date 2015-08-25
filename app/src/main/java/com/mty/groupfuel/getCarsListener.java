@@ -11,8 +11,6 @@ public interface getCarsListener {
 
     void setOwnedCars(List<Car> cars);
 
-    //List<String> getCities();
-
     ParseGeoPoint getLocation();
 
     void syncOwnedCars();
@@ -20,4 +18,6 @@ public interface getCarsListener {
     List<GasStation> getStations();
 
     List<Car> getCars();
+
+    void removeCar(Car car);
 }

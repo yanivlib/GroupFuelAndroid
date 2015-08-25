@@ -33,7 +33,6 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -364,6 +363,14 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    public void removeCar(Car car) {
+        if (getOwnedCars().contains(car)) {
+            ownedCars.remove(car);
+        } else if (getDriverCars().contains(car)) {
+            driverCars.remove(car);
+        }
     }
 
 }

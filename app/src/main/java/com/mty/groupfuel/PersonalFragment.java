@@ -1,7 +1,6 @@
 package com.mty.groupfuel;
 
 import android.app.DatePickerDialog;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -125,13 +124,16 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
                 if (e == null) {
                     Toast.makeText(view.getContext(), "Personal details updated", Toast.LENGTH_LONG).show();
                     final FragmentManager fm = getActivity().getSupportFragmentManager();
-                    if (fm.findFragmentByTag(ViewPagerContainerFragment.class.getSimpleName()) == null){
-                        android.support.v4.app.FragmentTransaction transaction = fm.beginTransaction();
+                    final android.support.v4.app.FragmentTransaction transaction = fm.beginTransaction();
+                    final Fragment f = fm.findFragmentByTag(ViewPagerContainerFragment.class.getSimpleName());
+                    if (f == null) {
+                        //android.support.v4.app.FragmentTransaction transaction = fm.beginTransaction();
                         transaction.replace(R.id.content_frame, new ViewPagerContainerFragment(), ViewPagerContainerFragment.class.getSimpleName());
                         transaction.addToBackStack(null);
                         transaction.commit();
                     } else {
-                        fm.popBackStack();
+                        transaction.replace(R.id.content_frame, f, ViewPagerContainerFragment.class.getSimpleName());
+                        //fm.popBackStack();
                     }
                 } else {
                     Alerter.createErrorAlert(e, getActivity()).show();
