@@ -20,4 +20,7 @@ public class Consts {
     public final static String BROADCAST_CARS = "broadcast_cars";
     public final static String BROADCAST_LOCATION = "broadcast_location";
     public final static String BROADCAST_STATIONS = "broadcast_station";
+    public final static String BROADCAST_FUELINGS = "broadcast_fuelings";
+    public final static String BROADCAST_CITIES = "broadcast_cities";
+
 }

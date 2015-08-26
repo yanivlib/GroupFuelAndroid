@@ -42,7 +42,7 @@ import java.util.Map;
 public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefreshLayout.OnRefreshListener{
     private static final String LOG_TAG = UsageFragment.class.getSimpleName();
 
-    getCarsListener mCallback;
+    CarsListener mCallback;
 
     private Button button;
     private ListView listView;
@@ -123,10 +123,10 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mCallback = (getCarsListener)activity;
+            mCallback = (CarsListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement getCarsListener");
+                    + " must implement CarsListener");
         }
     }
 

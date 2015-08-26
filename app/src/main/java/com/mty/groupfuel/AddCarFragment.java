@@ -37,7 +37,7 @@ import java.util.Map;
 public class AddCarFragment extends Fragment implements View.OnClickListener{
 
     private static ProgressDialog progressDialog;
-    getCarsListener mCallback;
+    CarsListener mCallback;
     private Spinner maker;
     private Spinner model;
     private Spinner engine;
@@ -131,10 +131,10 @@ public class AddCarFragment extends Fragment implements View.OnClickListener{
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mCallback = (getCarsListener) activity;
+            mCallback = (CarsListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement getCarsListener");
+                    + " must implement CarsListener");
         }
     }
 

@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.mty.groupfuel.datamodel.Car;
+import com.mty.groupfuel.datamodel.Fueling;
 import com.mty.groupfuel.datamodel.GasStation;
 import com.mty.groupfuel.datamodel.User;
 import com.parse.FindCallback;
@@ -36,11 +37,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity
-        implements getCarsListener {
+        implements CarsListener, StationsListener, LocationListener, FuelingsListener {
 
     private static final String CURRENT_FRAGMENT = "current_fragment";
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -49,12 +49,12 @@ public class MainActivity extends AppCompatActivity
     private static ProgressDialog progress;
     private List<Car> ownedCars;
     private List<Car> driverCars;
-    private List<String> cities;
-
+    private List<String> cities = new ArrayList<>();
     private List<GasStation> stations;
-    private Toolbar toolbar;
-    private Fragment mContent;
     private ParseGeoPoint location;
+    private List<Fueling> fuelings;
+    private Toolbar toolbar;
+    //private Fragment mContent;
 
     private static void logOut(final Context context) {
         new AlertDialog.Builder(context)
@@ -125,6 +125,28 @@ public class MainActivity extends AppCompatActivity
         this.driverCars = driverCars;
     }
 
+    public List<Fueling> getFuelings() {
+        return fuelings;
+    }
+
+    public void setFuelings(List<Fueling> fuelings) {
+        this.fuelings = fuelings;
+    }
+
+    @Override
+    public List<String> getCities() {
+        return cities;
+    }
+
+    public void setCities(List<String> cities) {
+        this.cities = cities;
+    }
+
+    public void addFueling(Fueling fueling) {
+        this.fuelings.add(fueling);
+        broadcastFuelings();
+    }
+
     public void broadcast(int message, String action) {
         Log.d(LOG_TAG, "Broadcasting message: " + action + " " + message);
         Intent intent = new Intent(action);
@@ -135,6 +157,7 @@ public class MainActivity extends AppCompatActivity
     public void broadcastCarList() {
         int size = (ownedCars != null ? ownedCars.size() : 0) + (driverCars != null ? driverCars.size() : 0);
         broadcast(size, Consts.BROADCAST_CARS);
+        syncFueling();
     }
 
     public void broadcastLocation() {
@@ -145,13 +168,12 @@ public class MainActivity extends AppCompatActivity
         broadcast(stations.size(), Consts.BROADCAST_STATIONS);
     }
 
-    //@Override
-    //public List<String> getCities() {
-    //    return new ArrayList<>(Arrays.asList("הרצליה", "טבריה", "באר שבע"));
-    //}
+    public void broadcastFuelings() {
+        broadcast(fuelings.size(), Consts.BROADCAST_FUELINGS);
+    }
 
-    public void setCities(List<String> cities) {
-        this.cities = cities;
+    public void broadcstCities() {
+        broadcast(cities.size(), Consts.BROADCAST_CITIES);
     }
 
     private void findViewsByid() {
@@ -163,7 +185,7 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        Fragment f = getSupportFragmentManager().findFragmentById(R.id.content_frame);
+        final Fragment f = getSupportFragmentManager().findFragmentById(R.id.content_frame);
         //ViewPagerContainerFragment viewPagerContainerFragment = (ViewPagerContainerFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
         if (f == null) {
             ViewPagerContainerFragment viewPagerContainerFragment = new ViewPagerContainerFragment();
@@ -172,7 +194,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
+    private void syncData() {
+        syncOwnedCars();
+        syncDrivedCars();
+        syncCurrentLocation();
+        syncFueling();
+        syncCities();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,10 +232,8 @@ public class MainActivity extends AppCompatActivity
                 transaction.commit();
             }
         });
-        syncOwnedCars();
-        syncDrivedCars();
-        syncCurrentLocation();
-        //syncMakers();
+
+        syncData();
         user = ParseUser.getCurrentUser();
     }
     @Override
@@ -225,7 +251,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
         switch (id) {
             case R.id.action_settings:
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -243,7 +269,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        FragmentManager fm = getSupportFragmentManager();
+        final FragmentManager fm = getSupportFragmentManager();
         for(int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
             Log.i(LOG_TAG, "Found fragment: " + fm.getBackStackEntryAt(entry).getId());
         }
@@ -309,7 +335,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void syncCurrentLocation() {
-        Criteria criteria = new Criteria();
+        final Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_LOW);
         criteria.setAltitudeRequired(false);
         criteria.setBearingRequired(false);
@@ -331,7 +357,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     void syncStationsByLocation(final ParseGeoPoint point) {
-        ParseQuery<GasStation> query = GasStation.getQuery();
+        final ParseQuery<GasStation> query = GasStation.getQuery();
         query.whereNear("Location", point);
         query.findInBackground(new FindCallback<GasStation>() {
             @Override
@@ -347,30 +373,57 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    void syncMakers() {
-        final Map<String, String> params = new HashMap<>();
-        params.put("table", "CarModel");
-        params.put("equalTos", "Make");
-        ParseCloud.callFunctionInBackground("getDistinctFieldFromDB", params, new FunctionCallback<ArrayList<Object>>() {
-            @Override
-            public void done(ArrayList<Object> result, ParseException e) {
-                if (e == null) {
-                    for (Object object : result) {
-                        Log.i(LOG_TAG, object.toString());
-                    }
-                } else {
-                    Alerter.createErrorAlert(e, MainActivity.this).show();
-                }
-            }
-        });
-    }
-
     public void removeCar(Car car) {
         if (getOwnedCars().contains(car)) {
             ownedCars.remove(car);
         } else if (getDriverCars().contains(car)) {
             driverCars.remove(car);
         }
+    }
+
+    public void syncFueling() {
+        List<Car> cars = getCars();
+        if (cars == null || cars.isEmpty()) {
+            return;
+        }
+        final ParseQuery<Fueling> query = Fueling.getQuery();
+        query.whereContainedIn("Car", UsageFragment.getPointers(cars));
+        query.include("Car");
+        Log.i(LOG_TAG, "querying for Fueling list");
+        query.findInBackground(new FindCallback<Fueling>() {
+            @Override
+            public void done(List<Fueling> list, ParseException e) {
+                if (e == null) {
+                    Log.i(LOG_TAG, "query completed successfully");
+                    setFuelings(list);
+                    broadcastFuelings();
+                } else {
+                    Log.e(LOG_TAG, "query failed", e);
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        });
+    }
+
+    public void syncCities() {
+        if (!cities.isEmpty()) {
+            return;
+        }
+        Log.d(LOG_TAG, "fetching cities...");
+        ParseCloud.callFunctionInBackground("getCities", new HashMap<String, Object>(), new FunctionCallback<ArrayList<String>>() {
+            @Override
+            public void done(ArrayList<String> cities, ParseException e) {
+                if (e == null) {
+                    setCities(cities);
+                    //TODO: broadcast cities
+                    broadcstCities();
+                    //setCitiesInSpinner(cities);
+                    Log.d(LOG_TAG, "got " + cities.size() + " cities");
+                } else {
+                    Alerter.createErrorAlert(e, MainActivity.this);
+                }
+            }
+        });
     }
 
 }

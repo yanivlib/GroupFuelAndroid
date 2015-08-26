@@ -31,7 +31,7 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     Map<String, List<Object>> listDataChild;
     List<Car> cars;
 
-    getCarsListener mCallback;
+    CarsListener mCallback;
 
     List<Object> carList;
     List<Object> personalList;
@@ -62,10 +62,10 @@ public class SettingsFragment extends android.support.v4.app.Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mCallback = (getCarsListener)activity;
+            mCallback = (CarsListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement getCarsListener");
+                    + " must implement CarsListener");
         }
     }
 

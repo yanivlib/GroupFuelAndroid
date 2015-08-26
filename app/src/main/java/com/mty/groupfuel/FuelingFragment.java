@@ -28,8 +28,6 @@ import com.mty.groupfuel.datamodel.Fueling;
 import com.mty.groupfuel.datamodel.GasStation;
 import com.mty.groupfuel.datamodel.User;
 import com.parse.FindCallback;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -49,8 +47,12 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     private final static String LOG_TAG = FuelingFragment.class.getSimpleName();
     private static ProgressDialog progressDialog;
     Context context;
+
     // Interfaces
-    getCarsListener mCallback;
+    CarsListener carsListener;
+    LocationListener locationListener;
+    FuelingsListener fuelingsListener;
+
     // Views
     private EditText mileageEditText;
     private EditText priceEditText;
@@ -62,6 +64,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     private Spinner stationsSpinner;
     private RadioGroup radioGroup;
     private TextView cityText;
+
     // Fields
     private Map<String, List<GasStation>> cityToStation;
     private List<Car> cars;
@@ -72,17 +75,25 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()) {
+            final String action = intent.getAction();
+            final int message = intent.getIntExtra(action, 0);
+            switch (action) {
                 case Consts.BROADCAST_CARS:
-                    int carAmount = intent.getIntExtra(Consts.BROADCAST_CARS, 0);
-                    if (carAmount > 0) {
-                        setCars(mCallback.getCars());
+                    if (message > 0) {
+                        setCars(carsListener.getCars());
                     }
                     break;
                 case Consts.BROADCAST_LOCATION:
-                    if (intent.getIntExtra(Consts.BROADCAST_LOCATION, 0) != 0) {
-                        setLocation(mCallback.getLocation());
+                    if (message != 0) {
+                        setLocation(locationListener.getLocation());
                     }
+                    break;
+                case Consts.BROADCAST_CITIES:
+                    if (message > 0) {
+                        setCities(locationListener.getCities());
+                        setCitiesInSpinner(cities);
+                    }
+                    break;
             }
             Log.d(LOG_TAG, "Got message: " + intent.toString());
         }
@@ -158,10 +169,12 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mCallback = (getCarsListener)activity;
+            carsListener = (CarsListener) activity;
+            locationListener = (LocationListener) activity;
+            fuelingsListener = (FuelingsListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement getCarsListener");
+                    + " must implement CarsListener");
         }
     }
 
@@ -169,11 +182,11 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.cars = new ArrayList<>();
-        setCars(mCallback.getCars());
+        setCars(carsListener.getCars());
         setCities(new ArrayList<String>());
-        location = mCallback.getLocation();
+        location = locationListener.getLocation();
         if (location != null) {
-            getStationsByLocation(mCallback.getLocation());
+            getStationsByLocation(locationListener.getLocation());
         }
         pleaseSelect = getString(R.string.please_select);
         cityToStation = new HashMap<>();
@@ -189,7 +202,9 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         attachAdapter(view, cars.toArray(), carSpinner, new CarSelect());
         attachAdapter(view, cities.toArray(), citySpinner, new CitySelect());
         attachAdapter(view, new GasStation[]{}, stationsSpinner, new StationSelect());
-        syncCities();
+        setCities(locationListener.getCities());
+        setCitiesInSpinner(cities);
+        //syncCities();
 
         MainActivity.fab.setVisibility(View.INVISIBLE);
         radioGroup.setOnCheckedChangeListener(new OnRadioButtonClicked());
@@ -218,6 +233,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Consts.BROADCAST_CARS);
         filter.addAction(Consts.BROADCAST_LOCATION);
+        filter.addAction(Consts.BROADCAST_CITIES);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, filter);
 
     }
@@ -343,7 +359,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
             sendButton.setEnabled(true);
             return;
         }
-        Fueling fueling = new Fueling();
+        final Fueling fueling = new Fueling();
         fueling.setAmount(amount);
         fueling.setMileage(mileage);
         fueling.setPrice(price);
@@ -361,30 +377,12 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
                 } else {
                     car.setMileage(mileage);
                     car.saveEventually();
+                    fuelingsListener.addFueling(fueling);
                     Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
                 }
             }
         });
         getActivity().getSupportFragmentManager().popBackStack();
-    }
-
-    void syncCities() {
-        if (!cities.isEmpty()) {
-            return;
-        }
-        Log.d(LOG_TAG, "fetching cities...");
-        ParseCloud.callFunctionInBackground("getCities", new HashMap<String, Object>(), new FunctionCallback<ArrayList<String>>() {
-            @Override
-            public void done(ArrayList<String> cities, ParseException e) {
-                if (e == null) {
-                    setCities(cities);
-                    setCitiesInSpinner(cities);
-                    Log.d(LOG_TAG, "got " + cities.size() + " cities");
-                } else {
-                    Alerter.createErrorAlert(e, context);
-                }
-            }
-        });
     }
 
     private class StationSelect implements AdapterView.OnItemSelectedListener {
