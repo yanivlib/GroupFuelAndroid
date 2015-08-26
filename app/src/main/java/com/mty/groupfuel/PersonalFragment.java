@@ -130,11 +130,11 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
                         //android.support.v4.app.FragmentTransaction transaction = fm.beginTransaction();
                         transaction.replace(R.id.content_frame, new ViewPagerContainerFragment(), ViewPagerContainerFragment.class.getSimpleName());
                         transaction.addToBackStack(null);
-                        transaction.commit();
                     } else {
                         transaction.replace(R.id.content_frame, f, ViewPagerContainerFragment.class.getSimpleName());
                         //fm.popBackStack();
                     }
+                    transaction.commit();
                 } else {
                     Alerter.createErrorAlert(e, getActivity()).show();
                     applyButton.setEnabled(true);

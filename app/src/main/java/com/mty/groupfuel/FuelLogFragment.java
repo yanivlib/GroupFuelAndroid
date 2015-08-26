@@ -132,10 +132,11 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
             setFuelingList(fuelingList);
         }
         listView = (ListView) view.findViewById(android.R.id.list);
-        for (int i = 0; i < container.getChildCount(); i++) {
-            View v = container.getChildAt(i);
+        ViewGroup viewGroup = (ViewGroup) listView.getParent();
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View v = viewGroup.getChildAt(i);
             if (v.getTag() != null && v.getTag().equals("NO_CARS")) {
-                container.removeViewAt(i);
+                viewGroup.removeViewAt(i);
             }
         }
         setOnRefreshListener(this);
@@ -144,7 +145,7 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
             listView.setVisibility(View.INVISIBLE);
             NoCarsView noCarsView = new NoCarsView(getActivity());
             noCarsView.setTag("NO_CARS");
-            container.addView(noCarsView);
+            viewGroup.addView(noCarsView);
         } else if (fuelingList.isEmpty()) {
             NoCarsView noCarsView = new NoCarsView(getActivity());
             noCarsView.setTag("NO_CARS");
@@ -160,7 +161,7 @@ public class FuelLogFragment extends SwipeRefreshListFragment implements SwipeRe
             });
             //noCarsView.setVisibility(View.INVISIBLE);
             noCarsView.setText("No fuelings available. Add one now!");
-            container.addView(noCarsView);
+            viewGroup.addView(noCarsView);
         }
         return view;
     }
