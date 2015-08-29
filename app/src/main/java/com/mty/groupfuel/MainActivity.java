@@ -9,6 +9,7 @@ import android.location.Criteria;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.mty.groupfuel.datamodel.Car;
+import com.mty.groupfuel.datamodel.Fueling;
 import com.mty.groupfuel.datamodel.GasStation;
 import com.mty.groupfuel.datamodel.User;
 import com.parse.FindCallback;
@@ -32,12 +34,13 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity
-        implements getCarsListener {
+        implements CarsListener, StationsListener, LocationListener, FuelingsListener {
 
     private static final String CURRENT_FRAGMENT = "current_fragment";
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -46,51 +49,12 @@ public class MainActivity extends AppCompatActivity
     private static ProgressDialog progress;
     private List<Car> ownedCars;
     private List<Car> driverCars;
-
+    private List<String> cities = new ArrayList<>();
     private List<GasStation> stations;
-    private Toolbar toolbar;
-    private Fragment mContent;
     private ParseGeoPoint location;
-
-    public static AlertDialog.Builder createErrorAlert(String message, String title, Context context) {
-        return new AlertDialog.Builder(context)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert);
-    }
-
-    public static AlertDialog.Builder createErrorAlert(List<String> list, String title, Context context) {
-        return createErrorAlert(catString(list), title, context);
-    }
-
-    public static AlertDialog.Builder createErrorAlert(List<String> list, Context context) {
-        return createErrorAlert(catString(list), context);
-    }
-
-    public static AlertDialog.Builder createErrorAlert(String message, Context context) {
-        return new AlertDialog.Builder(context)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert);
-    }
-
-    private static String catString(List<String> list) {
-        String result = "";
-        for (String string : list) {
-            result += string;
-            result += "\n";
-        }
-        return result;
-    }
+    private List<Fueling> fuelings;
+    private Toolbar toolbar;
+    //private Fragment mContent;
 
     private static void logOut(final Context context) {
         new AlertDialog.Builder(context)
@@ -130,6 +94,10 @@ public class MainActivity extends AppCompatActivity
             cars.addAll(getDriverCars());
             Log.d(LOG_TAG, "driver cars : " + getDriverCars().size());
         }
+        Set<Car> set = new HashSet<>();
+        set.addAll(cars);
+        cars.clear();
+        cars.addAll(set);
         return (cars.isEmpty() ? null : cars);
     }
 
@@ -157,6 +125,28 @@ public class MainActivity extends AppCompatActivity
         this.driverCars = driverCars;
     }
 
+    public List<Fueling> getFuelings() {
+        return fuelings;
+    }
+
+    public void setFuelings(List<Fueling> fuelings) {
+        this.fuelings = fuelings;
+    }
+
+    @Override
+    public List<String> getCities() {
+        return cities;
+    }
+
+    public void setCities(List<String> cities) {
+        this.cities = cities;
+    }
+
+    public void addFueling(Fueling fueling) {
+        this.fuelings.add(fueling);
+        broadcastFuelings();
+    }
+
     public void broadcast(int message, String action) {
         Log.d(LOG_TAG, "Broadcasting message: " + action + " " + message);
         Intent intent = new Intent(action);
@@ -167,6 +157,7 @@ public class MainActivity extends AppCompatActivity
     public void broadcastCarList() {
         int size = (ownedCars != null ? ownedCars.size() : 0) + (driverCars != null ? driverCars.size() : 0);
         broadcast(size, Consts.BROADCAST_CARS);
+        syncFueling();
     }
 
     public void broadcastLocation() {
@@ -177,9 +168,12 @@ public class MainActivity extends AppCompatActivity
         broadcast(stations.size(), Consts.BROADCAST_STATIONS);
     }
 
-    @Override
-    public List<String> getCities() {
-        return new ArrayList<>(Arrays.asList("הרצליה", "טבריה", "באר שבע"));
+    public void broadcastFuelings() {
+        broadcast(fuelings.size(), Consts.BROADCAST_FUELINGS);
+    }
+
+    public void broadcstCities() {
+        broadcast(cities.size(), Consts.BROADCAST_CITIES);
     }
 
     private void findViewsByid() {
@@ -191,7 +185,7 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        Fragment f = getSupportFragmentManager().findFragmentById(R.id.content_frame);
+        final Fragment f = getSupportFragmentManager().findFragmentById(R.id.content_frame);
         //ViewPagerContainerFragment viewPagerContainerFragment = (ViewPagerContainerFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
         if (f == null) {
             ViewPagerContainerFragment viewPagerContainerFragment = new ViewPagerContainerFragment();
@@ -200,7 +194,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
+    private void syncData() {
+        syncOwnedCars();
+        syncDrivedCars();
+        syncCurrentLocation();
+        syncFueling();
+        syncCities();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,6 +209,18 @@ public class MainActivity extends AppCompatActivity
         findViewsByid();
 
         setSupportActionBar(toolbar);
+
+        try {
+            if (getIntent().getStringExtra(Consts.PARENT_ACTIVITY_NAME).equals(RegisterActivity.class.getName())) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.add(R.id.content_frame, new ViewPagerContainerFragment(), ViewPagerContainerFragment.class.getSimpleName());
+                transaction.replace(R.id.content_frame, new PersonalFragment(), PersonalFragment.class.getSimpleName());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        } catch (NullPointerException e) {
+            Log.d(LOG_TAG, "no extra in intent", e);
+        }
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -220,16 +232,14 @@ public class MainActivity extends AppCompatActivity
                 transaction.commit();
             }
         });
-        syncOwnedCars();
-        syncDrivedCars();
-        syncCurrentLocation();
+
+        syncData();
         user = ParseUser.getCurrentUser();
     }
     @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
         Log.d(LOG_TAG, "resuming fragments...");
-        // YOUR STUFF IS HERE
     }
 
     @Override
@@ -241,7 +251,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        final int id = item.getItemId();
         switch (id) {
             case R.id.action_settings:
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -257,31 +267,20 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        final FragmentManager fm = getSupportFragmentManager();
+        for(int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
+            Log.i(LOG_TAG, "Found fragment: " + fm.getBackStackEntryAt(entry).getId());
+        }
+        super.onBackPressed();
+    }
+
     public void syncOwnedCars() {
         ParseCloud.callFunctionInBackground("getOwnedCars", new HashMap<String, Object>(), new FunctionCallback<ArrayList<Car>>() {
             @Override
             public void done(ArrayList<Car> result, ParseException e) {
                 if (e == null) {
-                    if (result.size() == 0) {
-                        new AlertDialog.Builder(MainActivity.this)
-                                .setTitle("No ownedCars found")
-                                .setMessage("You need at least one car to access this function. Would you want to add one now?")
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                                        transaction.replace(R.id.content_frame, SettingsFragment.newInstance(), SettingsFragment.class.getSimpleName());
-                                        transaction.addToBackStack(null);
-                                        transaction.commit();
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // do nothing
-                                    }
-                                })
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
-                    }
                     final HashMap<String, String> params = new HashMap<>();
                     for (final Car car : result) {
                         params.put("carNumber", car.getCarNumber());
@@ -296,13 +295,7 @@ public class MainActivity extends AppCompatActivity
                     setOwnedCars(result);
                     broadcastCarList();
                 } else {
-                    switch (e.getCode()) {
-                        case 141:
-                            System.out.println(e.getMessage());
-                            break;
-                        default:
-                            throw new RuntimeException(e.getMessage());
-                    }
+                    Alerter.createErrorAlert(e, MainActivity.this).show();
                 }
             }
         });
@@ -318,7 +311,7 @@ public class MainActivity extends AppCompatActivity
                     broadcastCarList();
                     Log.d(LOG_TAG, "found drived cars : " + cars.size());
                 } else {
-                    throw new RuntimeException(e.getMessage());
+                    Alerter.createErrorAlert(e, MainActivity.this).show();
                 }
             }
         });
@@ -342,13 +335,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void syncCurrentLocation() {
-        Criteria criteria = new Criteria();
+        final Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_LOW);
         criteria.setAltitudeRequired(false);
         criteria.setBearingRequired(false);
         criteria.setCostAllowed(true);
         criteria.setPowerRequirement(Criteria.POWER_LOW);
-        ParseGeoPoint.getCurrentLocationInBackground(55000, criteria, new LocationCallback() {
+        ParseGeoPoint.getCurrentLocationInBackground(50000, criteria, new LocationCallback() {
             @Override
             public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
                 if (e == null) {
@@ -356,6 +349,7 @@ public class MainActivity extends AppCompatActivity
                     broadcastLocation();
                     syncStationsByLocation(parseGeoPoint);
                 } else {
+                    syncCurrentLocation();
                     broadcastLocation();
                 }
             }
@@ -363,7 +357,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     void syncStationsByLocation(final ParseGeoPoint point) {
-        ParseQuery<GasStation> query = GasStation.getQuery();
+        final ParseQuery<GasStation> query = GasStation.getQuery();
         query.whereNear("Location", point);
         query.findInBackground(new FindCallback<GasStation>() {
             @Override
@@ -377,6 +371,72 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    public void removeCar(Car car) {
+        if (getOwnedCars().contains(car)) {
+            ownedCars.remove(car);
+        } else if (getDriverCars().contains(car)) {
+            driverCars.remove(car);
+        }
+    }
+
+    public void syncFueling() {
+        List<Car> cars = getCars();
+        if (cars == null || cars.isEmpty()) {
+            return;
+        }
+        final ParseQuery<Fueling> query = Fueling.getQuery();
+        query.whereContainedIn("Car", UsageFragment.getPointers(cars));
+        query.include("Car");
+        Log.i(LOG_TAG, "querying for Fueling list");
+        query.findInBackground(new FindCallback<Fueling>() {
+            @Override
+            public void done(List<Fueling> list, ParseException e) {
+                if (e == null) {
+                    Log.i(LOG_TAG, "query completed successfully");
+                    setFuelings(list);
+                    broadcastFuelings();
+                } else {
+                    Log.e(LOG_TAG, "query failed", e);
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        });
+    }
+
+    public void syncCities() {
+        if (!cities.isEmpty()) {
+            return;
+        }
+        Log.d(LOG_TAG, "fetching cities...");
+        ParseCloud.callFunctionInBackground("getCities", new HashMap<String, Object>(), new FunctionCallback<ArrayList<String>>() {
+            @Override
+            public void done(ArrayList<String> cities, ParseException e) {
+                if (e == null) {
+                    setCities(cities);
+                    //TODO: broadcast cities
+                    broadcstCities();
+                    //setCitiesInSpinner(cities);
+                    Log.d(LOG_TAG, "got " + cities.size() + " cities");
+                } else {
+                    Alerter.createErrorAlert(e, MainActivity.this);
+                }
+            }
+        });
+    }
+
+    public void updateMileage(Car car, Number mileage) {
+        Car newcar = car;
+        newcar.setMileage(mileage);
+        if (ownedCars.contains(car)) {
+            ownedCars.remove(car);
+            ownedCars.add(newcar);
+        } else if (driverCars.contains(car)) {
+            driverCars.remove(car);
+            driverCars.add(car);
+        }
+        broadcastCarList();
     }
 
 }

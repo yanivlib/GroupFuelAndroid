@@ -15,20 +15,17 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class LoginActivity extends Activity implements View.OnClickListener {
 
     private ProgressDialog progressDialog;
-    private EditText usernameET;
-    private EditText passwordET;
+    private EditText username;
+    private EditText password;
     private Button loginButton;
 
     private void findViewsById() {
-        usernameET = (EditText) findViewById(R.id.usernameText);
-        passwordET = (EditText) findViewById(R.id.passwordText);
+        username = (EditText) findViewById(R.id.username);
+        password = (EditText) findViewById(R.id.password);
         loginButton = (Button) findViewById(R.id.login);
     }
 
@@ -64,22 +61,25 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
     public void doLogin(View view) {
+        loginButton.setEnabled(false);
         progressDialog = ProgressDialog.show(this, getResources().getString(R.string.wait), getResources().getString(R.string.login_progress));
-        String username = usernameET.getText().toString().trim();
-        String password = passwordET.getText().toString().trim();
-        usernameET.setText("");
-        passwordET.setText("");
-        List<String> error = new ArrayList<>();
+        String username = this.username.getText().toString().trim();
+        String password = this.password.getText().toString().trim();
+        this.password.setText("");
+        final StringBuilder error = new StringBuilder();
         if (username.isEmpty()) {
-            error.add(getResources().getString(R.string.username_empty));
+            error.append(getResources().getString(R.string.username_empty));
+            error.append('\n');
         }
         if (password.isEmpty()) {
-            error.add(getResources().getString(R.string.password_empty));
+            error.append(getResources().getString(R.string.password_empty));
+            error.append('\n');
         }
         //TODO add more checks.
-        if (!error.isEmpty()) {
+        if (error.length() > 0) {
             progressDialog.dismiss();
-            MainActivity.createErrorAlert(error, getString(R.string.login_error_title),this).show();
+            Alerter.createErrorAlert(error.toString(), getString(R.string.login_error_title), this).show();
+            loginButton.setEnabled(true);
             return;
         }
         User.logInInBackground(username, password, new LogInCallback() {
@@ -88,7 +88,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 if (user != null) {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
-                    MainActivity.createErrorAlert(e.getMessage(), getString(R.string.login_error_title), LoginActivity.this).show();
+                    Alerter.createErrorAlert(e.getMessage(), getString(R.string.login_error_title), LoginActivity.this).show();
+                    loginButton.setEnabled(true);
                 }
             }
         });

@@ -12,7 +12,7 @@ import com.parse.ParseGeoPoint;
 
 public class GasStationItem extends RelativeLayout {
 
-    private GasStation gasStation;
+    //private GasStation gasStation;
 
     private TextView title;
     private TextView distance;
@@ -42,26 +42,19 @@ public class GasStationItem extends RelativeLayout {
     //    return location;
     //}
 
-    void setupChildren() {
-        this.title = (TextView) findViewById(R.id.title);
-        this.distance = (TextView) findViewById(R.id.distance);
-        this.price = (TextView) findViewById(R.id.price);
+    public void setPrice(Number price) {
+        if (price == null) {
+            this.price.setText("No price provided");
+        } else {
+            this.price.setText(price.toString() + " NIS");
+        }
     }
 
-    public void setData(GasStation gasStation, ParseGeoPoint currentLocation) {
-        this.gasStation = gasStation;
-        ParseGeoPoint gasStationLocation = gasStation.getLocation();
-        this.title.setText(gasStation.getDisplayName());
-
-        this.price.setText("2.5 nis");
-
+    public void setLocation(ParseGeoPoint currentLocation, ParseGeoPoint gasStationLocation) {
         if (currentLocation == null || gasStationLocation == null) {
             this.distance.setText("a lot");
         } else {
-            //System.out.println("current location: " + currentLocation);
-            //System.out.println("gas station location: " + location);
             double distance = gasStationLocation.distanceInKilometersTo(currentLocation);
-            //System.out.println("distance between them: " + distance);
             String distnaceString;
             if (distance < 1) {
                 distnaceString = "Less then 1";
@@ -70,5 +63,17 @@ public class GasStationItem extends RelativeLayout {
             }
             this.distance.setText(distnaceString + " km");
         }
+    }
+
+    void setupChildren() {
+        this.title = (TextView) findViewById(R.id.title);
+        this.distance = (TextView) findViewById(R.id.distance);
+        this.price = (TextView) findViewById(R.id.price);
+    }
+
+    public void setData(GasStation gasStation, ParseGeoPoint currentLocation) {
+        this.title.setText(gasStation.getDisplayName());
+        setPrice(gasStation.getPrice());
+        setLocation(currentLocation, gasStation.getLocation());
     }
 }

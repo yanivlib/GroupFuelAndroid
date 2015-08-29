@@ -1,9 +1,11 @@
 package com.mty.groupfuel;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.mty.groupfuel.datamodel.User;
 import com.parse.ParseException;
@@ -24,6 +27,7 @@ import java.util.Locale;
 
 public class PersonalFragment extends Fragment implements View.OnClickListener {
 
+    private static ProgressDialog progressDialog;
     final private Calendar myCalendar = Calendar.getInstance();
     final private User user = (User) ParseUser.getCurrentUser();
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Consts.DATE_FORMAT, Locale.US);
@@ -102,7 +106,8 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
+        applyButton.setEnabled(false);
         user.setFirstName(firstName.getText().toString());
         user.setLastName(lastName.getText().toString());
         user.setBirthDate(myCalendar.getTime());
@@ -111,14 +116,28 @@ public class PersonalFragment extends Fragment implements View.OnClickListener {
         } else {
             user.setGender(false);
         }
+        progressDialog = ProgressDialog.show(getActivity(), getResources().getString(R.string.wait), getResources().getString(R.string.personal_progress));
         user.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                progressDialog.dismiss();
                 if (e == null) {
-                    //Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
-                    getActivity().getSupportFragmentManager().popBackStack();
+                    Toast.makeText(view.getContext(), "Personal details updated", Toast.LENGTH_LONG).show();
+                    final FragmentManager fm = getActivity().getSupportFragmentManager();
+                    final android.support.v4.app.FragmentTransaction transaction = fm.beginTransaction();
+                    final Fragment f = fm.findFragmentByTag(ViewPagerContainerFragment.class.getSimpleName());
+                    if (f == null) {
+                        //android.support.v4.app.FragmentTransaction transaction = fm.beginTransaction();
+                        transaction.replace(R.id.content_frame, new ViewPagerContainerFragment(), ViewPagerContainerFragment.class.getSimpleName());
+                        transaction.addToBackStack(null);
+                    } else {
+                        transaction.replace(R.id.content_frame, f, ViewPagerContainerFragment.class.getSimpleName());
+                        //fm.popBackStack();
+                    }
+                    transaction.commit();
                 } else {
-                    throw new RuntimeException(e.getMessage());
+                    Alerter.createErrorAlert(e, getActivity()).show();
+                    applyButton.setEnabled(true);
                 }
             }
         });

@@ -2,6 +2,7 @@ package com.mty.groupfuel;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -44,9 +45,13 @@ import java.util.Map;
 
 public class FuelingFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
     private final static String LOG_TAG = FuelingFragment.class.getSimpleName();
+    private static ProgressDialog progressDialog;
     Context context;
+
     // Interfaces
-    getCarsListener mCallback;
+    CarsListener carsListener;
+    LocationListener locationListener;
+    FuelingsListener fuelingsListener;
 
     // Views
     private EditText mileageEditText;
@@ -67,22 +72,28 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     private List<GasStation> stationsNearby;
     private List<GasStation> stationsInCity;
     private ParseGeoPoint location;
-    //private Car selectedCar;
-
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()) {
+            final String action = intent.getAction();
+            final int message = intent.getIntExtra(action, 0);
+            switch (action) {
                 case Consts.BROADCAST_CARS:
-                    int carAmount = intent.getIntExtra(Consts.BROADCAST_CARS, 0);
-                    if (carAmount > 0) {
-                        setCars(mCallback.getCars());
+                    if (message > 0) {
+                        setCars(carsListener.getCars());
                     }
                     break;
                 case Consts.BROADCAST_LOCATION:
-                    if (intent.getIntExtra(Consts.BROADCAST_LOCATION, 0) != 0) {
-                        setLocation(mCallback.getLocation());
+                    if (message != 0) {
+                        setLocation(locationListener.getLocation());
                     }
+                    break;
+                case Consts.BROADCAST_CITIES:
+                    if (message > 0) {
+                        setCities(locationListener.getCities());
+                        setCitiesInSpinner(cities);
+                    }
+                    break;
             }
             Log.d(LOG_TAG, "Got message: " + intent.toString());
         }
@@ -146,15 +157,24 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         adapter.addAll(list);
     }
 
+    private void setCitiesInSpinner(List<String> list) {
+        ArrayAdapter<Object> adapter = (ArrayAdapter<Object>) citySpinner.getAdapter();
+        adapter.clear();
+        adapter.add(pleaseSelect);
+        adapter.addAll(list);
+    }
+
     // Lifecycle methods
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mCallback = (getCarsListener)activity;
+            carsListener = (CarsListener) activity;
+            locationListener = (LocationListener) activity;
+            fuelingsListener = (FuelingsListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement getCarsListener");
+                    + " must implement CarsListener");
         }
     }
 
@@ -162,11 +182,11 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.cars = new ArrayList<>();
-        setCars(mCallback.getCars());
-        setCities(mCallback.getCities());
-        location = mCallback.getLocation();
+        setCars(carsListener.getCars());
+        setCities(new ArrayList<String>());
+        location = locationListener.getLocation();
         if (location != null) {
-            getStationsByLocation(mCallback.getLocation());
+            getStationsByLocation(locationListener.getLocation());
         }
         pleaseSelect = getString(R.string.please_select);
         cityToStation = new HashMap<>();
@@ -182,6 +202,10 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         attachAdapter(view, cars.toArray(), carSpinner, new CarSelect());
         attachAdapter(view, cities.toArray(), citySpinner, new CitySelect());
         attachAdapter(view, new GasStation[]{}, stationsSpinner, new StationSelect());
+        setCities(locationListener.getCities());
+        setCitiesInSpinner(cities);
+        //syncCities();
+
         MainActivity.fab.setVisibility(View.INVISIBLE);
         radioGroup.setOnCheckedChangeListener(new OnRadioButtonClicked());
         if (location == null) {
@@ -209,6 +233,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         IntentFilter filter = new IntentFilter();
         filter.addAction(Consts.BROADCAST_CARS);
         filter.addAction(Consts.BROADCAST_LOCATION);
+        filter.addAction(Consts.BROADCAST_CITIES);
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mMessageReceiver, filter);
 
     }
@@ -301,33 +326,40 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
 
     @Override
     public void onClick(View view) {
-        List<String> error = new ArrayList<>();
+        sendButton.setEnabled(false);
+        StringBuilder error = new StringBuilder();
         Number amount = numberFromEditText(amountEditText);
-        Number mileage = numberFromEditText(mileageEditText);
+        final Number mileage = numberFromEditText(mileageEditText);
         Number price = numberFromEditText(priceEditText);
         User user = (User) ParseUser.getCurrentUser();
-        Car car = (Car) carSpinner.getSelectedItem();
+        if (carSpinner.getSelectedItemPosition() == 0) {
+            Alerter.createErrorAlert("No car selected. Please select car to continue", context).show();
+            sendButton.setEnabled(true);
+            return;
+        }
+        final Car car = (Car) carSpinner.getSelectedItem();
         GasStation station = null;
         if (stationsSpinner.getSelectedItemPosition() > 0) {
             station = (GasStation) stationsSpinner.getSelectedItem();
         }
         if (amount == 0) {
-            error.add(getString(R.string.amount_empty));
+            error.append(getString(R.string.amount_empty));
         }
         if (mileage == 0) {
-            error.add(getString(R.string.mileage_empty));
+            error.append(getString(R.string.mileage_empty));
         }
         if (price == 0) {
-            error.add(getString(R.string.price_empty));
+            error.append(getString(R.string.price_empty));
         }
         if (car.getObjectId().equals(Consts.OBJECTID_NULL)) {
-            error.add("Illegal car");
+            error.append("Illegal car");
         }
-        if (!error.isEmpty()) {
-            MainActivity.createErrorAlert(error, context).show();
+        if (error.length() > 0) {
+            Alerter.createErrorAlert(error.toString(), context).show();
+            sendButton.setEnabled(true);
             return;
         }
-        Fueling fueling = new Fueling();
+        final Fueling fueling = new Fueling();
         fueling.setAmount(amount);
         fueling.setMileage(mileage);
         fueling.setPrice(price);
@@ -335,12 +367,18 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
         fueling.setFuelType(car.getModel().getFuelType());
         fueling.setGasStation(station);
         fueling.put("Car", ParseObject.createWithoutData("Car", car.getObjectId()));
+        progressDialog = ProgressDialog.show(context, getResources().getString(R.string.wait), getResources().getString(R.string.fueling_progress));
         fueling.saveEventually(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                progressDialog.dismiss();
                 if (e != null) {
-                    MainActivity.createErrorAlert(e.getMessage(), context).show();
+                    Alerter.createErrorAlert(e, context).show();
                 } else {
+                    car.setMileage(mileage);
+                    car.saveEventually();
+                    carsListener.updateMileage(car, mileage);
+                    fuelingsListener.addFueling(fueling);
                     Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
                 }
             }

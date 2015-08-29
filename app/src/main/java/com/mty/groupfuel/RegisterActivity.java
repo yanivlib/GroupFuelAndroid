@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,17 +15,19 @@ import com.parse.SignUpCallback;
 
 public class RegisterActivity extends Activity implements View.OnClickListener {
 
-    private EditText usernameET;
-    private EditText passwordET;
-    private EditText passwordAgainET;
-    private Button registerButton;
+    private EditText username;
+    private EditText password;
+    private EditText passwordAgain;
+    private EditText email;
+    private Button button;
     private ProgressDialog progressDialog;
 
     private void findViewsById() {
-        usernameET = (EditText) findViewById(R.id.usernameText);
-        passwordET = (EditText) findViewById(R.id.passwordText);
-        passwordAgainET = (EditText) findViewById(R.id.passwordTextAgain);
-        registerButton = (Button) findViewById(R.id.register);
+        username = (EditText) findViewById(R.id.username);
+        password = (EditText) findViewById(R.id.password);
+        passwordAgain = (EditText) findViewById(R.id.password_again);
+        email = (EditText) findViewById(R.id.email);
+        button = (Button) findViewById(R.id.register);
     }
 
     @Override
@@ -33,42 +36,52 @@ public class RegisterActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_register);
         findViewsById();
 
-        registerButton.setOnClickListener(this);
+        button.setOnClickListener(this);
     }
 
     public void doRegister(View view) {
-        String error = "";
-        String username = usernameET.getText().toString().trim();
-        String password = passwordET.getText().toString().trim();
-        String passwordAgain = passwordAgainET.getText().toString().trim();
+        button.setEnabled(false);
+        StringBuilder error = new StringBuilder();
+        String username = this.username.getText().toString().trim();
+        String email = this.email.getText().toString().trim();
+        String password = this.password.getText().toString().trim();
+        String passwordAgain = this.passwordAgain.getText().toString().trim();
 
         if (username.isEmpty()) {
-            error += getString(R.string.username_empty);
+            error.append(getString(R.string.username_empty));
+            error.append('\n');
         }
         if (password.isEmpty()) {
-            error += getString(R.string.password_empty);
+            error.append(getString(R.string.password_empty));
+            error.append('\n');
         }
         if (!password.equals(passwordAgain)) {
-            error += getString(R.string.passwords_diff);
+            error.append(getString(R.string.passwords_diff));
+            error.append('\n');
+        }
+        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            error.append("Please provide legal email");
+            error.append('\n');
         }
         if (error.length() > 0) {
-            MainActivity.createErrorAlert(error, getString(R.string.signup_error_title), this).show();
+            Alerter.createErrorAlert(error.toString(), getString(R.string.signup_error_title), this).show();
+            button.setEnabled(true);
             return;
         }
-        //ParseUser user = new ParseUser();
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
+        user.setEmail(email);
         progressDialog = ProgressDialog.show(this, getResources().getString(R.string.wait), getResources().getString(R.string.signup_progress));
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
                 progressDialog.dismiss();
                 if (e == null) {
-                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                    intent.putExtra(Consts.PARENT_ACTIVITY_NAME, RegisterActivity.class.getName());
-                    startActivity(intent);
+                    startActivity(new Intent(RegisterActivity.this, MainActivity.class)
+                            .putExtra(Consts.PARENT_ACTIVITY_NAME, RegisterActivity.class.getName()));
                 } else {
-                    MainActivity.createErrorAlert(e.getMessage(), getString(R.string.signup_error_title), RegisterActivity.this).show();
+                    Alerter.createErrorAlert(e.getMessage(), getString(R.string.signup_error_title), RegisterActivity.this).show();
+                    button.setEnabled(true);
                 }
             }
         });

@@ -23,10 +23,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/fueling_top"
+        android:layout_toEndOf="@+id/textView9"
+        android:gravity="center_vertical"
         android:spinnerMode="dropdown" />
 
     <EditText
@@ -106,6 +106,7 @@
         android:id="@+id/city_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/fueling_city"
         android:layout_alignEnd="@+id/textView8"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -113,6 +114,7 @@
         android:layout_alignTop="@+id/fueling_city"
         android:layout_toLeftOf="@+id/fueling_city"
         android:layout_toStartOf="@+id/fueling_city"
+        android:gravity="center_vertical"
         android:text="Choose City" />
 
     <Spinner
@@ -141,20 +143,38 @@
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/fueling_rg"
         android:layout_alignEnd="@+id/textView10"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/textView10"
         android:layout_below="@+id/fueling_amount"
+        android:gravity="center_vertical"
         android:text="Filter Gas Stations:" />
 
     <TextView
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/fueling_stations"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/fueling_city"
+        android:gravity="center_vertical"
         android:text="Choose Gas Station:" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fueling_mileage"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/fueling_car"
+        android:layout_toLeftOf="@+id/fueling_top"
+        android:layout_toStartOf="@+id/fueling_top"
+        android:gravity="center_vertical"
+        android:text="Car"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

@@ -8,8 +8,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mty.groupfuel.datamodel.Car;
-import com.parse.ParseUser;
+import com.mty.groupfuel.datamodel.User;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class CarItem extends RelativeLayout {
@@ -23,6 +24,7 @@ public class CarItem extends RelativeLayout {
     private TextView mpg;
     private TextView dpg;
     private TextView owner;
+    private TextView drivers;
 
     public CarItem(Context context) {
         this(context, null);
@@ -64,33 +66,42 @@ public class CarItem extends RelativeLayout {
         this.dpg.setText(dpg);
     }
 
-    private void setupChildren() {
-        this.header = (TextView)findViewById(R.id.usage_car_title);
-        this.mileage = (TextView)findViewById(R.id.usage_mileage);
-        this.mpg = (TextView)findViewById(R.id.usage_mpg);
-        this.dpg = (TextView)findViewById(R.id.usage_dpg);
-        this.owner = (TextView) findViewById(R.id.usage_owner);
+    public void setDrivers(ArrayList<User> drivers) {
+        StringBuilder builder = new StringBuilder();
+        String prefix = "";
+        for (User driver : drivers) {
+            builder.append(prefix);
+            prefix = ", ";
+            builder.append(driver.getDisplayName());
+        }
+        if (builder.length() > 0) {
+            this.drivers.setText(builder.toString());
+        } else {
+            this.drivers.setText("None");
+        }
     }
 
-    public void setData(Car car, Map<String, Number> map) {
+    private void setupChildren() {
+        this.header = (TextView) findViewById(R.id.car_title);
+        this.mileage = (TextView) findViewById(R.id.mileage);
+        this.mpg = (TextView) findViewById(R.id.mpg);
+        this.dpg = (TextView) findViewById(R.id.dpg);
+        this.owner = (TextView) findViewById(R.id.owner);
+        this.drivers = (TextView) findViewById(R.id.drivers);
+    }
+
+    public void setData(Car car, Map<String, Number> map, boolean isOwner) {
         Number price = map.get(TOTAL_PRICE);
         Number amount = map.get(TOTAL_AMOUNT);
         Number starting = map.get(STARTING_MILEAGE);
         Number mileage = map.get(CURRENT_MILEAGE);
 
         int miles = (mileage.intValue() - starting.intValue());
-        int intPrice = price.intValue();
-        if (intPrice == 0) {
-            intPrice++;
-        }
-        int intAmount = amount.intValue();
-        if (intAmount == 0) {
-            intAmount++;
-        }
-        String dpg = String.valueOf(miles / intPrice);
-        String mpg = String.valueOf(miles / intAmount);
 
-        if (car.getOwner().equals(ParseUser.getCurrentUser())) {
+        String dpg = String.valueOf(price.intValue() / miles);
+        String mpg = String.valueOf(amount.intValue() / miles);
+
+        if (isOwner) {
             owner.setText(R.string.me);
         } else {
             owner.setText(car.getOwner().getDisplayName());
@@ -99,5 +110,11 @@ public class CarItem extends RelativeLayout {
         setMileage(mileage.toString());
         setDpg(dpg);
         setMpg(mpg);
+        if (isOwner) {
+            setDrivers(car.getDrivers());
+        } else {
+            this.removeView(drivers);
+            this.removeView(findViewById(R.id.drivers_text));
+        }
     }
 }

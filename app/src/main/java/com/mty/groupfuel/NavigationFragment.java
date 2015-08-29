@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import com.mty.groupfuel.datamodel.GasStation;
 import com.parse.ParseGeoPoint;
@@ -30,9 +31,11 @@ import java.util.List;
 public class NavigationFragment extends ListFragment {
 
     private static final String LOG_TAG = NavigationFragment.class.getSimpleName();
-    getCarsListener mCallback;
+    private LocationListener locationListener;
+    private StationsListener stationsListener;
     private List<GasStation> stations;
     private ParseGeoPoint location = new ParseGeoPoint();
+    private TextView title;
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -42,12 +45,12 @@ public class NavigationFragment extends ListFragment {
             switch (action) {
                 case Consts.BROADCAST_LOCATION:
                     if (message > 0) {
-                        setLocation(mCallback.getLocation());
+                        setLocation(locationListener.getLocation());
                     }
                     break;
                 case Consts.BROADCAST_STATIONS:
                     if (message > 0) {
-                        setStations(mCallback.getStations());
+                        setStations(stationsListener.getStations());
                     }
             }
             Log.d(LOG_TAG, "Got message: " + action + " " + message);
@@ -103,10 +106,11 @@ public class NavigationFragment extends ListFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mCallback = (getCarsListener) activity;
+            locationListener = (LocationListener) activity;
+            stationsListener = (StationsListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement getCarsListener");
+                    + " must implement CarsListener");
         }
     }
 
@@ -114,7 +118,7 @@ public class NavigationFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         stations = new ArrayList<>();
-        ArrayList<GasStation> currentStations = (ArrayList<GasStation>) mCallback.getStations();
+        ArrayList<GasStation> currentStations = (ArrayList<GasStation>) stationsListener.getStations();
         if (currentStations != null) {
             setStations(currentStations);
         } else {
@@ -126,15 +130,24 @@ public class NavigationFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_navigation, container, false);
+        title = (TextView) view.findViewById(R.id.title);
 
         setListAdapter(new StationAdapter(container.getContext(), stations));
 
         if (stations.isEmpty()) {
-            setStations(mCallback.getStations());
+            setStations(stationsListener.getStations());
         }
-        setLocation(mCallback.getLocation());
+        setLocation(locationListener.getLocation());
+        if (stations.isEmpty()) {
+            title.setVisibility(View.INVISIBLE);
+            ViewGroup viewGroup = (ViewGroup) view.findViewById(android.R.id.list).getParent();
+            NoCarsView noCarsView = new NoCarsView(getActivity());
+            noCarsView.setText("Location services unavailable. Please try again later");
+            noCarsView.setButtonVisibility(View.INVISIBLE);
+            viewGroup.addView(noCarsView);
+        }
 
         return view;
     }

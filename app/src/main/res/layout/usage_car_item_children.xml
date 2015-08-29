@@ -9,7 +9,7 @@
     android:paddingTop="5dp">
 
     <TextView
-        android:id="@+id/usage_car_title"
+        android:id="@+id/car_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -17,53 +17,53 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
 
     <TextView
-        android:id="@+id/usage_mileage_title"
+        android:id="@+id/mileage_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/usage_mileage"
+        android:layout_alignTop="@+id/mileage"
         android:paddingBottom="3dp"
         android:paddingTop="3dp"
         android:text="@string/current_mileage"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
     <TextView
-        android:id="@+id/usage_mpg_title"
+        android:id="@+id/mpg_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/usage_mileage_title"
-        android:layout_toLeftOf="@+id/usage_mileage"
-        android:layout_toStartOf="@+id/usage_mileage"
+        android:layout_below="@+id/mileage_title"
+        android:layout_toLeftOf="@+id/mileage"
+        android:layout_toStartOf="@+id/mileage"
         android:paddingBottom="3dp"
         android:paddingTop="3dp"
-        android:text="Mile per Gallon"
+        android:text="Kilometer per Liter"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
     <TextView
-        android:id="@+id/usage_dpg_title"
+        android:id="@+id/dpg_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/usage_mpg_title"
-        android:layout_toLeftOf="@+id/usage_mpg"
-        android:layout_toStartOf="@+id/usage_mpg"
+        android:layout_below="@+id/mpg_title"
+        android:layout_toLeftOf="@+id/mpg"
+        android:layout_toStartOf="@+id/mpg"
         android:paddingBottom="3dp"
         android:paddingTop="3dp"
-        android:text="$ per Gallon"
+        android:text="$ per Liter"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
     <TextView
-        android:id="@+id/usage_mileage"
+        android:id="@+id/mileage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/usage_car_title"
-        android:layout_toRightOf="@+id/usage_mileage_title"
+        android:layout_below="@+id/car_title"
+        android:layout_toRightOf="@+id/mileage_title"
         android:paddingBottom="3dp"
         android:paddingLeft="15dp"
         android:paddingTop="3dp"
@@ -71,13 +71,13 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
     <TextView
-        android:id="@+id/usage_dpg"
+        android:id="@+id/dpg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/usage_mileage"
-        android:layout_alignRight="@+id/usage_mileage"
-        android:layout_alignTop="@+id/usage_dpg_title"
-        android:layout_toRightOf="@+id/usage_dpg_title"
+        android:layout_alignEnd="@+id/mileage"
+        android:layout_alignRight="@+id/mileage"
+        android:layout_alignTop="@+id/dpg_title"
+        android:layout_toRightOf="@+id/dpg_title"
         android:paddingBottom="3dp"
         android:paddingLeft="15dp"
         android:paddingTop="3dp"
@@ -85,14 +85,14 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
     <TextView
-        android:id="@+id/usage_mpg"
+        android:id="@+id/mpg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/usage_mileage"
-        android:layout_alignRight="@+id/usage_mileage"
-        android:layout_below="@+id/usage_mileage"
-        android:layout_toEndOf="@+id/usage_mileage_title"
-        android:layout_toRightOf="@+id/usage_mileage_title"
+        android:layout_alignEnd="@+id/mileage"
+        android:layout_alignRight="@+id/mileage"
+        android:layout_below="@+id/mileage"
+        android:layout_toEndOf="@+id/mileage_title"
+        android:layout_toRightOf="@+id/mileage_title"
         android:paddingBottom="3dp"
         android:paddingLeft="15dp"
         android:paddingTop="3dp"
@@ -100,29 +100,56 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
     <TextView
-        android:id="@+id/usage_owner_text"
+        android:id="@+id/owner_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/usage_dpg_title"
+        android:layout_alignEnd="@+id/dpg_title"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/usage_dpg_title"
-        android:layout_below="@+id/usage_dpg_title"
+        android:layout_alignRight="@+id/dpg_title"
+        android:layout_below="@+id/dpg_title"
         android:paddingBottom="3dp"
         android:paddingTop="3dp"
         android:text="Owner"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
     <TextView
-        android:id="@+id/usage_owner"
+        android:id="@+id/owner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/usage_owner_text"
-        android:layout_alignLeft="@+id/usage_dpg"
+        android:layout_alignBottom="@+id/owner_text"
+        android:layout_alignLeft="@+id/dpg"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignStart="@+id/usage_dpg"
-        android:layout_below="@+id/usage_dpg"
+        android:layout_alignStart="@+id/dpg"
+        android:layout_below="@+id/dpg"
+        android:paddingBottom="3dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="3dp"
+        android:text="New Text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/drivers_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/owner_text"
+        android:layout_toLeftOf="@+id/owner"
+        android:layout_toStartOf="@+id/owner"
+        android:text="Drivers"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/drivers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/owner"
+        android:layout_alignLeft="@+id/owner"
+        android:layout_alignRight="@+id/owner"
+        android:layout_alignStart="@+id/owner"
+        android:layout_below="@+id/owner"
         android:paddingBottom="3dp"
         android:paddingLeft="15dp"
         android:paddingTop="3dp"

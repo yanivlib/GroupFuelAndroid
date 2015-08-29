@@ -14,8 +14,9 @@ public class Car extends ParseObject {
     private final static String MODEL = "Model";
     private final static String NUMBER = "CarNumber";
     private final static String MILEAGE = "Mileage";
+    private final static String INITIAL_MILEAGE = "InitialMileage";
 
-    private ArrayList<User> drivers;
+    private ArrayList<User> drivers = new ArrayList<>();
 
     public Car () {
 
@@ -25,17 +26,21 @@ public class Car extends ParseObject {
         return ParseQuery.getQuery(Car.class);
     }
 
+    public void removeDriver(User driver) {
+        this.drivers.remove(driver);
+    }
+
     public ArrayList<User> getDrivers() {
         return drivers;
     }
 
     public void setDrivers(ArrayList<User> drivers) {
-        for (User driver : drivers) {
-            if (getOwner().getEmail().equals(driver.getEmail()) || getOwner().getObjectId().equals(driver.getObjectId())) {
-                drivers.remove(driver);
-            }
-        }
         this.drivers = drivers;
+        //for (User driver : drivers) {
+        //    if (getOwner().getEmail().equals(driver.getEmail()) || getOwner().getObjectId().equals(driver.getObjectId())) {
+        //        this.drivers.remove(driver);
+        //    }
+        //}
     }
 
     public User getOwner() {
@@ -80,6 +85,14 @@ public class Car extends ParseObject {
 
     public void setMileage(Number value) {
         put(MILEAGE, value);
+    }
+
+    public Number getInitialMileage() {
+        return getNumber(INITIAL_MILEAGE);
+    }
+
+    public void setInitialMileage(Number initialMileage) {
+        put(INITIAL_MILEAGE, initialMileage);
     }
 
     public String getDisplayName() {

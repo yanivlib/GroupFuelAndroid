@@ -272,7 +272,7 @@ public class SettingsListAdapter extends BaseExpandableListAdapter{
                             if (e == null) {
                                 Toast.makeText(context, "Facebook account linked successfully!", Toast.LENGTH_LONG).show();
                             } else {
-                                MainActivity.createErrorAlert(e.getMessage(), context);
+                                Alerter.createErrorAlert(e, context).show();
                             }
                         }
                     });
