@@ -14,4 +14,6 @@ public interface CarsListener {
     List<Car> getCars();
 
     void removeCar(Car car);
+
+    void updateMileage(Car car, Number Mileage);
 }

@@ -426,4 +426,17 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    public void updateMileage(Car car, Number mileage) {
+        Car newcar = car;
+        newcar.setMileage(mileage);
+        if (ownedCars.contains(car)) {
+            ownedCars.remove(car);
+            ownedCars.add(newcar);
+        } else if (driverCars.contains(car)) {
+            driverCars.remove(car);
+            driverCars.add(car);
+        }
+        broadcastCarList();
+    }
+
 }

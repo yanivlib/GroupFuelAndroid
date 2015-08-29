@@ -97,16 +97,9 @@ public class CarItem extends RelativeLayout {
         Number mileage = map.get(CURRENT_MILEAGE);
 
         int miles = (mileage.intValue() - starting.intValue());
-        int intPrice = price.intValue();
-        if (intPrice == 0) {
-            intPrice++;
-        }
-        int intAmount = amount.intValue();
-        if (intAmount == 0) {
-            intAmount++;
-        }
-        String dpg = String.valueOf(miles / intPrice);
-        String mpg = String.valueOf(miles / intAmount);
+
+        String dpg = String.valueOf(price.intValue() / miles);
+        String mpg = String.valueOf(amount.intValue() / miles);
 
         if (isOwner) {
             owner.setText(R.string.me);

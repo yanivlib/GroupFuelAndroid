@@ -377,6 +377,7 @@ public class FuelingFragment extends android.support.v4.app.Fragment implements 
                 } else {
                     car.setMileage(mileage);
                     car.saveEventually();
+                    carsListener.updateMileage(car, mileage);
                     fuelingsListener.addFueling(fueling);
                     Toast.makeText(context, context.getString(R.string.fueling_updated), Toast.LENGTH_LONG).show();
                 }

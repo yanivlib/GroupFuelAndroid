@@ -206,7 +206,6 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
         if (datamap != null) {
             return;
         }
-        final UsageFragment fragment = this;
         List<JSONObject> carPointers = new ArrayList<>(getPointers(cars));
         final Map<String, List<JSONObject>> params = new HashMap<>();
         params.put("cars", carPointers);
@@ -255,7 +254,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                 carItem = CarItem.inflate(parent);
             }
             Car car = getItem(position);
-            if (datamap.get(car.getObjectId()) != null) {
+            if (datamap != null && datamap.get(car.getObjectId()) != null) {
                 Log.d(LOG_TAG, "getting infoe of car " + car.getDisplayName());
                 carItem.setData(car, datamap.get(car.getObjectId()), car.getOwner().equals(ParseUser.getCurrentUser()));
             } else {
@@ -362,7 +361,7 @@ public class UsageFragment extends SwipeRefreshListFragment implements SwipeRefr
                     builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            progressDialog = ProgressDialog.show(context, getResources().getString(R.string.wait), "Adding driver");
+                            progressDialog = ProgressDialog.show(context, getResources().getString(R.string.wait), "Removing car");
                             ParseCloud.callFunctionInBackground("removeCar", params, new FunctionCallback<Object>() {
                                 @Override
                                 public void done(Object o, ParseException e) {
